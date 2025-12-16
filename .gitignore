@@ -1,3 +1,45 @@
 /.cursor
 /.vs
 /WebApplication1.sln
+/WebApplication1/bin
+/WebApplication1/obj
+ 
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+ 
+# Visual Studio files
+*.user
+*.suo
+*.sln.docstates
+*.resharper
+*.dotSettings
+ 
+# Package manager files
+*.nupkg
+*.nuget.props
+*.nuget.targets
+ 
+# Log files
+*.log
+ 
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+ 
+# IDE-specific files
+.idea/
+.vscode/
+ 
+# Dependency directories
+node_modules/
+bower_components/
+jspm_packages/
+typings/
+ 
+# Compressed files
+*.tgz
