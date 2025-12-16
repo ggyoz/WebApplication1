@@ -1,0 +1,134 @@
+@model WebApplication1.Models.Menu
+
+@{
+    ViewData["Title"] = "메뉴 수정";
+}
+
+<h1>메뉴 수정</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedAt" />
+            <input type="hidden" asp-for="UpdatedAt" />
+            
+            <div class="form-group mb-3">
+                <label asp-for="Name" class="control-label">메뉴 이름 *</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Level" class="control-label">레벨 *</label>
+                <select asp-for="Level" class="form-control" id="levelSelect">
+                    <option value="1">1단계 (최상위 메뉴)</option>
+                    <option value="2">2단계 (서브 메뉴)</option>
+                    <option value="3">3단계 (서브 서브 메뉴)</option>
+                </select>
+                <span asp-validation-for="Level" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3" id="parentMenuGroup">
+                <label asp-for="ParentId" class="control-label">부모 메뉴</label>
+                <select asp-for="ParentId" class="form-control" asp-items="ViewBag.ParentMenus">
+                    <option value="">없음 (최상위 메뉴)</option>
+                </select>
+                <span asp-validation-for="ParentId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="control-label">링크 설정</label>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">방법 1: Controller/Action 사용 (내부 페이지)</label>
+                            <small class="text-muted d-block mb-2">ASP.NET Core 라우팅을 사용합니다. URL이 비어있을 때 사용됩니다.</small>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input asp-for="Controller" class="form-control" placeholder="Controller (예: Home)" />
+                                    <small class="text-muted">컨트롤러 이름</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <input asp-for="Action" class="form-control" placeholder="Action (예: Index)" />
+                                    <small class="text-muted">액션 이름</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr />
+                        
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">방법 2: 직접 URL 사용 (우선순위 높음)</label>
+                            <small class="text-muted d-block mb-2">외부 링크나 특정 경로를 직접 지정합니다. URL이 입력되면 Controller/Action보다 우선합니다.</small>
+                            <input asp-for="Url" class="form-control" placeholder="예: /Home/Index 또는 https://example.com" />
+                            <small class="text-muted">내부 경로: /Home/Index, 외부 링크: https://example.com</small>
+                        </div>
+                        
+                        <div class="alert alert-info mt-3 mb-0">
+                            <small>
+                                <strong>💡 사용 방법:</strong><br/>
+                                • 내부 페이지: Controller와 Action만 입력 (예: Home, Index)<br/>
+                                • 외부 링크: URL만 입력 (예: https://example.com)<br/>
+                                • 둘 다 입력 시: URL이 우선 사용됩니다
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Icon" class="control-label">아이콘 (CSS 클래스)</label>
+                <input asp-for="Icon" class="form-control" placeholder="예: bi bi-house" />
+                <small class="form-text text-muted">Bootstrap Icons 사용 예: bi bi-house, bi bi-file-text</small>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="DisplayOrder" class="control-label">표시 순서</label>
+                <input asp-for="DisplayOrder" class="form-control" type="number" />
+                <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <div class="form-check">
+                    <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                    <label asp-for="IsActive" class="form-check-label">활성화</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="저장" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">목록으로</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // 레벨 변경 시 부모 메뉴 필드 표시/숨김
+        document.getElementById('levelSelect').addEventListener('change', function() {
+            var level = parseInt(this.value);
+            var parentGroup = document.getElementById('parentMenuGroup');
+            if (level === 1) {
+                parentGroup.style.display = 'none';
+                document.getElementById('ParentId').value = '';
+            } else {
+                parentGroup.style.display = 'block';
+            }
+        });
+
+        // 초기 로드 시 레벨에 따라 부모 메뉴 필드 표시/숨김
+        var initialLevel = @Model.Level;
+        if (initialLevel === 1) {
+            document.getElementById('parentMenuGroup').style.display = 'none';
+        }
+
+        // 두 필드를 모두 입력 가능하게 유지
+        // URL이 있으면 URL이 우선 사용되고, 없으면 Controller/Action이 사용됩니다.
+    </script>
+}
+

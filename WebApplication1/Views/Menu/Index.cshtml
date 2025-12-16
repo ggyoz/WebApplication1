@@ -1,0 +1,60 @@
+@model IEnumerable<WebApplication1.Models.Menu>
+
+@{
+    ViewData["Title"] = "메뉴 관리";
+}
+
+<h1>메뉴 관리</h1>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["Error"]
+    </div>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">새 메뉴 추가</a>
+    <a asp-action="Create" asp-route-parentId="0" class="btn btn-secondary">1단계 메뉴 추가</a>
+</p>
+
+@if (Model != null && Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>이름</th>
+                    <th>링크</th>
+                    <th>레벨</th>
+                    <th>순서</th>
+                    <th>상태</th>
+                    <th>작업</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var menu in Model)
+                {
+                    @await Html.PartialAsync("_MenuRow", menu)
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p class="text-muted">메뉴가 없습니다. 첫 번째 메뉴를 추가해보세요!</p>
+}
+
+@section Scripts {
+    <script>
+        // 트리 구조 접기/펼치기
+        function toggleChildren(menuId) {
+            var children = document.querySelectorAll(`[data-parent-id="${menuId}"]`);
+            children.forEach(function(child) {
+                child.style.display = child.style.display === 'none' ? '' : 'none';
+            });
+        }
+    </script>
+}
+

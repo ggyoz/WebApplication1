@@ -1,0 +1,25 @@
+@model WebApplication1.Models.Post
+
+@{
+    ViewData["Title"] = "게시물 상세";
+}
+
+<h1>게시물 상세</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">제목</dt>
+        <dd class="col-sm-10">@Model.Title</dd>
+        
+        <dt class="col-sm-2">내용</dt>
+        <dd class="col-sm-10">@Model.Content</dd>
+        
+        <dt class="col-sm-2">작성일</dt>
+        <dd class="col-sm-10">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Index" class="btn btn-secondary">목록으로</a>
+</div>
+
