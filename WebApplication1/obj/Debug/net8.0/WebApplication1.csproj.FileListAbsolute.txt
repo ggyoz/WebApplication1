@@ -49,3 +49,4 @@ C:\Users\Administrator\source\repos\WebApplication1\WebApplication1\bin\Debug\ne
 C:\Users\Administrator\source\repos\WebApplication1\WebApplication1\bin\Debug\net8.0\System.Reactive.dll
 C:\Users\Administrator\source\repos\WebApplication1\WebApplication1\bin\Debug\net8.0\Websocket.Client.dll
 C:\Users\Administrator\source\repos\WebApplication1\WebApplication1\obj\Debug\net8.0\WebAppli.7D14BD69.Up2Date
+C:\Users\Administrator\source\repos\WebApplication1\WebApplication1\obj\Debug\net8.0\WebApplication1.sourcelink.json
