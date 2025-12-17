@@ -1,10 +1,8 @@
 @model IEnumerable<WebApplication1.Models.Post>
 
 @{
-    ViewData["Title"] = "게시물 목록";
+    ViewData["Title"] = "요청사항 목록";
 }
-
-<h1>게시물 목록</h1>
 
 @if (ViewBag.Error != null)
 {
@@ -21,15 +19,14 @@
     </div>
 }
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">새 게시물 작성</a>
-</p>
+
 
 @if (Model != null && Model.Any())
 {
     <table class="table">
         <thead>
             <tr>
+                <th>번호</th>
                 <th>제목</th>
                 <th>내용</th>
                 <th>작성일</th>
@@ -40,6 +37,7 @@
             @foreach (var item in Model)
             {
                 <tr>
+                    <td>@item.Id</td>
                     <td>@item.Title</td>
                     <td>@(item.Content.Length > 50 ? item.Content.Substring(0, 50) + "..." : item.Content)</td>
                     <td>@item.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
@@ -53,6 +51,9 @@
 }
 else
 {
-    <p>게시물이 없습니다. 첫 번째 게시물을 작성해보세요!</p>
+    <p>요청사항이 없습니다.</p>
 }
 
+<p class="text-end">
+    <a asp-action="Create" class="btn btn-primary float-end">요청사항 등록</a>
+</p>

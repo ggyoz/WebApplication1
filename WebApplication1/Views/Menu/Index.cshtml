@@ -4,8 +4,6 @@
     ViewData["Title"] = "메뉴 관리";
 }
 
-<h1>메뉴 관리</h1>
-
 @if (TempData["Error"] != null)
 {
     <div class="alert alert-danger" role="alert">
@@ -13,20 +11,27 @@
     </div>
 }
 
-<p>
+<p class="text-end">
     <a asp-action="Create" class="btn btn-primary">새 메뉴 추가</a>
-    <a asp-action="Create" asp-route-parentId="0" class="btn btn-secondary">1단계 메뉴 추가</a>
+    <!-- <a asp-action="Create" asp-route-parentId="0" class="btn btn-secondary">1단계 메뉴 추가</a> -->
 </p>
 
 @if (Model != null && Model.Any())
 {
     <div class="table-responsive">
-        <table class="table table-bordered">
+        <table class="board-tabl">
+            <colgroup>
+                <col width="15%"/>
+                <col width="20%"/>
+                <col width="20%"/>
+                <col width="10x"/>
+                <col width="20%"/>
+            </colgroup>
+
             <thead class="table-light">
                 <tr>
                     <th>이름</th>
                     <th>링크</th>
-                    <th>레벨</th>
                     <th>순서</th>
                     <th>상태</th>
                     <th>작업</th>
@@ -43,17 +48,40 @@
 }
 else
 {
-    <p class="text-muted">메뉴가 없습니다. 첫 번째 메뉴를 추가해보세요!</p>
+    <p class="text-muted">메뉴가 없습니다.</p>
 }
 
 @section Scripts {
     <script>
+
+        var depth1Menus = document.querySelectorAll('[data-level]:not([data-level="1"])');
+        depth1Menus.forEach( menu => menu.style.display = 'none' );
+
+        //  중복코드 제거 해야됨!!!!!
         // 트리 구조 접기/펼치기
-        function toggleChildren(menuId) {
-            var children = document.querySelectorAll(`[data-parent-id="${menuId}"]`);
-            children.forEach(function(child) {
-                child.style.display = child.style.display === 'none' ? '' : 'none';
-            });
+        function toggleChildren(othis, menuId) {
+
+            let icontag = othis.firstElementChild.classList;
+
+            if(othis.firstElementChild.classList.contains("show")){
+                othis.firstElementChild.classList.remove("show");
+
+                var children = document.querySelectorAll(`[data-parent-id="${menuId}"]`);                
+                children.forEach( (child) => 
+                    child.style.display = child.style.display === 'none' ? '' : 'none'
+                );
+
+            }else{
+
+                othis.firstElementChild.classList.add("show");
+                var children = document.querySelectorAll(`[data-parent-id="${menuId}"]`);                
+                children.forEach( (child) => 
+                    child.style.display = child.style.display === 'none' ? '' : 'none'
+                );
+                
+            }
+
+            
         }
     </script>
 }

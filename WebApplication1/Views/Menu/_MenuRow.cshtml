@@ -1,40 +1,28 @@
 @model WebApplication1.Models.Menu
 
 @{
-    var indent = (Model.Level - 1) * 30;
+    var indent = (Model.Level - 1) * 20;
     var marginLeft = $"{indent}px";
 }
 
-<tr data-menu-id="@Model.Id" data-level="@Model.Level" style="margin-left: @marginLeft;">
+<tr data-menu-id="@Model.Id" data-parent-id="@Model.ParentId" data-level="@Model.Level" style="margin-left: @marginLeft;">
     <td>
         <span style="margin-left: @marginLeft;">
             @if (Model.Children != null && Model.Children.Any())
             {
-                <button type="button" class="btn btn-sm btn-link p-0" onclick="toggleChildren(@Model.Id)" style="text-decoration: none;">
-                    <i class="bi bi-chevron-down"></i>
+                <button type="button" class="btn btn-sm btn-link p-0" onclick="toggleChildren(this, @Model.Id)" style="text-decoration: none; ">                    
+                    <i class="dept1-btn"></i>
                 </button>
             }
             else
             {
-                <span style="width: 20px; display: inline-block;"></span>
-            }
-            @if (!string.IsNullOrEmpty(Model.Icon))
+                <i class="bi bi-dash"></i>
+            }            
+            <!-- @if (!string.IsNullOrEmpty(Model.Icon))
             {
                 <i class="@Model.Icon"></i>
-            }
+            } -->
             <strong>@Model.Name</strong>
-            @if (Model.Level == 1)
-            {
-                <span class="badge bg-primary">1단계</span>
-            }
-            else if (Model.Level == 2)
-            {
-                <span class="badge bg-info">2단계</span>
-            }
-            else if (Model.Level == 3)
-            {
-                <span class="badge bg-secondary">3단계</span>
-            }
         </span>
     </td>
     <td>
@@ -50,8 +38,7 @@
         {
             <span class="text-muted">-</span>
         }
-    </td>
-    <td>@Model.Level</td>
+    </td>    
     <td>
         <div class="btn-group btn-group-sm">
             <a asp-action="MoveUp" asp-route-id="@Model.Id" class="btn btn-outline-secondary" title="위로">
@@ -77,16 +64,14 @@
         <div class="btn-group btn-group-sm">
             @if (Model.Level < 3)
             {
-                <a asp-action="Create" asp-route-parentId="@Model.Id" class="btn btn-sm btn-outline-primary" title="하위 메뉴 추가">
-                    <i class="bi bi-plus-circle"></i>
+                <a asp-action="Create" asp-route-parentId="@Model.Id" class="btn btn-sm btn-outline" title="하위 메뉴 추가">
+                    <i class="bi bi-plus-circle">메뉴 추가</i>
                 </a>
             }
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-warning" title="수정">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline" title="수정">
                 <i class="bi bi-pencil"></i>
             </a>
-            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-danger" title="삭제">
-                <i class="bi bi-trash"></i>
-            </a>
+            
         </div>
     </td>
 </tr>

@@ -1,9 +1,43 @@
 ﻿@{
-    ViewData["Title"] = "홈 페이지";
+    ViewData["Title"] = "대시보드";
 }
 
-<div class="text-center">
-    <h1 class="display-4">!</h1>
-    <p>ASP.NET Core로 만든 첫 번째 웹 페이지입니다.</p>
-    <p>현재 시간: @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")</p>
+<div class="container mt-4">
+    <h3 class="display-4 mb-4">대시보드</h3>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Larger Widget A</h5>
+                    <p class="card-text">More detailed information for a larger widget.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Larger Widget B</h5>
+                    <p class="card-text">Another section with more content.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Full Width Widget</h5>
+                    <p class="card-text">This widget spans the entire width of the container.</p>
+                    <p class="card-text">This widget spans the entire width of the container.</p>
+                    <p class="card-text">This widget spans the entire width of the container.</p>
+                    <p class="card-text">This widget spans the entire width of the container.</p>
+                    <p class="card-text">This widget spans the entire width of the container.</p>
+                    <p class="card-text">This widget spans the entire width of the container.</p>
+                    <p class="card-text">This widget spans the entire width of the container.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,0 +1,63 @@
+/* A modern, clean, and readable table design */
+
+table.board-tabl {
+    width: 100%;
+    border-collapse: collapse; /* Remove cell spacing */
+    margin: 20px 0;
+    font-size: 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+}
+
+/* Table Header */
+table.board-tabl thead tr {
+    background-color: #9c9ea0; /* A modern dark grey for the header */
+    color: #ffffff;
+    text-align: left;
+    font-weight: bold;
+}
+
+/* Table Cells (Header and Data) */
+table.board-tabl th,
+table.board-tabl td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e2e8f0; /* Light grey border for rows */
+}
+
+/* Table Body Rows - Hover Effect */
+table.board-tabl tbody tr:hover {
+    background-color: #f7fafc; /* A very light grey for hover */
+    cursor: pointer;
+}
+
+/* Remove border from the last row for a cleaner look */
+table.board-tabl tbody tr:last-of-type {
+    border-bottom: none;
+}
+
+/* Styling for links within the table to make them fit in */
+table.board-tabl a {
+    color: #2b6cb0; /* A nice blue for links */
+    text-decoration: none;
+    font-weight: 500;
+}
+
+table.board-tabl a:hover {
+    text-decoration: underline;
+}
+
+/* Badge styling for status indicators, etc. */
+table.board-tabl .badge {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: #fff;
+}
+
+.badge.bg-success { background-color: #28a745; }
+.badge.bg-danger { background-color: #dc3545; }
+.badge.bg-warning { background-color: #ffc107; color: #212529; }
+.badge.bg-info { background-color: #17a2b8; }
+.badge.bg-primary { background-color: #007bff; }
+.badge.bg-secondary { background-color: #6c757d; }
