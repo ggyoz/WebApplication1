@@ -1,0 +1,86 @@
+@model CSR.Models.Menu
+
+@{
+    var indent = (Model.Level - 1) * 20;
+    var marginLeft = $"{indent}px";
+}
+
+<tr data-menu-id="@Model.Id" data-parent-id="@Model.ParentId" data-level="@Model.Level" style="margin-left: @marginLeft;">
+    <td>
+        <span style="margin-left: @marginLeft;">
+            @if (Model.Children != null && Model.Children.Any())
+            {
+                <button type="button" class="btn btn-sm btn-link p-0" onclick="toggleChildren(this, @Model.Id)" style="text-decoration: none; ">                    
+                    <i class="dept1-btn"></i>
+                </button>
+            }
+            else
+            {
+                <i class="bi bi-dash"></i>
+            }            
+            <!-- @if (!string.IsNullOrEmpty(Model.Icon))
+            {
+                <i class="@Model.Icon"></i>
+            } -->
+            <strong>@Model.Name</strong>
+        </span>
+    </td>
+    <td>
+        @if (!string.IsNullOrEmpty(Model.Url))
+        {
+            <a href="@Model.Url" target="_blank">@Model.Url</a>
+        }
+        else if (!string.IsNullOrEmpty(Model.Controller) && !string.IsNullOrEmpty(Model.Action))
+        {
+            <span>@Model.Controller/@Model.Action</span>
+        }
+        else
+        {
+            <span class="text-muted">-</span>
+        }
+    </td>    
+    <td>
+        <div class="btn-group btn-group-sm">
+            <a asp-action="MoveUp" asp-route-id="@Model.Id" class="btn btn-outline-secondary" title="위로">
+                <i class="bi bi-arrow-up"></i>
+            </a>
+            <span class="btn btn-outline-secondary">@Model.DisplayOrder</span>
+            <a asp-action="MoveDown" asp-route-id="@Model.Id" class="btn btn-outline-secondary" title="아래로">
+                <i class="bi bi-arrow-down"></i>
+            </a>
+        </div>
+    </td>
+    <td>
+        @if (Model.IsActive)
+        {
+            <span class="badge bg-success">활성</span>
+        }
+        else
+        {
+            <span class="badge bg-secondary">비활성</span>
+        }
+    </td>
+    <td>
+        <div class="btn-group btn-group-sm">
+            @if (Model.Level < 3)
+            {
+                <a asp-action="Create" asp-route-parentId="@Model.Id" class="btn btn-sm btn-outline" title="하위 메뉴 추가">
+                    <i class="bi bi-plus-circle">메뉴 추가</i>
+                </a>
+            }
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline" title="수정">
+                <i class="bi bi-pencil"></i>
+            </a>
+            
+        </div>
+    </td>
+</tr>
+
+@if (Model.Children != null && Model.Children.Any())
+{
+    @foreach (var child in Model.Children.OrderBy(c => c.DisplayOrder))
+    {
+        @await Html.PartialAsync("_MenuRow", child)
+    }
+}
+
