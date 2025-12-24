@@ -1,0 +1,7 @@
+테이블 설명 : GROUP 정보
+
+컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
+GROUPID	number	PK	Y		그룹 ID	
+SYSTEMCODE	varchar2(20)				시스템 코드	
+GROUPNAME	varchar2(50)				그룹 이름	
+GROUPNOTE	varchar2(2000)				그룹 설명	

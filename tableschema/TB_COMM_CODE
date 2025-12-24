@@ -1,0 +1,14 @@
+테이블 설명 : 공통 코드 관리 테이블
+컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
+CODEID	varchar2(10)	PK	Y		코드ID	
+PARENTCODEID	varchar2(100)		Y		부모코드 ID	
+NAME	varchar2(10)		Y		이름	
+VALUE	number				값	
+DEPTH	varchar2(1000)				단계	
+ORDER	number				정렬순서	
+NOTE	varchar(1000)				설명	
+USEYN	varchar2(1)		Y	'Y'	사용여부	
+REG_DATE	date		Y	sysdate	등록일	
+REG_USERID	varchar2(10)		Y		등록자 ID	
+UPDATE_DATE	date				수정일	
+UPDATE_USERID	varchar2(10)				수정자 ID	

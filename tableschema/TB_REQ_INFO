@@ -1,0 +1,30 @@
+테이블 설명 : 요청사항
+컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
+REQID	number	PK	Y		요청번호	
+PARENTID	number				상위요청번호	
+TITLE	varchar2(50)		Y		제목	
+CONTENTS_HTML	clob				내용(HTML)	
+CONTENTS_TEXT	clob				내용(TEXT)	
+REQDATE	varchar2(10)		Y		요청일	
+REQENDDATE	varchar2(10)		Y		완료요청(예정)일	
+REQTYPE	varchar2(10)		Y		요청유형	
+REQUSERID	varchar2(10)		Y		요청자	
+RESUSERID	varchar2(10)				조치자	
+DFCLTCD	varchar2(10)				난이도	
+PRIORITYCD	varchar2(10)		Y		긴급도	
+MAN_DAY	float				투입공수	
+PROC_STATUS	varchar2(10)				진행상태	
+PROC_RATE	number				진행률	
+ANSWER_HTML	clob				답변내용 html	
+ANSWER_TEXT	clob				답변내용 text	
+DELAYREASON_HTML	clob				지연사유 html	
+DELAYREASON_TEXT	clob				지연사유 text	
+CORCD	varchar2(10)		Y		법인코드	
+DEPTCD	varchar2(10)		Y		부서코드	
+TEAMCD	varchar2(10)		Y		팀 코드	
+REQHISTORY	varchar2(1000)				조치내역(히스토리)	
+REG_DATE	date		Y		등록자ID	
+REG_USERID	varchar2(10)		Y	sysdate	등록일	
+UPDATE_DATE	date				수정자 ID	
+UPDATE_USERID	varchar2(10)				수정일	
+USEYN	varchar2(1)		Y	N	삭제여부	

@@ -1,0 +1,5 @@
+테이블 설명 : USER와 GROUP 매핑 테이블	
+
+컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
+USERID	varchar2(10)	PK	Y		사용자 ID	
+GROUPID	varchar2(10)	PK	Y		그룹 ID	

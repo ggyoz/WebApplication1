@@ -1,0 +1,29 @@
+테이블 정보 : 유저 정보 테이블
+USERID	varchar2(10)	PK	Y		사용자 ID	
+USERPWD	varchar2(100)				사용자 비밀번호	
+USERNAME	varchar2(100)				사용자 이름	
+EMPNO	varchar2(10)				사원 번호	
+DEPTCD	varchar2(10)				부서 코드	
+DEPTNAME	varchar2(100)				부서명	
+TEAMCD	varchar2(10)				팀 코드	
+TEAMNAME	varchar2(100)				팀명 	
+CORCD	varchar2(10)				법인 코드	
+SYSCD	varchar2(10)				시스템 코드	
+BIZCD	varchar2(10)				사업장 코드	
+TELNO	varchar2(20)				전화 번호	
+MOB_PHONE_NO	varchar2(20)				휴대폰 번호	
+EMAIL_ADDR	varchar2(30)				전자메일 주소	
+RETIRE_DATE	varchar2(10)				퇴사일	
+CORNAME	varchar2(30)				법인코드명	
+SYSNAME	varchar2(30)				시스템 코드명	
+BIZNAME	varchar2(30)				사업장명	
+ADMIN_FLAG	number			0	관리자권한	
+CUSTCD	varchar2(10)				고객사 코드	
+VENDCD	varchar2(10)				협력사 코드	
+AUTH_FLAG	number			0	메뉴부여권한	
+USER_DIV	varchar2(10)				사용자구분
+PW_MISS_COUNT	number				로그인 실패 횟수	
+REG_DATE	date				등록일	
+REG_USERID	varchar2(10)				등록자 id	
+UPDATE_DATE	date				수정일	
+UPDATE_USERID	varchar2(10)				수정자 id	

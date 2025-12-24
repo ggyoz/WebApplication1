@@ -1,0 +1,17 @@
+테이블 설명 : MENU 정보
+
+컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
+MENUID	varchar2(40)	PK	Y		메뉴 ID	
+SYSTEMCODE	varchar2(10)				시스템 코드	
+MENUNAME	varchar2(100)				메뉴 이름	
+CONTROLLER	varchar2(20)				메뉴 컨트롤러	
+ACTION	varchar2(20)				메뉴 행동	
+URL	varchar2(300)				메뉴 경로	
+PARENTID	varchar2(40)				상위 메뉴 ID	
+INFO	varchar2(1000)				메뉴정보	
+ORDER	number				메뉴 정렬 순서	
+USEYN	varchar2(1)				사용 여부	
+CREATE_DATE	date				생성일	
+CREATE_USERID	varchar2(10)				생성자 ID	
+UPDATE_DATE	date				수정일	
+UPDATE_USERID	varchar2(10)				수정자 ID	

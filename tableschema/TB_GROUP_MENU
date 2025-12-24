@@ -1,0 +1,6 @@
+테이블 설명 : GROUP별 MENU 매핑 테이블
+
+컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
+GROUPID	varchar2(10)	PK	Y		그룹 ID	
+MENUID	varchar2(40)	PK	Y		메뉴 ID 	
+NOTE	varchar2(2000)				설명	

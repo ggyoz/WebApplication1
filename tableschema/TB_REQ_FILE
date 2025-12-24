@@ -1,0 +1,9 @@
+테이블 설명 : 요청사항 첨부파일 테이블
+FILEID	number	PK	Y		파일 ID	
+REQ_ID	number		Y		요청글 ID	
+REQ_TYPE	varchar2(1)		Y		첨부파일 구분	
+FILE_NAME	varchar2(1)		Y		파일명	
+FILE_PATH	varchar2(1)		Y		파일 경로	
+REG_DATE	date		Y		등록일	
+REG_USERID	varchar2(10)		Y		등록자ID	
+USEYN	varchar2(1)		Y	'Y'	사용여부	
