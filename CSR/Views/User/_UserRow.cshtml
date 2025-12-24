@@ -1,0 +1,17 @@
+@model CSR.Models.User
+
+<tr>
+    <td>@Html.DisplayFor(modelItem => modelItem.UserId)</td>
+    <td>@Html.DisplayFor(modelItem => modelItem.UserName)</td>
+    <td>@Html.DisplayFor(modelItem => modelItem.EmpNo)</td>
+    <td>@Html.DisplayFor(modelItem => modelItem.EmailAddr)</td>
+    <td>@(Model.AdminFlag ? "예" : "아니오")</td>
+    <td>@Html.DisplayFor(modelItem => modelItem.RegDate)</td>
+    <td>
+        <div class="btn-group btn-group-sm">
+            <a asp-action="Details" asp-route-id="@Model.UserId" class="btn btn-sm btn-outline-info">상세보기</a>
+            <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-sm btn-outline-primary">수정</a>
+            <a asp-action="Delete" asp-route-id="@Model.UserId" class="btn btn-sm btn-outline-danger">삭제</a>
+        </div>
+    </td>
+</tr>

@@ -1,0 +1,149 @@
+@model CSR.Models.User
+
+@{
+    ViewData["Title"] = "사용자 추가";
+}
+
+<h1>사용자 추가</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="UserId" class="control-label">사용자 ID *</label>
+                <input asp-for="UserId" class="form-control" />
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="UserPwd" class="control-label">비밀번호 *</label>
+                <input asp-for="UserPwd" class="form-control" type="password" />
+                <span asp-validation-for="UserPwd" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="UserName" class="control-label">이름 *</label>
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="EmpNo" class="control-label">사원 번호</label>
+                <input asp-for="EmpNo" class="form-control" />
+                <span asp-validation-for="EmpNo" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="DeptCd" class="control-label">부서 코드</label>
+                <input asp-for="DeptCd" class="form-control" />
+                <span asp-validation-for="DeptCd" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="DeptName" class="control-label">부서명</label>
+                <input asp-for="DeptName" class="form-control" />
+                <span asp-validation-for="DeptName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="TeamCd" class="control-label">팀 코드</label>
+                <input asp-for="TeamCd" class="form-control" />
+                <span asp-validation-for="TeamCd" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="TeamName" class="control-label">팀명</label>
+                <input asp-for="TeamName" class="form-control" />
+                <span asp-validation-for="TeamName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="CorCd" class="control-label">법인 코드</label>
+                <input asp-for="CorCd" class="form-control" />
+                <span asp-validation-for="CorCd" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="SysCd" class="control-label">시스템 코드</label>
+                <input asp-for="SysCd" class="form-control" />
+                <span asp-validation-for="SysCd" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="BizCd" class="control-label">사업장 코드</label>
+                <input asp-for="BizCd" class="form-control" />
+                <span asp-validation-for="BizCd" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="TelNo" class="control-label">전화 번호</label>
+                <input asp-for="TelNo" class="form-control" />
+                <span asp-validation-for="TelNo" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="MobPhoneNo" class="control-label">휴대폰 번호</label>
+                <input asp-for="MobPhoneNo" class="form-control" />
+                <span asp-validation-for="MobPhoneNo" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="EmailAddr" class="control-label">전자메일 주소</label>
+                <input asp-for="EmailAddr" class="form-control" type="email" />
+                <span asp-validation-for="EmailAddr" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="RetireDate" class="control-label">퇴사일 (YYYYMMDD)</label>
+                <input asp-for="RetireDate" class="form-control" />
+                <span asp-validation-for="RetireDate" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="CorName" class="control-label">법인코드명</label>
+                <input asp-for="CorName" class="form-control" />
+                <span asp-validation-for="CorName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="SysName" class="control-label">시스템 코드명</label>
+                <input asp-for="SysName" class="form-control" />
+                <span asp-validation-for="SysName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="BizName" class="control-label">사업장명</label>
+                <input asp-for="BizName" class="form-control" />
+                <span asp-validation-for="BizName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <div class="form-check">
+                    <input asp-for="AdminFlag" class="form-check-input" type="checkbox" />
+                    <label asp-for="AdminFlag" class="form-check-label">관리자 권한</label>
+                </div>
+                <span asp-validation-for="AdminFlag" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="CustCd" class="control-label">고객사 코드</label>
+                <input asp-for="CustCd" class="form-control" />
+                <span asp-validation-for="CustCd" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="VendCd" class="control-label">협력사 코드</label>
+                <input asp-for="VendCd" class="form-control" />
+                <span asp-validation-for="VendCd" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <div class="form-check">
+                    <input asp-for="AuthFlag" class="form-check-input" type="checkbox" value="1" />
+                    <label asp-for="AuthFlag" class="form-check-label">메뉴 부여 권한</label>
+                </div>
+                <span asp-validation-for="AuthFlag" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="UserDiv" class="control-label">사용자 구분</label>
+                <input asp-for="UserDiv" class="form-control" />
+                <span asp-validation-for="UserDiv" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="PwMissCount" class="control-label">로그인 실패 횟수</label>
+                <input asp-for="PwMissCount" class="form-control" type="number" />
+                <span asp-validation-for="PwMissCount" class="text-danger"></span>
+            </div>            
+            <div class="form-group">
+                <input type="submit" value="생성" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">목록으로</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

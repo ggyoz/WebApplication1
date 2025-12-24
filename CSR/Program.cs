@@ -59,6 +59,8 @@ builder.Services.AddScoped<OracleConnection>(sp =>
     return new OracleConnection(connectionString);
 });
 
+// UserService 등록 (Oracle DB 사용)
+builder.Services.AddScoped<CSR.Services.UserService>();
 
 var app = builder.Build();
 
