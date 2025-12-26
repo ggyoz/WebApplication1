@@ -1,0 +1,20 @@
+테이블 설명 : 요청사항 관리 테이블
+NO	컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
+1	HISTROYID		PK	Y		히스토리번호	
+2	REQID	number		Y		요청번호	
+3	REQENDDATE	varchar2(10)		Y		완료요청(예정)일	
+4	RESUSERID	varchar2(10)				조치자	
+5	DFCLTCD	varchar2(10)				난이도	
+6	MAN_DAY	float				투입공수	
+7	PROC_STATUS	varchar2(10)				진행상태	
+8	PROC_RATE	number				진행률	
+9	ANSWER_HTML	clob				답변내용 html	
+10	ANSWER_TEXT	clob				답변내용 text	
+11	DELAYREASON_HTML	clob				지연사유 html	
+12	DELAYREASON_TEXT	clob				지연사유 text	
+13	REQHISTORY	varchar2(1000)				조치내역(히스토리)	
+14	REG_DATE	date		Y		등록자ID	
+15	REG_USERID	varchar2(10)		Y	sysdate	등록일	
+16	UPDATE_DATE	date				수정자 ID	
+17	UPDATE_USERID	varchar2(10)				수정일	
+18	USEYN	varchar2(1)		Y	'Y'	삭제여부	
