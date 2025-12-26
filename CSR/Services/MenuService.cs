@@ -1,38 +1,58 @@
-using Supabase;
+using Dapper;
+using Oracle.ManagedDataAccess.Client;
 using CSR.Models;
+using System.Data;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CSR.Services
 {
     public class MenuService
     {
-        private readonly Supabase.Client _supabase;
+        private readonly IDbConnection _dbConnection;
 
-        public MenuService(Supabase.Client supabase)
+        public MenuService(IDbConnection connection)
         {
-            _supabase = supabase;
+            _dbConnection = connection;
         }
+
+        private const string SelectColumns = @"
+            MENUID AS MenuId, SYSTEMCODE AS SystemCode, MENUNAME AS MenuName, CONTROLLER, ACTION, URL, 
+            PARENTID AS ParentId, INFO, SORT_ORDER AS SortOrder, USEYN AS UseYn, 
+            TO_CHAR(CREATE_DATE, 'YYYY-MM-DD HH24:MI:SS') AS CreateDate, 
+            CREATE_USERID AS CreateUserId, 
+            TO_CHAR(UPDATE_DATE, 'YYYY-MM-DD HH24:MI:SS') AS UpdateDate, 
+            UPDATE_USERID AS UpdateUserId,
+            CAST(NULL AS VARCHAR2(100)) AS Icon
+        ";
 
         // 모든 메뉴 조회 (활성화된 것만)
         public async Task<List<Menu>> GetAllActiveMenusAsync()
         {
-            var response = await _supabase
-                .From<Menu>()
-                .Select("id,name,url,controller,action,icon,display_order,is_active,parent_id,level,created_at,updated_at")
-                .Filter("is_active", Supabase.Postgrest.Constants.Operator.Equals, true)
-                .Order("display_order", Supabase.Postgrest.Constants.Ordering.Ascending)
-                .Get();
-            return response.Models;
+            var sql = $"SELECT {SelectColumns} FROM TB_MENU_INFO WHERE USEYN = 'Y' ORDER BY SORT_ORDER ASC";
+            var result = await _dbConnection.QueryAsync<Menu>(sql);
+            return result.ToList();
         }
 
         // 모든 메뉴 조회 (관리자용)
         public async Task<List<Menu>> GetAllMenusAsync()
         {
-            var response = await _supabase
-                .From<Menu>()
-                .Select("id,name,url,controller,action,icon,display_order,is_active,parent_id,level,created_at,updated_at")
-                .Order("display_order", Supabase.Postgrest.Constants.Ordering.Ascending)
-                .Get();
-            return response.Models;
+            var sql = $"SELECT {SelectColumns} FROM TB_MENU_INFO ORDER BY SORT_ORDER ASC";
+            var result = await _dbConnection.QueryAsync<Menu>(sql);
+            return result.ToList();
+        }
+        
+        private void SetMenuLevels(Menu menu, int level)
+        {
+            menu.Level = level;
+            if (menu.Children != null)
+            {
+                foreach (var child in menu.Children)
+                {
+                    SetMenuLevels(child, level + 1);
+                }
+            }
         }
 
         // 계층 구조로 메뉴 조회 (1단계 메뉴만, 자식 포함)
@@ -42,190 +62,259 @@ namespace CSR.Services
                 ? await GetAllActiveMenusAsync() 
                 : await GetAllMenusAsync();
 
-            // 1단계 메뉴만 필터링
-            var rootMenus = allMenus.Where(m => m.Level == 1).ToList();
+            var menuDict = allMenus.ToDictionary(m => m.MenuId);
+            var rootMenus = new List<Menu>();
 
-            // 각 메뉴에 자식 메뉴 추가
-            foreach (var menu in rootMenus)
+            foreach (var menu in allMenus)
             {
-                menu.Children = BuildMenuTree(menu, allMenus);
+                if (string.IsNullOrEmpty(menu.ParentId) || !menuDict.ContainsKey(menu.ParentId))
+                {
+                    rootMenus.Add(menu);
+                }
+                else
+                {
+                    if (menuDict.TryGetValue(menu.ParentId, out var parent))
+                    {
+                        parent.Children ??= new List<Menu>();
+                        parent.Children.Add(menu);
+                    }
+                }
+            }
+            
+            // Ensure children are sorted
+            foreach(var menu in allMenus.Where(m => m.Children != null))
+            {
+                menu.Children = menu.Children.OrderBy(m => m.SortOrder).ToList();
             }
 
-            return rootMenus;
-        }
-
-        // 재귀적으로 메뉴 트리 구성
-        private List<Menu> BuildMenuTree(Menu parent, List<Menu> allMenus)
-        {
-            var children = allMenus
-                .Where(m => m.ParentId == parent.Id)
-                .OrderBy(m => m.DisplayOrder)
-                .ToList();
-
-            foreach (var child in children)
+            foreach (var rootMenu in rootMenus)
             {
-                child.Children = BuildMenuTree(child, allMenus);
+                SetMenuLevels(rootMenu, 1);
             }
 
-            return children;
+            return rootMenus.OrderBy(m => m.SortOrder).ToList();
         }
 
         // ID로 메뉴 조회
-        public async Task<Menu?> GetMenuByIdAsync(int id)
+        public async Task<Menu?> GetMenuByIdAsync(string id)
         {
-            var response = await _supabase
-                .From<Menu>()
-                .Select("id,name,url,controller,action,icon,display_order,is_active,parent_id,level,created_at,updated_at")
-                .Filter("id", Supabase.Postgrest.Constants.Operator.Equals, id)
-                .Get();
-            return response.Models.FirstOrDefault();
+            var sql = $@"
+                SELECT
+                    q.MenuId, q.SystemCode, q.MenuName, q.Controller, q.Action, q.Url,
+                    q.ParentId, q.Info, q.SortOrder, q.UseYn, q.CreateDate, q.CreateUserId,
+                    q.UpdateDate, q.UpdateUserId, q.Icon, q.Lvl as Level,
+                    (SELECT COUNT(*) FROM TB_MENU_INFO WHERE PARENTID = q.MenuId) AS ChildCount
+                FROM (
+                    SELECT 
+                        ${SelectColumns}
+                        LEVEL as Lvl
+                    FROM TB_MENU_INFO
+                    START WITH PARENTID IS NULL
+                    CONNECT BY PRIOR MENUID = PARENTID
+                ) q
+                WHERE q.MenuId = :Id";
+
+                sql = @"SELECT
+                        q.MenuId,
+                        q.SystemCode,
+                        q.MenuName,
+                        q.Controller,
+                        q.Action,
+                        q.Url,
+                        q.ParentId,
+                        q.Info,
+                        q.SortOrder,
+                        q.UseYn,
+                        q.CreateDate,
+                        q.CreateUserId,
+                        q.UpdateDate,
+                        q.UpdateUserId,
+                        q.Icon,
+                        q.MenuLevel,
+                        NVL(c.ChildCount, 0) AS ChildCount
+                    FROM (
+                        SELECT 
+                            MENUID AS MenuId,
+                            SYSTEMCODE AS SystemCode,
+                            MENUNAME AS MenuName,
+                            CONTROLLER,
+                            ACTION,
+                            URL,
+                            PARENTID AS ParentId,
+                            INFO,
+                            SORT_ORDER AS SortOrder,
+                            USEYN AS UseYn,
+                            TO_CHAR(CREATE_DATE, 'YYYY-MM-DD HH24:MI:SS') AS CreateDate,
+                            CREATE_USERID AS CreateUserId,
+                            TO_CHAR(UPDATE_DATE, 'YYYY-MM-DD HH24:MI:SS') AS UpdateDate,
+                            UPDATE_USERID AS UpdateUserId,
+                            CAST(NULL AS VARCHAR2(100)) AS Icon,
+                            LEVEL AS MenuLevel
+                        FROM TB_MENU_INFO
+                        START WITH PARENTID IS NULL
+                        CONNECT BY PRIOR MENUID = PARENTID
+                    ) q
+                    LEFT JOIN (
+                        SELECT PARENTID, COUNT(*) AS ChildCount
+                        FROM TB_MENU_INFO
+                        GROUP BY PARENTID
+                    ) c
+                        ON c.PARENTID = q.MenuId
+                    WHERE q.MenuId = :Id;"
+
+            var result = await _dbConnection.QueryAsync<Menu>(sql, new { Id = id });
+            return result.FirstOrDefault();
         }
 
         // 부모 메뉴 목록 조회 (드롭다운용)
-        public async Task<List<Menu>> GetParentMenusAsync(int? excludeId = null, int? maxLevel = null)
+        public async Task<List<Menu>> GetParentMenusAsync(string? excludeId = null)
         {
-            var query = _supabase
-                .From<Menu>()
-                .Select("id,name,url,controller,action,icon,display_order,is_active,parent_id,level,created_at,updated_at");
-
-            if (maxLevel.HasValue)
+            var sql = $"SELECT {SelectColumns} FROM TB_MENU_INFO";
+            var parameters = new DynamicParameters();
+            
+            if (excludeId != null)
             {
-                query = query.Filter("level", Supabase.Postgrest.Constants.Operator.LessThan, maxLevel.Value);
+                sql += " WHERE MENUID != :ExcludeId";
+                parameters.Add("ExcludeId", excludeId);
             }
-
-            if (excludeId.HasValue)
-            {
-                query = query.Filter("id", Supabase.Postgrest.Constants.Operator.NotEqual, excludeId.Value);
-            }
-
-            var response = await query
-                .Order("display_order", Supabase.Postgrest.Constants.Ordering.Ascending)
-                .Get();
-
-            return response.Models;
+            
+            sql += " ORDER BY SORT_ORDER ASC";
+            
+            var result = await _dbConnection.QueryAsync<Menu>(sql, parameters);
+            return result.ToList();
         }
 
         // 메뉴 생성
-        public async Task<Menu> CreateMenuAsync(Menu menu)
+        public async Task<string> CreateMenuAsync(Menu menu)
         {
-            var response = await _supabase
-                .From<Menu>()
-                .Insert(menu);
-            return response.Models.First();
+            // In Oracle, we often use a sequence for new IDs. Assuming MENUID is managed by client or another mechanism.
+            // Also assuming CreateDate and RegDate are handled by DB triggers or default values.
+            var sql = @"
+                INSERT INTO TB_MENU_INFO (
+                    MENUID, MENUNAME, URL, CONTROLLER, ACTION, SORT_ORDER, USEYN, PARENTID, SYSTEMCODE, INFO, CREATE_USERID, UPDATE_USERID, CREATE_DATE, UPDATE_DATE
+                ) VALUES (
+                    SEQ_MENU_INFO.NEXTVAL, :MenuName, :Url, :Controller, :Action, :SortOrder, :UseYn, :ParentId, :SystemCode, :Info, :CreateUserId, :UpdateUserId, SYSDATE, SYSDATE
+                ) RETURNING MENUID INTO :NewMenuId";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("MenuName", menu.MenuName);
+            parameters.Add("Url", menu.Url);
+            parameters.Add("Controller", menu.Controller);
+            parameters.Add("Action", menu.Action);
+            parameters.Add("SortOrder", menu.SortOrder);
+            parameters.Add("UseYn", menu.UseYn);
+            parameters.Add("ParentId", menu.ParentId);
+            parameters.Add("SystemCode", menu.SystemCode);
+            parameters.Add("Info", menu.Info);
+            parameters.Add("CreateUserId", menu.CreateUserId);
+            parameters.Add("UpdateUserId", menu.UpdateUserId);
+            parameters.Add("NewMenuId", dbType: DbType.String, direction: ParameterDirection.Output, size: 50);
+
+            await _dbConnection.ExecuteAsync(sql, parameters);
+            
+            return parameters.Get<string>("NewMenuId");
         }
 
         // 메뉴 수정
-        public async Task<Menu> UpdateMenuAsync(Menu menu)
+        public async Task UpdateMenuAsync(Menu menu)
         {
-            var query = _supabase
-                .From<Menu>()
-                .Filter("id", Supabase.Postgrest.Constants.Operator.Equals, menu.Id)
-                .Set(x => x.Name, menu.Name)
-                .Set(x => x.DisplayOrder, menu.DisplayOrder)
-                .Set(x => x.IsActive, menu.IsActive)
-                .Set(x => x.Level, menu.Level);
-
-            // Nullable 필드들은 조건부로 설정
-            query = query.Set(x => x.Url, menu.Url ?? string.Empty);
-            query = query.Set(x => x.Controller, menu.Controller ?? string.Empty);
-            query = query.Set(x => x.Action, menu.Action ?? string.Empty);
-            query = query.Set(x => x.Icon, menu.Icon ?? string.Empty);
-            query = query.Set(x => x.ParentId, menu.ParentId);
-
-            var response = await query.Update();
-            return response.Models.FirstOrDefault() ?? menu;
+            var sql = @"
+                UPDATE TB_MENU_INFO SET
+                    MENUNAME = :MenuName,
+                    URL = :Url,
+                    CONTROLLER = :Controller,
+                    ACTION = :Action,
+                    SORT_ORDER = :SortOrder,
+                    USEYN = :UseYn,
+                    PARENTID = :ParentId,
+                    SYSTEMCODE = :SystemCode,
+                    INFO = :Info,
+                    UPDATE_USERID = :UpdateUserId,
+                    UPDATE_DATE = SYSDATE
+                WHERE MENUID = :MenuId";
+            await _dbConnection.ExecuteAsync(sql, new {
+                menu.MenuName,
+                menu.Url,
+                menu.Controller,
+                menu.Action,
+                menu.SortOrder,
+                menu.UseYn,
+                menu.ParentId,
+                menu.SystemCode,
+                menu.Info,
+                menu.UpdateUserId,
+                menu.MenuId
+            });
         }
 
         // 메뉴 삭제
-        public async Task DeleteMenuAsync(int id)
+        public async Task DeleteMenuAsync(string id)
         {
-            await _supabase
-                .From<Menu>()
-                .Filter("id", Supabase.Postgrest.Constants.Operator.Equals, id)
-                .Delete();
+            var sql = "DELETE FROM TB_MENU_INFO WHERE MENUID = :Id";
+            await _dbConnection.ExecuteAsync(sql, new { Id = id });
         }
 
-        // 순서 변경 (위로)
-        public async Task<bool> MoveUpAsync(int id)
+        private async Task<Menu?> GetSiblingAsync(Menu menu, bool findPrevious)
         {
-            var menu = await GetMenuByIdAsync(id);
-            if (menu == null) return false;
-
-            // 같은 레벨, 같은 부모의 메뉴 중에서 현재보다 display_order가 작은 것 중 가장 큰 것 찾기
-            var query = _supabase
-                .From<Menu>()
-                .Select("id,name,url,controller,action,icon,display_order,is_active,parent_id,level,created_at,updated_at")
-                .Filter("level", Supabase.Postgrest.Constants.Operator.Equals, menu.Level)
-                .Filter("display_order", Supabase.Postgrest.Constants.Operator.LessThan, menu.DisplayOrder);
-
-            if (menu.ParentId.HasValue)
-            {
-                query = query.Filter("parent_id", Supabase.Postgrest.Constants.Operator.Equals, menu.ParentId.Value);
-            }
-            else
-            {
-                query = query.Filter<int?>("parent_id", Supabase.Postgrest.Constants.Operator.Is, null);
-            }
-
-            var response = await query
-                .Order("display_order", Supabase.Postgrest.Constants.Ordering.Descending)
-                .Limit(1)
-                .Get();
-
-            var previousMenu = response.Models.FirstOrDefault();
-            if (previousMenu == null) return false;
-
-            // 순서 교환
-            var tempOrder = menu.DisplayOrder;
-            menu.DisplayOrder = previousMenu.DisplayOrder;
-            previousMenu.DisplayOrder = tempOrder;
-
-            await UpdateMenuAsync(menu);
-            await UpdateMenuAsync(previousMenu);
-
-            return true;
+            var op = findPrevious ? "<" : ">";
+            var orderBy = findPrevious ? "DESC" : "ASC";
+            
+            var sql = $@"
+                SELECT {SelectColumns} FROM TB_MENU_INFO
+                WHERE COALESCE(PARENTID, 'ROOT') = COALESCE(:ParentId, 'ROOT')
+                  AND SORT_ORDER {op} :SortOrder
+                ORDER BY SORT_ORDER {orderBy}
+                FETCH FIRST 1 ROWS ONLY";
+            
+            return await _dbConnection.QueryFirstOrDefaultAsync<Menu>(sql, new { menu.ParentId, menu.SortOrder });
         }
 
-        // 순서 변경 (아래로)
-        public async Task<bool> MoveDownAsync(int id)
+        // 순서 변경 (위로 또는 아래로)
+        private async Task<bool> MoveOrderAsync(string id, bool moveUp)
         {
-            var menu = await GetMenuByIdAsync(id);
-            if (menu == null) return false;
-
-            // 같은 레벨, 같은 부모의 메뉴 중에서 현재보다 display_order가 큰 것 중 가장 작은 것 찾기
-            var query = _supabase
-                .From<Menu>()
-                .Select("id,name,url,controller,action,icon,display_order,is_active,parent_id,level,created_at,updated_at")
-                .Filter("level", Supabase.Postgrest.Constants.Operator.Equals, menu.Level)
-                .Filter("display_order", Supabase.Postgrest.Constants.Operator.GreaterThan, menu.DisplayOrder);
-
-            if (menu.ParentId.HasValue)
+            if (_dbConnection.State == ConnectionState.Closed)
             {
-                query = query.Filter("parent_id", Supabase.Postgrest.Constants.Operator.Equals, menu.ParentId.Value);
-            }
-            else
-            {
-                query = query.Filter<int?>("parent_id", Supabase.Postgrest.Constants.Operator.Is, null);
+                _dbConnection.Open();
             }
 
-            var response = await query
-                .Order("display_order", Supabase.Postgrest.Constants.Ordering.Ascending)
-                .Limit(1)
-                .Get();
+            using var transaction = _dbConnection.BeginTransaction();
+            try
+            {
+                var menuToMove = await _dbConnection.QueryFirstOrDefaultAsync<Menu>($"SELECT {SelectColumns} FROM TB_MENU_INFO WHERE MENUID = :Id", new {Id = id}, transaction);
+                if (menuToMove == null) return false;
 
-            var nextMenu = response.Models.FirstOrDefault();
-            if (nextMenu == null) return false;
+                var sibling = await _dbConnection.QueryFirstOrDefaultAsync<Menu>(
+                    $@"SELECT {SelectColumns} FROM TB_MENU_INFO
+                       WHERE COALESCE(PARENTID, 'ROOT') = COALESCE(:ParentId, 'ROOT') AND SORT_ORDER {(moveUp ? "<" : ">")} :SortOrder
+                       ORDER BY SORT_ORDER {(moveUp ? "DESC" : "ASC")}
+                       FETCH FIRST 1 ROWS ONLY",
+                    new { menuToMove.ParentId, menuToMove.SortOrder },
+                    transaction);
 
-            // 순서 교환
-            var tempOrder = menu.DisplayOrder;
-            menu.DisplayOrder = nextMenu.DisplayOrder;
-            nextMenu.DisplayOrder = tempOrder;
+                if (sibling == null) return false;
 
-            await UpdateMenuAsync(menu);
-            await UpdateMenuAsync(nextMenu);
+                // Swap SORT_ORDER
+                var tempOrder = menuToMove.SortOrder;
+                
+                var updateSql = "UPDATE TB_MENU_INFO SET SORT_ORDER = :SortOrder WHERE MENUID = :MenuId";
 
-            return true;
+                await _dbConnection.ExecuteAsync(updateSql, new { SortOrder = sibling.SortOrder, MenuId = menuToMove.MenuId }, transaction);
+                await _dbConnection.ExecuteAsync(updateSql, new { SortOrder = tempOrder, MenuId = sibling.MenuId }, transaction);
+                
+                transaction.Commit();
+                return true;
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw; // re-throw the exception to see what went wrong
+            }
         }
+
+        public Task<bool> MoveUpAsync(string id) => MoveOrderAsync(id, true);
+        public Task<bool> MoveDownAsync(string id) => MoveOrderAsync(id, false);
     }
 }
+
+
 

@@ -33,17 +33,17 @@ namespace CSR.Controllers
         }
 
         // GET: Menu/Create
-        public async Task<IActionResult> Create(int? parentId = null)
+        public async Task<IActionResult> Create(string? parentId = null)
         {
             var menu = new Menu
             {
-                IsActive = true,
-                DisplayOrder = 0
+                UseYn = "Y",
+                SortOrder = 0
             };
 
-            if (parentId.HasValue)
+            if (!string.IsNullOrEmpty(parentId))
             {
-                var parent = await _menuService.GetMenuByIdAsync(parentId.Value);
+                var parent = await _menuService.GetMenuByIdAsync(parentId);
                 if (parent != null)
                 {
                     menu.ParentId = parent.Id;
@@ -63,7 +63,7 @@ namespace CSR.Controllers
         // POST: Menu/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Url,Controller,Action,Icon,DisplayOrder,IsActive,ParentId,Level")] Menu menu)
+        public async Task<IActionResult> Create([Bind("Name,Url,Controller,Action,Icon,DisplayOrder,UseYn,ParentId,Level")] Menu menu)
         {
             if (ModelState.IsValid)
             {
@@ -84,7 +84,7 @@ namespace CSR.Controllers
         }
 
         // GET: Menu/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(string id)
         {
             var menu = await _menuService.GetMenuByIdAsync(id);
             if (menu == null)
@@ -99,7 +99,7 @@ namespace CSR.Controllers
         // POST: Menu/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Url,Controller,Action,Icon,DisplayOrder,IsActive,ParentId,Level,CreatedAt,UpdatedAt")] Menu menu)
+        public async Task<IActionResult> Edit(string id, [Bind("Id,Name,Url,Controller,Action,Icon,DisplayOrder,UseYn,ParentId,Level,CreatedAt,UpdatedAt")] Menu menu)
         {
             if (id != menu.Id)
             {
@@ -125,7 +125,7 @@ namespace CSR.Controllers
         }
 
         // GET: Menu/Delete/5
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
             var menu = await _menuService.GetMenuByIdAsync(id);
             if (menu == null)
@@ -139,7 +139,7 @@ namespace CSR.Controllers
         // POST: Menu/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             try
             {
@@ -155,7 +155,7 @@ namespace CSR.Controllers
         }
 
         // 순서 변경: 위로
-        public async Task<IActionResult> MoveUp(int id)
+        public async Task<IActionResult> MoveUp(string id)
         {
             var result = await _menuService.MoveUpAsync(id);
             if (!result)
@@ -166,7 +166,7 @@ namespace CSR.Controllers
         }
 
         // 순서 변경: 아래로
-        public async Task<IActionResult> MoveDown(int id)
+        public async Task<IActionResult> MoveDown(string id)
         {
             var result = await _menuService.MoveDownAsync(id);
             if (!result)
@@ -177,10 +177,9 @@ namespace CSR.Controllers
         }
 
         // 부모 메뉴 목록을 ViewBag에 설정
-        private async Task PopulateParentMenus(Menu menu, int? excludeId = null)
+        private async Task PopulateParentMenus(Menu menu, string? excludeId = null)
         {
-            var maxLevel = menu.Level > 1 ? menu.Level - 1 : (int?)null;
-            var parentMenus = await _menuService.GetParentMenusAsync(excludeId, maxLevel);
+            var parentMenus = await _menuService.GetParentMenusAsync(excludeId);
             
             ViewBag.ParentMenus = new SelectList(
                 parentMenus,

@@ -1,69 +1,67 @@
 using Newtonsoft.Json;
-using Supabase.Postgrest.Attributes;
-using Supabase.Postgrest.Models;
+using System.Collections.Generic;
 
 namespace CSR.Models
 {
-    [Table("menus")]
-    public class Menu : BaseModel
+    /// <summary>
+    /// Represents an item in the menu. 
+    /// The properties are mapped from the TB_MENU_INFO table in the Oracle database.
+    /// </summary>
+    public class Menu
     {
-        [PrimaryKey("id")]
-        public int Id { get; set; }
-
-        [Column("name")]
-        public string Name { get; set; } = string.Empty;
-
-        [Column("url")]
-        public string? Url { get; set; }
-
-        [Column("controller")]
+        // Columns from TB_MENU_INFO
+        public string MenuId { get; set; } = string.Empty;
+        public string? SystemCode { get; set; }
+        public string? MenuName { get; set; }
         public string? Controller { get; set; }
-
-        [Column("action")]
         public string? Action { get; set; }
+        public string? Url { get; set; }
+        public string? ParentId { get; set; }
+        public string? Info { get; set; }
+        public int SortOrder { get; set; }
+        public string UseYn { get; set; } = "Y";
+        public DateTime? CreateDate { get; set; }
+        public string? CreateUserId { get; set; }
+        public DateTime? UpdateDate { get; set; }
+        public string? UpdateUserId { get; set; }
 
-        [Column("icon")]
+        // --- Compatibility & Helper Properties ---
+
+        // Properties from original Menu model that are not in TB_MENU_INFO.
+        // Dapper will ignore them if they are not in the SELECT list.
+        // Kept for compatibility with existing views.
         public string? Icon { get; set; }
-
-        [Column("display_order")]
-        public int DisplayOrder { get; set; }
-
-        [Column("is_active")]
-        public bool IsActive { get; set; } = true;
-
-        [Column("parent_id")]
-        public int? ParentId { get; set; }
-
-        [Column("level")]
         public int Level { get; set; }
 
-        [Column("created_at")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        [Column("updated_at")]
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        // 자식 메뉴 목록 (데이터베이스 컬럼 아님, 코드에서 사용)
+        // Navigation properties, populated manually.
         [JsonIgnore]
         public List<Menu>? Children { get; set; }
-
-        // 부모 메뉴 (데이터베이스 컬럼 아님, 코드에서 사용)
         [JsonIgnore]
         public Menu? Parent { get; set; }
 
-        // 링크 URL 생성 (controller/action 또는 url 사용)
+        // The original model used different property names.
+        // These read-only properties are for compatibility with views and other code.
+        [JsonIgnore]
+        public string Id => MenuId;
+        [JsonIgnore]
+        public string Name => MenuName ?? string.Empty;
+        [JsonIgnore]
+        public int DisplayOrder => SortOrder;
+
+        
+        /// <summary>
+        /// Generates the link for the menu item, using either a direct URL or a controller/action pair.
+        /// </summary>
         public string GetLink()
         {
             if (!string.IsNullOrEmpty(Url))
             {
                 return Url;
             }
-
             if (!string.IsNullOrEmpty(Controller) && !string.IsNullOrEmpty(Action))
             {
                 return $"/{Controller}/{Action}";
             }
-
             return "#";
         }
     }

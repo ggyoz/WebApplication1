@@ -7,9 +7,9 @@ namespace CSR.Services
 {
     public class UserService
     {
-        private readonly OracleConnection _connection;
+        private readonly IDbConnection _connection;
 
-        public UserService(OracleConnection connection)
+        public UserService(IDbConnection connection)
         {
             _connection = connection;
         }

@@ -1,5 +1,6 @@
 using Supabase;
 using Oracle.ManagedDataAccess.Client;
+using System.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,9 +32,6 @@ if (!string.IsNullOrEmpty(supabaseUrl) && !string.IsNullOrEmpty(supabaseKey))
 
     // PostService 등록
     builder.Services.AddScoped<CSR.Services.PostService>();
-    
-    // MenuService 등록
-    builder.Services.AddScoped<CSR.Services.MenuService>();
 }
 else
 {
@@ -44,22 +42,22 @@ else
     }
 }
 
-builder.Services.AddScoped<OracleConnection>(sp =>
+// Oracle DB 연결을 위한 IDbConnection 등록
+builder.Services.AddScoped<IDbConnection>(sp =>
 {
     var configuration = sp.GetRequiredService<IConfiguration>();
     var connectionString = configuration.GetConnectionString("OracleConnection");
 
     if (string.IsNullOrEmpty(connectionString))
     {
-        // 연결 문자열이 없으면
         throw new InvalidOperationException("OracleConnection 연결 문자열이 설정되지 않았습니다. appsettings.json을 확인해주세요.");
     }
-
-    // 주입된 OracleConnection은 사용하는 서비스 내에서 using 블록을 통해 관리(Open/Close)되어야 합니다.
+    
     return new OracleConnection(connectionString);
 });
 
-// UserService 등록 (Oracle DB 사용)
+// Oracle DB를 사용하는 서비스 등록
+builder.Services.AddScoped<CSR.Services.MenuService>();
 builder.Services.AddScoped<CSR.Services.UserService>();
 
 var app = builder.Build();
