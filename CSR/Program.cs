@@ -1,6 +1,8 @@
 using Supabase;
 using Oracle.ManagedDataAccess.Client;
 using System.Data;
+using System.Linq;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,8 +32,6 @@ if (!string.IsNullOrEmpty(supabaseUrl) && !string.IsNullOrEmpty(supabaseKey))
         return client;
     });
 
-    // PostService 등록
-    builder.Services.AddScoped<CSR.Services.PostService>();
 }
 else
 {
@@ -56,9 +56,14 @@ builder.Services.AddScoped<IDbConnection>(sp =>
     return new OracleConnection(connectionString);
 });
 
-// Oracle DB를 사용하는 서비스 등록
-builder.Services.AddScoped<CSR.Services.MenuService>();
-builder.Services.AddScoped<CSR.Services.UserService>();
+// CSR.Services 네임스페이스의 모든 서비스를 자동으로 등록합니다.
+var serviceTypes = typeof(Program).Assembly.GetTypes()
+    .Where(t => t.IsClass && !t.IsAbstract && t.Namespace == "CSR.Services");
+
+foreach (var service in serviceTypes)
+{
+    builder.Services.AddScoped(service);
+}
 
 var app = builder.Build();
 
