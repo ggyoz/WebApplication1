@@ -5,38 +5,6 @@
     var menuTree = await MenuService.GetMenuTreeAsync(activeOnly: true);
 }
 
-@helper RenderMenuItems(List<Menu> menus)
-{
-    @foreach (var menu in menus)
-    {
-        var hasChildren = menu.Children != null && menu.Children.Any();
-        // Use a more robust ID, ensuring it starts with a letter.
-        var collapseId = $"menu-collapse-{menu.MenuId.Replace(".", "_")}";
-
-        <li class="mb-1">
-            @if (hasChildren)
-            {
-                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="false">
-                    @menu.MenuName
-                </button>
-                <div class="collapse" id="@collapseId">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-4">
-                        @RenderMenuItems(menu.Children)
-                    </ul>
-                </div>
-            }
-            else
-            {
-                // Simple link for items without children. The button-like appearance is for consistency.
-                <a href="@menu.GetLink()" class="btn btn-toggle-link align-items-center rounded text-decoration-none">
-                    @menu.MenuName
-                </a>
-            }
-        </li>
-    }
-}
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -83,14 +51,14 @@
         <!-- Sidebar -->
         <div id="sidebar-wrapper" class="flex-shrink-0 p-3 bg-white" style="width: 250px;">
             <ul class="list-unstyled ps-0">
-                @RenderMenuItems(menuTree)
+                @await Html.PartialAsync("_MenuPartial", menuTree)
                 
                 <li class="border-top my-3"></li>
-                <li class="mb-1">
+                <!-- <li class="mb-1">
                      <a href="/Menu/Index" class="btn btn-toggle-link align-items-center rounded text-decoration-none">
                         ⚙️ 메뉴 관리
                     </a>
-                </li>
+                </li> -->
             </ul>
         </div>
 

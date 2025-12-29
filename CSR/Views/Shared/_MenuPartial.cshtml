@@ -1,0 +1,28 @@
+@using CSR.Models
+@model List<Menu>
+
+@foreach (var menu in Model)
+{
+    var hasChildren = menu.Children != null && menu.Children.Any();
+    var collapseId = $"menu-collapse-{menu.MenuId.Replace(".", "_")}";
+
+    <li class="mb-1">
+        @if (hasChildren)
+        {
+            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="false">
+                @menu.MenuName
+            </button>
+            <div class="collapse" id="@collapseId">
+                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-4">
+                    @await Html.PartialAsync("_MenuPartial", menu.Children)
+                </ul>
+            </div>
+        }
+        else
+        {
+            <a href="@menu.GetLink()" class="btn btn-toggle-link align-items-center rounded text-decoration-none">
+                @menu.MenuName
+            </a>
+        }
+    </li>
+}
