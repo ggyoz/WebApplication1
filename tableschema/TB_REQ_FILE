@@ -1,9 +1,12 @@
 테이블 설명 : 요청사항 첨부파일 테이블
-FILEID	number	PK	Y		파일 ID	
-REQ_ID	number		Y		요청글 ID	
-REQ_TYPE	varchar2(1)		Y		첨부파일 구분	
-FILE_NAME	varchar2(1)		Y		파일명	
-FILE_PATH	varchar2(1)		Y		파일 경로	
-REG_DATE	date		Y		등록일	
-REG_USERID	varchar2(10)		Y		등록자ID	
-USEYN	varchar2(1)		Y	'Y'	사용여부	
+NO	컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
+1	FILEID	number	PK	Y		파일 ID	
+2	REQID	number		Y		요청글 ID	
+3	HISTORYID	number		Y		히스토리 ID	
+4	REQTYPE	varchar2(1)		Y		첨부파일 구분	
+5	UPLOAD_FILENAME	varchar2(64)		Y		서버에 저장하는 파일 명 ( 해시값 or 타입스탬프 기반 이름 )	
+6	REAL_FILENAME	varchar2(50)		Y		파일명	
+7	FILEPATH	varchar2(100)		Y		파일 저장 경로	
+14	REG_DATE	date		Y	sysdate	등록일	
+15	REG_USERID	varchar2(10)		Y		등록자 ID	
+10	USEYN	varchar2(1)		Y	'Y'	사용여부	

@@ -1,9 +1,8 @@
 테이블 설명 : 법인 정보 테이블
-
-컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
-CORCD	varchar2(10)	PK	Y		법인코드	
-CORNM	varchar2(100)				법인명	
-NATIONCD	varchar2(10)				국가코드	
-COINCD	varchar2(10)				통화코드	
-LANGUAGE	varchar2(10)				언어코드	
-ACC_TITLE	varchar2(10)				계정과목	
+NO	컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
+1	CORCD	varchar2(10)	PK	Y		법인코드	
+2	CORNM	varchar2(100)				법인명	
+3	NATIONCD	varchar2(10)				국가코드	
+4	COINCD	varchar2(10)				통화코드	
+5	LANGUAGE	varchar2(10)				언어코드	
+6	ACC_TITLE	varchar2(10)				계정과목	

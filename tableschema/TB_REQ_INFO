@@ -1,31 +1,36 @@
-테이블 설명 : 요청사항
-컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
-REQID	number	PK	Y		요청번호	
-PARENTID	number				상위요청번호	
-TITLE	varchar2(50)		Y		제목	
-CONTENTS_HTML	clob				내용(HTML)	
-CONTENTS_TEXT	clob				내용(TEXT)	
-REQDATE	varchar2(10)		Y		요청일	
-REQENDDATE	varchar2(10)		Y		완료요청(예정)일	
-REQTYPE	varchar2(10)		Y		요청유형	
-REQMENU	varchar2(10)				요청메뉴(영역)	
-REQUSERID	varchar2(10)		Y		요청자	
-RESUSERID	varchar2(10)				조치자	
-DFCLTCD	varchar2(10)				난이도	
-PRIORITYCD	varchar2(10)		Y		긴급도	
-MAN_DAY	float				투입공수	
-PROC_STATUS	varchar2(10)				진행상태	
-PROC_RATE	number				진행률	
-ANSWER_HTML	clob				답변내용 html	
-ANSWER_TEXT	clob				답변내용 text	
-DELAYREASON_HTML	clob				지연사유 html	
-DELAYREASON_TEXT	clob				지연사유 text	
-CORCD	varchar2(10)		Y		법인코드	
-DEPTCD	varchar2(10)		Y		부서코드	
-TEAMCD	varchar2(10)		Y		팀 코드	
-REQHISTORY	varchar2(1000)				조치내역(히스토리)	
-REG_DATE	date		Y	sysdate	등록일	
-REG_USERID	varchar2(10)		Y		등록자 ID	
-UPDATE_DATE	date				수정일	
-UPDATE_USERID	varchar2(10)				수정자 ID	
-USEYN	varchar2(1)		Y	'Y'	삭제여부	
+테이블 설명 : 요청사항 관리
+NO	컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
+1	REQID	number	PK	Y		요청번호	
+2	PARENTID	number				상위요청번호	
+3	TITLE	varchar2(50)		Y		제목	
+4	CONTENTS_HTML	clob				내용(HTML)	
+5	CONTENTS_TEXT	clob				내용(TEXT)	
+6	REQDATE	date		Y		요청일	
+7	DUEDATE	date				처리기한	
+8	EXPECTDATE	date		Y		완료예정일	
+9	STARTDATE	date		Y		실제 시작일	
+10	ENDDATE	date		Y		실제 종료일	
+11	REQTYPE	varchar2(10)		Y		요청유형	
+12	SYSTEMCD	varchar2(10)		Y		대상시스템	
+13	REQMENU	varchar2(10)				요청메뉴(영역)	
+14	REQUSERID	varchar2(10)		Y		요청자	
+15	RESUSERID	varchar2(10)				조치자	
+16	DFCLTCD	varchar2(10)				난이도	
+17	PRIORITYCD	varchar2(10)		Y		긴급도	
+18	MAN_DAY	float				투입공수	
+19	PROC_STATUS	varchar2(10)				진행상태	
+20	PROC_RATE	number				진행률	
+21	ANSWER_HTML	clob				답변내용 html	
+22	ANSWER_TEXT	clob				답변내용 text	
+23	DELAYREASON_HTML	clob				지연사유 html	
+24	DELAYREASON_TEXT	clob				지연사유 text	
+25	CORCD	varchar2(10)		Y		법인코드	
+26	DEPTCD	varchar2(10)		Y		부서코드	
+27	OFFICECD	varchar2(10)		Y		실 코드	
+28	TEAMCD	varchar2(10)		Y		팀 코드	
+29	REQHISTORY	varchar2(1000)				조치내역(히스토리)	
+30	REG_DATE	date		Y	sysdate	등록일	
+31	REG_USERID	varchar2(10)		Y		등록자 ID	
+32	UPDATE_DATE	date				수정일	
+33	UPDATE_USERID	varchar2(10)				수정자 ID	
+34	USEYN	varchar2(1)		Y	'Y'	삭제여부	

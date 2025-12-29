@@ -1,30 +1,35 @@
-테이블 설명 : 요청사항 관리 테이블
+테이블 설명 : 요청사항 히스토리
 NO	컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
 1	HISTROYID	number	PK	Y		히스토리번호	
-2	REQID	number		Y		요청번호	
+2	REQID	number	PK	Y		요청번호	
 3	PARENTID	number				상위요청번호	
 4	TITLE	varchar2(50)		Y		제목	
 5	CONTENTS_HTML	clob				내용(HTML)	
 6	CONTENTS_TEXT	clob				내용(TEXT)	
-7	REQDATE	varchar2(10)		Y		요청일	
-8	REQENDDATE	varchar2(10)		Y		완료요청(예정)일	
-9	REQTYPE	varchar2(10)		Y		요청유형	
-10	REQMENU	varchar2(10)				요청메뉴(영역)	
-11	REQUSERID	varchar2(10)		Y		요청자	
-12	RESUSERID	varchar2(10)				조치자	
-13	DFCLTCD	varchar2(10)				난이도	
-14	PRIORITYCD	varchar2(10)		Y		긴급도	
-15	MAN_DAY	float				투입공수	
-16	PROC_STATUS	varchar2(10)				진행상태	
-17	PROC_RATE	number				진행률	
-18	ANSWER_HTML	clob				답변내용 html	
-19	ANSWER_TEXT	clob				답변내용 text	
-20	DELAYREASON_HTML	clob				지연사유 html	
-21	DELAYREASON_TEXT	clob				지연사유 text	
-22	CORCD	varchar2(10)		Y		법인코드	
-23	DEPTCD	varchar2(10)		Y		부서코드	
-24	TEAMCD	varchar2(10)		Y		팀 코드	
-25	REQHISTORY	varchar2(1000)				조치내역(히스토리)	
-26	REG_DATE	date		Y	sysdate	등록일	
-27	REG_USERID	varchar2(10)		Y		등록자 ID	
-28	USEYN	varchar2(1)		Y	'Y'	삭제여부	
+7	REQDATE	date		Y		요청일	
+8	DUEDATE	date				처리기한	
+9	EXPECTDATE	date		Y		완료예정일	
+10	STARTDATE	date		Y		실제 시작일	
+11	ENDDATE	date		Y		실제 종료일	
+12	REQTYPE	varchar2(10)		Y		요청유형	
+13	SYSTEMCD	varchar2(10)		Y		대상시스템	
+14	REQMENU	varchar2(10)				요청메뉴(영역)	
+15	REQUSERID	varchar2(10)		Y		요청자	
+16	RESUSERID	varchar2(10)				조치자	
+17	DFCLTCD	varchar2(10)				난이도	
+18	PRIORITYCD	varchar2(10)		Y		긴급도	
+19	MAN_DAY	float				투입공수	
+20	PROC_STATUS	varchar2(10)				진행상태	
+21	PROC_RATE	number				진행률	
+22	ANSWER_HTML	clob				답변내용 html	
+23	ANSWER_TEXT	clob				답변내용 text	
+24	DELAYREASON_HTML	clob				지연사유 html	
+25	DELAYREASON_TEXT	clob				지연사유 text	
+26	CORCD	varchar2(10)		Y		법인코드	
+27	DEPTCD	varchar2(10)		Y		부서코드	
+28	OFFICECD	varchar2(10)		Y		실 코드	
+29	TEAMCD	varchar2(10)		Y		팀 코드	
+30	REQHISTORY	varchar2(1000)				조치내역(히스토리)	
+31	REG_DATE	date		Y	sysdate	등록일	
+32	REG_USERID	varchar2(10)		Y		등록자 ID	
+33	USEYN	varchar2(1)		Y	'Y'	삭제여부	
