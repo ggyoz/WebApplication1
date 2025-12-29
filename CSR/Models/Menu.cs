@@ -31,7 +31,7 @@ namespace CSR.Models
         // Dapper will ignore them if they are not in the SELECT list.
         // Kept for compatibility with existing views.
         public string? Icon { get; set; }
-        public int Level { get; set; }
+        public int MenuLevel { get; set; }
 
         // Navigation properties, populated manually.
         [JsonIgnore]

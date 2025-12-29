@@ -13,26 +13,24 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             
             <div class="form-group mb-3">
-                <label asp-for="Name" class="control-label">메뉴 이름 *</label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="MenuName" class="control-label">메뉴 이름 *</label>
+                <input asp-for="MenuName" class="form-control" />
+                <span asp-validation-for="MenuName" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Level" class="control-label">레벨 *</label>
-                <select asp-for="Level" class="form-control" id="levelSelect">
+                <label asp-for="MenuLevel" class="control-label">레벨 *</label>
+                <select asp-for="MenuLevel" class="form-control" id="levelSelect">
                     <option value="1">1단계 (최상위 메뉴)</option>
                     <option value="2">2단계 (서브 메뉴)</option>
                     <option value="3">3단계 (서브 서브 메뉴)</option>
                 </select>
-                <span asp-validation-for="Level" class="text-danger"></span>
+                <span asp-validation-for="MenuLevel" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3" id="parentMenuGroup">
                 <label asp-for="ParentId" class="control-label">부모 메뉴</label>
-                <select asp-for="ParentId" class="form-control" asp-items="ViewBag.ParentMenus">
-                    <option value="">없음 (최상위 메뉴)</option>
-                </select>
+                <select asp-for="ParentId" class="form-control"></select>
                 <span asp-validation-for="ParentId" class="text-danger"></span>
             </div>
 
@@ -41,8 +39,6 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="mb-3">
-                            <label class="form-label fw-bold">방법 1: Controller/Action 사용 (내부 페이지)</label>
-                            <small class="text-muted d-block mb-2">ASP.NET Core 라우팅을 사용합니다. URL이 비어있을 때 사용됩니다.</small>
                             <div class="row">
                                 <div class="col-md-6">
                                     <input asp-for="Controller" class="form-control" placeholder="Controller (예: Home)" />
@@ -58,15 +54,12 @@
                         <hr />
                         
                         <div class="mb-2">
-                            <label class="form-label fw-bold">방법 2: 직접 URL 사용 (우선순위 높음)</label>
-                            <small class="text-muted d-block mb-2">외부 링크나 특정 경로를 직접 지정합니다. URL이 입력되면 Controller/Action보다 우선합니다.</small>
                             <input asp-for="Url" class="form-control" placeholder="예: /Home/Index 또는 https://example.com" />
-                            <small class="text-muted">내부 경로: /Home/Index, 외부 링크: https://example.com</small>
                         </div>
                         
                         <div class="alert alert-info mt-3 mb-0">
                             <small>
-                                <strong>💡 사용 방법:</strong><br/>
+                                <strong>사용 방법:</strong><br/>
                                 • 내부 페이지: Controller와 Action만 입력 (예: Home, Index)<br/>
                                 • 외부 링크: URL만 입력 (예: https://example.com)<br/>
                                 • 둘 다 입력 시: URL이 우선 사용됩니다
@@ -83,9 +76,9 @@
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="DisplayOrder" class="control-label">표시 순서</label>
-                <input asp-for="DisplayOrder" class="form-control" type="number" value="0" />
-                <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+                <label asp-for="SortOrder" class="control-label">표시 순서</label>
+                <input asp-for="SortOrder" class="form-control" type="number" value="0" />
+                <span asp-validation-for="SortOrder" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
@@ -112,40 +105,48 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
-        // 레벨 변경 시 부모 메뉴 필드 표시/숨김
-        document.getElementById('levelSelect').addEventListener('change', function() {
-            var level = parseInt(this.value);
-            var parentGroup = document.getElementById('parentMenuGroup');
-            if (level === 1) {
-                parentGroup.style.display = 'none';
-                document.getElementById('ParentId').value = '';
-            } else {
-                parentGroup.style.display = 'block';
-            }
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            const levelSelect = document.getElementById('levelSelect');
+            const parentIdSelect = document.getElementById('ParentId');
+            const parentMenuGroup = document.getElementById('parentMenuGroup');
 
-        // 초기 로드 시 레벨에 따라 부모 메뉴 필드 표시/숨김
-        var initialLevel = @Model.Level;
-        if (initialLevel === 1) {
-            document.getElementById('parentMenuGroup').style.display = 'none';
-        }
+            function updateParentMenus() {
+                const selectedLevel = parseInt(levelSelect.value);
 
-        // URL 입력 시 Controller/Action 비활성화 (선택사항)
-        // 주석 처리: 두 필드를 모두 입력 가능하게 유지
-        /*
-        document.getElementById('Url').addEventListener('input', function() {
-            var hasUrl = this.value.trim().length > 0;
-            document.getElementById('Controller').disabled = hasUrl;
-            document.getElementById('Action').disabled = hasUrl;
-        });
-        
-        document.getElementById('Controller').addEventListener('input', function() {
-            var hasController = this.value.trim().length > 0;
-            if (hasController && document.getElementById('Url').value.trim().length === 0) {
-                document.getElementById('Url').disabled = false;
+                if (selectedLevel === 1) {
+                    parentMenuGroup.style.display = 'none';
+                    parentIdSelect.innerHTML = '';
+                    return;
+                }
+
+                parentMenuGroup.style.display = 'block';
+
+                fetch(`/Menu/GetParentMenusForLevel?level=${selectedLevel}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        parentIdSelect.innerHTML = '';
+
+                        data.forEach(menu => {
+                            const option = new Option(menu.text, menu.value);
+                            parentIdSelect.add(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('부모 메뉴를 불러오는 중 오류 발생:', error);
+                        parentIdSelect.innerHTML = '<option value="">목록 로드 실패</option>';
+                    });
             }
+
+            levelSelect.addEventListener('change', updateParentMenus);
+
+            // 초기 로드 시에도 실행
+            updateParentMenus();
         });
-        */
     </script>
 }
 

@@ -47,23 +47,22 @@ namespace CSR.Controllers
                 if (parent != null)
                 {
                     menu.ParentId = parent.Id;
-                    menu.Level = parent.Level + 1;
-                    if (menu.Level > 3) menu.Level = 3; // 최대 3단계
+                    menu.MenuLevel = parent.MenuLevel + 1;
+                    if (menu.MenuLevel > 3) menu.MenuLevel = 3; // 최대 3단계
                 }
             }
             else
             {
-                menu.Level = 1;
+                menu.MenuLevel = 1;
             }
 
-            await PopulateParentMenus(menu);
             return View(menu);
         }
 
         // POST: Menu/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Url,Controller,Action,Icon,DisplayOrder,UseYn,ParentId,Level")] Menu menu)
+        public async Task<IActionResult> Create([Bind("MenuName,Url,Controller,Action,Icon,SortOrder,UseYn,ParentId,MenuLevel")] Menu menu)
         {
             if (ModelState.IsValid)
             {
@@ -79,7 +78,6 @@ namespace CSR.Controllers
                 }
             }
 
-            await PopulateParentMenus(menu);
             return View(menu);
         }
 
@@ -92,14 +90,13 @@ namespace CSR.Controllers
                 return NotFound();
             }
 
-            await PopulateParentMenus(menu, excludeId: id);
             return View(menu);
         }
 
         // POST: Menu/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,Name,Url,Controller,Action,Icon,DisplayOrder,UseYn,ParentId,Level,CreatedAt,UpdatedAt")] Menu menu)
+        public async Task<IActionResult> Edit(string id, [Bind("MenuId,MenuName,Url,Controller,Action,Icon,SortOrder,UseYn,ParentId,MenuLevel")] Menu menu)
         {
             if (id != menu.Id)
             {
@@ -120,7 +117,6 @@ namespace CSR.Controllers
                 }
             }
 
-            await PopulateParentMenus(menu, excludeId: id);
             return View(menu);
         }
 
@@ -176,17 +172,26 @@ namespace CSR.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // 부모 메뉴 목록을 ViewBag에 설정
-        private async Task PopulateParentMenus(Menu menu, string? excludeId = null)
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetParentMenusForLevel(int level)
         {
-            var parentMenus = await _menuService.GetParentMenusAsync(excludeId);
-            
-            ViewBag.ParentMenus = new SelectList(
-                parentMenus,
-                "Id",
-                "Name",
-                menu.ParentId
-            );
+            // 부모 메뉴는 선택된 레벨보다 1 작아야 합니다.
+            int parentLevel = level - 1;
+            if (parentLevel < 1)
+            {
+                // 1레벨 메뉴는 부모가 없으므로 빈 목록 반환
+                return Json(new List<Menu>());
+            }
+
+            // MenuService에 특정 레벨의 메뉴를 가져오는 메서드를 호출
+            var parentMenus = await _menuService.GetMenusByLevelAsync(parentLevel);
+
+            // JavaScript에서 사용하기 쉽도록 필요한 데이터만 가공 (Value, Text)
+            var result = parentMenus.Select(m => new { value = m.MenuId, text = m.MenuName });
+
+            return Json(result);
         }
     }
 }

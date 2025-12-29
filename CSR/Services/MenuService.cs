@@ -45,7 +45,7 @@ namespace CSR.Services
         
         private void SetMenuLevels(Menu menu, int level)
         {
-            menu.Level = level;
+            menu.MenuLevel = level;
             if (menu.Children != null)
             {
                 foreach (var child in menu.Children)
@@ -98,23 +98,7 @@ namespace CSR.Services
         // ID로 메뉴 조회
         public async Task<Menu?> GetMenuByIdAsync(string id)
         {
-            var sql = $@"
-                SELECT
-                    q.MenuId, q.SystemCode, q.MenuName, q.Controller, q.Action, q.Url,
-                    q.ParentId, q.Info, q.SortOrder, q.UseYn, q.CreateDate, q.CreateUserId,
-                    q.UpdateDate, q.UpdateUserId, q.Icon, q.Lvl as Level,
-                    (SELECT COUNT(*) FROM TB_MENU_INFO WHERE PARENTID = q.MenuId) AS ChildCount
-                FROM (
-                    SELECT 
-                        ${SelectColumns}
-                        LEVEL as Lvl
-                    FROM TB_MENU_INFO
-                    START WITH PARENTID IS NULL
-                    CONNECT BY PRIOR MENUID = PARENTID
-                ) q
-                WHERE q.MenuId = :Id";
-
-                sql = @"SELECT
+            var sql = @"SELECT
                         q.MenuId,
                         q.SystemCode,
                         q.MenuName,
@@ -160,7 +144,7 @@ namespace CSR.Services
                         GROUP BY PARENTID
                     ) c
                         ON c.PARENTID = q.MenuId
-                    WHERE q.MenuId = :Id;"
+                    WHERE q.MenuId = :Id";
 
             var result = await _dbConnection.QueryAsync<Menu>(sql, new { Id = id });
             return result.FirstOrDefault();
@@ -187,8 +171,6 @@ namespace CSR.Services
         // 메뉴 생성
         public async Task<string> CreateMenuAsync(Menu menu)
         {
-            // In Oracle, we often use a sequence for new IDs. Assuming MENUID is managed by client or another mechanism.
-            // Also assuming CreateDate and RegDate are handled by DB triggers or default values.
             var sql = @"
                 INSERT INTO TB_MENU_INFO (
                     MENUID, MENUNAME, URL, CONTROLLER, ACTION, SORT_ORDER, USEYN, PARENTID, SYSTEMCODE, INFO, CREATE_USERID, UPDATE_USERID, CREATE_DATE, UPDATE_DATE
@@ -313,6 +295,28 @@ namespace CSR.Services
 
         public Task<bool> MoveUpAsync(string id) => MoveOrderAsync(id, true);
         public Task<bool> MoveDownAsync(string id) => MoveOrderAsync(id, false);
+
+        public async Task<List<Menu>> GetMenusByLevelAsync(int level)
+        {
+            // LEVEL 가상 컬럼을 사용하여 특정 레벨의 메뉴만 조회합니다.
+            var sql = @"
+                SELECT * FROM (
+                    SELECT
+                        MENUID AS MenuId,
+                        MENUNAME AS MenuName,
+                        SORT_ORDER AS SortOrder,
+                        URL as Url,
+                        LEVEL AS MenuLevel
+                    FROM TB_MENU_INFO
+                    START WITH PARENTID IS NULL
+                    CONNECT BY PRIOR MENUID = PARENTID
+                    ORDER SIBLINGS BY SORT_ORDER
+                )
+                WHERE MenuLevel = :MenuLevel";
+
+            var result = await _dbConnection.QueryAsync<Menu>(sql, new { MenuLevel = level });
+            return result.ToList();
+        }
     }
 }
 
