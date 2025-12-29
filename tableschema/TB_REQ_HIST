@@ -1,20 +1,30 @@
 테이블 설명 : 요청사항 관리 테이블
 NO	컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
-1	HISTROYID		PK	Y		히스토리번호	
+1	HISTROYID	number	PK	Y		히스토리번호	
 2	REQID	number		Y		요청번호	
-3	REQENDDATE	varchar2(10)		Y		완료요청(예정)일	
-4	RESUSERID	varchar2(10)				조치자	
-5	DFCLTCD	varchar2(10)				난이도	
-6	MAN_DAY	float				투입공수	
-7	PROC_STATUS	varchar2(10)				진행상태	
-8	PROC_RATE	number				진행률	
-9	ANSWER_HTML	clob				답변내용 html	
-10	ANSWER_TEXT	clob				답변내용 text	
-11	DELAYREASON_HTML	clob				지연사유 html	
-12	DELAYREASON_TEXT	clob				지연사유 text	
-13	REQHISTORY	varchar2(1000)				조치내역(히스토리)	
-14	REG_DATE	date		Y		등록자ID	
-15	REG_USERID	varchar2(10)		Y	sysdate	등록일	
-16	UPDATE_DATE	date				수정자 ID	
-17	UPDATE_USERID	varchar2(10)				수정일	
-18	USEYN	varchar2(1)		Y	'Y'	삭제여부	
+3	PARENTID	number				상위요청번호	
+4	TITLE	varchar2(50)		Y		제목	
+5	CONTENTS_HTML	clob				내용(HTML)	
+6	CONTENTS_TEXT	clob				내용(TEXT)	
+7	REQDATE	varchar2(10)		Y		요청일	
+8	REQENDDATE	varchar2(10)		Y		완료요청(예정)일	
+9	REQTYPE	varchar2(10)		Y		요청유형	
+10	REQMENU	varchar2(10)				요청메뉴(영역)	
+11	REQUSERID	varchar2(10)		Y		요청자	
+12	RESUSERID	varchar2(10)				조치자	
+13	DFCLTCD	varchar2(10)				난이도	
+14	PRIORITYCD	varchar2(10)		Y		긴급도	
+15	MAN_DAY	float				투입공수	
+16	PROC_STATUS	varchar2(10)				진행상태	
+17	PROC_RATE	number				진행률	
+18	ANSWER_HTML	clob				답변내용 html	
+19	ANSWER_TEXT	clob				답변내용 text	
+20	DELAYREASON_HTML	clob				지연사유 html	
+21	DELAYREASON_TEXT	clob				지연사유 text	
+22	CORCD	varchar2(10)		Y		법인코드	
+23	DEPTCD	varchar2(10)		Y		부서코드	
+24	TEAMCD	varchar2(10)		Y		팀 코드	
+25	REQHISTORY	varchar2(1000)				조치내역(히스토리)	
+26	REG_DATE	date		Y	sysdate	등록일	
+27	REG_USERID	varchar2(10)		Y		등록자 ID	
+28	USEYN	varchar2(1)		Y	'Y'	삭제여부	

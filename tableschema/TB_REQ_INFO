@@ -8,6 +8,7 @@ CONTENTS_TEXT	clob				내용(TEXT)
 REQDATE	varchar2(10)		Y		요청일	
 REQENDDATE	varchar2(10)		Y		완료요청(예정)일	
 REQTYPE	varchar2(10)		Y		요청유형	
+REQMENU	varchar2(10)				요청메뉴(영역)	
 REQUSERID	varchar2(10)		Y		요청자	
 RESUSERID	varchar2(10)				조치자	
 DFCLTCD	varchar2(10)				난이도	
@@ -23,8 +24,8 @@ CORCD	varchar2(10)		Y		법인코드
 DEPTCD	varchar2(10)		Y		부서코드	
 TEAMCD	varchar2(10)		Y		팀 코드	
 REQHISTORY	varchar2(1000)				조치내역(히스토리)	
-REG_DATE	date		Y		등록자ID	
-REG_USERID	varchar2(10)		Y	sysdate	등록일	
-UPDATE_DATE	date				수정자 ID	
-UPDATE_USERID	varchar2(10)				수정일	
-USEYN	varchar2(1)		Y	N	삭제여부	
+REG_DATE	date		Y	sysdate	등록일	
+REG_USERID	varchar2(10)		Y		등록자 ID	
+UPDATE_DATE	date				수정일	
+UPDATE_USERID	varchar2(10)				수정자 ID	
+USEYN	varchar2(1)		Y	'Y'	삭제여부	
