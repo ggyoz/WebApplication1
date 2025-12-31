@@ -1,7 +1,10 @@
 ﻿@using CSR.Models
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Mvc.Rendering
 @inject CSR.Services.MenuService MenuService
+@inject IOptions<RequestLocalizationOptions> LocOptions
 @{
-    
     var menuTree = await MenuService.GetMenuTreeAsync(activeOnly: true);
     
     var activeMenuIds = new HashSet<string>();
@@ -43,6 +46,13 @@
     
     ViewData["ActiveMenuIds"] = activeMenuIds;
     ViewData["CurrentPath"] = currentPath;
+
+    // 다국어 선택을 위한 준비
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var cultureItems = LocOptions.Value.SupportedUICultures
+        .Select(c => new SelectListItem { Value = c.Name, Text = c.NativeName })
+        .ToList();
+        
 }
 
 <!DOCTYPE html>
@@ -79,6 +89,13 @@
                     </ul>
 
                     <form class="d-flex">
+                        <!-- 여기에 다국어 설정 추가 -->
+                        <form asp-controller="Home" asp-action="SetLanguage" asp-route-returnUrl="@Context.Request.Path" method="post" class="d-inline-flex">
+                            <select name="culture" asp-for="@requestCulture.RequestCulture.UICulture.Name" asp-items="cultureItems"
+                                    onchange="this.form.submit();" class="form-select form-select-sm me-2">
+                            </select>
+                        </form>
+                        <span>Cultures: @LocOptions.Value.SupportedUICultures.Count()</span>
                         <span class="navbar-text me-2">사용자 이름</span>
                         <button class="btn btn-outline-secondary" type="submit">logout</button>
                     </form>

@@ -7,8 +7,6 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
-
 // 다국어 서비스 등록
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddControllersWithViews()
@@ -71,6 +69,15 @@ foreach (var service in serviceTypes)
     builder.Services.AddScoped(service);
 }
 
+// 다국어 옵션 설정
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[] { "ko-KR", "en-US", "hi-IN", "zh-CN" };
+    options.SetDefaultCulture(supportedCultures[1]); // en-US
+    options.AddSupportedCultures(supportedCultures);
+    options.AddSupportedUICultures(supportedCultures);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -88,14 +95,7 @@ if(app.Environment.IsDevelopment()){
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// 다국어 미들웨어 설정 및 등록
-var supportedCultures = new[] { "ko-KR", "en-US" };
-var localizationOptions = new RequestLocalizationOptions()
-    .SetDefaultCulture(supportedCultures[0]) // 기본 언어 설정
-    .AddSupportedCultures(supportedCultures) // 지원할 언어 목록
-    .AddSupportedUICultures(supportedCultures); // UI에 표시할 언어 목록
-
-app.UseRequestLocalization(localizationOptions); // 요청 파이프라인에 미들웨어 추가
+app.UseRequestLocalization(); // 요청 파이프라인에 미들웨어 추가
 
 app.UseRouting();
 
