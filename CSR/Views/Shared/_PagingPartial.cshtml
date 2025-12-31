@@ -1,0 +1,90 @@
+@model CSR.Models.IPagedResult
+
+@{
+    // Preserve other query string parameters like for sorting or filtering
+    var routeData = new Dictionary<string, string>();
+    var queryData = ViewContext.HttpContext.Request.Query;
+    if (queryData != null)
+    {
+        foreach (var key in queryData.Keys)
+        {
+            if (key != "pageNumber")
+            {
+                routeData[key] = queryData[key];
+            }
+        }
+    }
+}
+
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-all-route-data="@(new Dictionary<string, string>(routeData) { { "pageNumber", "1" } })" aria-label="First">
+                        <span aria-hidden="true"><i class="bi bi-chevron-double-left"></i></span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" asp-all-route-data="@(new Dictionary<string, string>(routeData) { { "pageNumber", (Model.PageNumber - 1).ToString() } })" aria-label="Previous">
+                        <span aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">&laquo;&laquo;</a>
+                </li>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">&laquo;</a>
+                </li>
+            }
+
+            @* A more advanced pagination logic to show a limited number of page links *@
+            @{
+                int startPage = Math.Max(1, Model.PageNumber - 5);
+                int endPage = Math.Min(Model.TotalPages, Model.PageNumber + 4);
+
+                if (Model.PageNumber <= 5) {
+                    endPage = Math.Min(Model.TotalPages, 10);
+                }
+                if (Model.PageNumber > Model.TotalPages - 5) {
+                    startPage = Math.Max(1, Model.TotalPages - 9);
+                }
+            }
+
+            @for (var i = startPage; i <= endPage; i++)
+            {
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link" asp-all-route-data="@(new Dictionary<string, string>(routeData) { { "pageNumber", i.ToString() } })">@i</a>
+                </li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-all-route-data="@(new Dictionary<string, string>(routeData) { { "pageNumber", (Model.PageNumber + 1).ToString() } })" aria-label="Next">
+                        <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" asp-all-route-data="@(new Dictionary<string, string>(routeData) { { "pageNumber", Model.TotalPages.ToString() } })" aria-label="Last">
+                        <span aria-hidden="true"><i class="bi bi-chevron-double-right"></i></span>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">&raquo;</a>
+                </li>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">&raquo;&raquo;</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

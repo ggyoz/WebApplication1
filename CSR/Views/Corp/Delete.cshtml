@@ -1,0 +1,25 @@
+@model CSR.Models.Corp
+
+@{
+    ViewData["Title"] = "법인 삭제";
+}
+
+<h1>법인 삭제</h1>
+
+<h3>정말로 이 항목을 삭제하시겠습니까?</h3>
+<div>
+    <h4>법인 정보</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.CorCd)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.CorCd)</dd>
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.CorNm)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.CorNm)</dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="CorCd" />
+        <input type="submit" value="삭제" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">목록으로</a>
+    </form>
+</div>

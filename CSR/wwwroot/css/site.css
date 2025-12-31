@@ -122,3 +122,18 @@ body {
   color: #333;
   font-size: 20px;  
 }
+
+.search-btn::after{
+  content: "\F52A";
+  font-style: normal;
+  font-family: "bootstrap-icons";
+  margin: 4px;
+}
+
+.search-area{
+  margin-bottom: 1rem;
+}
+
+.search-body{
+  margin-top: 1rem;
+}

@@ -12,10 +12,9 @@ table.board-tabl {
 
 /* Table Header */
 table.board-tabl thead tr {
-    background-color: #9c9ea0; /* A modern dark grey for the header */
-    color: #ffffff;
-    text-align: left;
-    font-weight: bold;
+    background-color: #dadada; /* A modern dark grey for the header */
+    color: #000000;
+    text-align: left;    
 }
 
 /* Table Cells (Header and Data) */
@@ -27,7 +26,7 @@ table.board-tabl td {
 
 /* Table Body Rows - Hover Effect */
 table.board-tabl tbody tr:hover {
-    background-color: #f7fafc; /* A very light grey for hover */
+    background-color: #e0e0e0; /* A very light grey for hover */
     cursor: pointer;
 }
 
@@ -61,3 +60,17 @@ table.board-tabl .badge {
 .badge.bg-info { background-color: #17a2b8; }
 .badge.bg-primary { background-color: #007bff; }
 .badge.bg-secondary { background-color: #6c757d; }
+
+/* Styling for form tables */
+table.table-layout td {
+    padding: 8px 10px; /* Adjust padding as needed */
+    vertical-align: middle; /* Align content vertically in the middle */
+}
+
+table.table-layout tr {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+table.table-layout tr:last-of-type {
+    border-bottom: none;
+}

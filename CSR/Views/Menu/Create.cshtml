@@ -106,6 +106,10 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+
+            const urlSearch = new URLSearchParams(location.search);
+            let parentId = urlSearch.get('parentId');
+
             const levelSelect = document.getElementById('levelSelect');
             const parentIdSelect = document.getElementById('ParentId');
             const parentMenuGroup = document.getElementById('parentMenuGroup');
@@ -130,22 +134,28 @@
                     })
                     .then(data => {
                         parentIdSelect.innerHTML = '';
-
                         data.forEach(menu => {
-                            const option = new Option(menu.text, menu.value);
+                            const option = new Option(menu.text, menu.value);                            
                             parentIdSelect.add(option);
+                            // 선택된 부모 메뉴가 있을 경우 선택한 생태로 추가됨
+                            if( menu.value == parentId ){
+                                parentIdSelect.value = parentId;
+                            }
+
                         });
                     })
                     .catch(error => {
                         console.error('부모 메뉴를 불러오는 중 오류 발생:', error);
                         parentIdSelect.innerHTML = '<option value="">목록 로드 실패</option>';
                     });
+
             }
 
             levelSelect.addEventListener('change', updateParentMenus);
 
             // 초기 로드 시에도 실행
             updateParentMenus();
+
         });
     </script>
 }

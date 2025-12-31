@@ -1,18 +1,29 @@
 @using CSR.Models
 @model List<Menu>
+@{
+    var activeMenuIds = ViewData["ActiveMenuIds"] as HashSet<string> ?? new HashSet<string>();
+    var currentPath = ViewData["CurrentPath"] as string ?? "";
+    Console.WriteLine("currentPath : "  + ViewData["CurrentPath"]);
+        
+}
 
 @foreach (var menu in Model)
 {
     var hasChildren = menu.Children != null && menu.Children.Any();
+    var isExpanded = activeMenuIds.Contains(menu.MenuId);
+    var isActive = menu.GetLink().Equals(currentPath, StringComparison.OrdinalIgnoreCase);
+
+    Console.WriteLine(menu.GetLink());
+
     var collapseId = $"menu-collapse-{menu.MenuId.Replace(".", "_")}";
 
     <li class="mb-1">
         @if (hasChildren)
         {
-            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="false">
+            <button class="btn btn-toggle align-items-center rounded @(isExpanded ? "" : "collapsed") @(isActive ? "active" : "")" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="@(isExpanded ? "true" : "false")">
                 @menu.MenuName
             </button>
-            <div class="collapse" id="@collapseId">
+            <div class="collapse @(isExpanded ? "show" : "")" id="@collapseId">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-4">
                     @await Html.PartialAsync("_MenuPartial", menu.Children)
                 </ul>
@@ -20,7 +31,7 @@
         }
         else
         {
-            <a href="@menu.GetLink()" class="btn btn-toggle-link align-items-center rounded text-decoration-none">
+            <a href="@menu.GetLink()" class="btn btn-toggle-link align-items-center rounded text-decoration-none @(isActive ? "active" : "")">
                 @menu.MenuName
             </a>
         }

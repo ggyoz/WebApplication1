@@ -1,8 +1,10 @@
 테이블 설명 : 부서정보 테이블
-NO	컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
-1	DEPTCD	varchar2(10)	PK	Y		부서코드	
-2	DEPTNAME	varchar2(100)		Y		부서명	
-3	CORCD	varchar2(10)		Y		법인코드	
-4	ORDER	number				정렬순서	
-5	NOTE	varchar2(1000)				설명	
-6	USEYN	varchar2(1)		Y	'Y'	사용여부	
+NO	컬럼명  데이터 타입 KEY NOTNULL Default Comment	
+1   ORGID       number  PK  Y           조직ID
+2   PARENTID    number                  상위조직ID
+3	DEPTCD	    varchar2(10)	        부서코드	
+4	DEPTNAME	varchar2(100)       Y   	부서명	
+5	CORCD	    varchar2(10)		Y   	법인코드	
+6	ORDER	    number				    정렬순서	
+7	NOTE	    varchar2(1000)			설명	
+8	USEYN	    varchar2(1)		Y	    'Y'	사용여부	

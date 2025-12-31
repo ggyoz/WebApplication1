@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="UserManagement" xml:space="preserve">
+    <value>사용자 관리</value>
+  </data>
+  <data name="TotalUsers" xml:space="preserve">
+    <value>총 {0} 명의 사용자가 있습니다.</value>
+  </data>
+  <data name="AddUser" xml:space="preserve">
+    <value>새 사용자 추가</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>검색</value>
+  </data>
+  <data name="NoUsersToDisplay" xml:space="preserve">
+    <value>표시할 사용자가 없습니다.</value>
+  </data>
+  <data name="Operation" xml:space="preserve">
+    <value>작업</value>
+  </data>
+</root>

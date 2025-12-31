@@ -9,168 +9,80 @@
 <div>
     <hr />
     <dl class="row">
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.UserId)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.UserId)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.UserName)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.UserName)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.EmpNo)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.EmpNo)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.DeptCd)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.DeptCd)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.DeptName)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.DeptName)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.TeamCd)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.TeamCd)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.TeamName)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.TeamName)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.CorCd)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.CorCd)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.SysCd)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.SysCd)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.BizCd)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.BizCd)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.TelNo)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.TelNo)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.MobPhoneNo)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.MobPhoneNo)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.EmailAddr)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.EmailAddr)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.RetireDate)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.RetireDate)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.CorName)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.CorName)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.SysName)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.SysName)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.BizName)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.BizName)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.AdminFlag)
-        </dt>
-        <dd class="col-sm-9">
-            @(Model.AdminFlag ? "예" : "아니오")
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.CustCd)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.CustCd)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.VendCd)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.VendCd)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.AuthFlag)
-        </dt>
-        <dd class="col-sm-9">
-            @(Model.AuthFlag == 1 ? "예" : "아니오")
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.UserDiv)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.UserDiv)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.PwMissCount)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.PwMissCount)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.RegDate)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.RegDate)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.RegUserId)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.RegUserId)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.UpdateDate)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.UpdateDate)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.UpdateUserId)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.UpdateUserId)
-        </dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UserId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.UserId)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UserName)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.UserName)</dd>
+        
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Status)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Status)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.EmpNo)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.EmpNo)</dd>
+        
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CorCd)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.CorCd)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.DeptCd)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.DeptCd)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.OfficeCd)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.OfficeCd)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TeamCd)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.TeamCd)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.SysCd)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.SysCd)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.BizCd)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.BizCd)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TelNo)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.TelNo)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.MobPhoneNo)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.MobPhoneNo)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.EmailAddr)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.EmailAddr)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RetireDate)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.RetireDate)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CustCd)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.CustCd)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.VendCd)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.VendCd)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UserDiv)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.UserDiv)</dd>
+        
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.AdminFlag)</dt>
+        <dd class="col-sm-9">@(Model.AdminFlag ? "예" : "아니오")</dd>
+        
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.AuthFlag)</dt>
+        <dd class="col-sm-9">@(Model.AuthFlag == 1 ? "예" : "아니오")</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UseYn)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.UseYn)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.PwMissCount)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.PwMissCount)</dd>
+        
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RegDate)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.RegDate)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RegUserId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.RegUserId)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UpdateDate)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.UpdateDate)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UpdateUserId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.UpdateUserId)</dd>
     </dl>
 </div>
 <div class="text-end mt-3">

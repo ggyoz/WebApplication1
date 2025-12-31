@@ -9,6 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// 다국어 서비스 등록
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization() // 뷰에서 다국어를 지원하도록 설정
+    .AddDataAnnotationsLocalization(); // 데이터 유효성 검사 메시지에서 다국어를 지원하도록 설정
+
 // Supabase 클라이언트 등록
 var supabaseUrl = builder.Configuration["Supabase:Url"];
 var supabaseKey = builder.Configuration["Supabase:AnonKey"];
@@ -81,6 +87,15 @@ if(app.Environment.IsDevelopment()){
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// 다국어 미들웨어 설정 및 등록
+var supportedCultures = new[] { "ko-KR", "en-US" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[0]) // 기본 언어 설정
+    .AddSupportedCultures(supportedCultures) // 지원할 언어 목록
+    .AddSupportedUICultures(supportedCultures); // UI에 표시할 언어 목록
+
+app.UseRequestLocalization(localizationOptions); // 요청 파이프라인에 미들웨어 추가
 
 app.UseRouting();
 

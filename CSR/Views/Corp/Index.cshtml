@@ -1,0 +1,42 @@
+@model IEnumerable<CSR.Models.Corp>
+
+@{
+    ViewData["Title"] = "법인 정보 목록";
+}
+
+<partial name="_PageTitlePartial" />
+
+<div class="d-flex justify-content-between mb-3 align-items-center">
+    <div>
+       
+    </div>
+    <div>
+        <a asp-action="Create" class="btn btn-light">법인 등록</a>
+    </div>
+</div>
+
+
+<table class="board-tabl">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.CorCd)</th>
+            <th>@Html.DisplayNameFor(model => model.CorNm)</th>
+            <th>@Html.DisplayNameFor(model => model.NationCd)</th>
+            <th>@Html.DisplayNameFor(model => model.CoinCd)</th>
+            <th>@Html.DisplayNameFor(model => model.Language)</th>
+            <th>@Html.DisplayNameFor(model => model.AccTitle)</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr style="cursor: pointer;" onclick="window.location.href = '@Url.Action("Details", "Corp", new { id = item.CorCd })';">
+            <td>@Html.DisplayFor(modelItem => item.CorCd)</td>
+            <td>@Html.DisplayFor(modelItem => item.CorNm)</td>
+            <td>@Html.DisplayFor(modelItem => item.NationCd)</td>
+            <td>@Html.DisplayFor(modelItem => item.CoinCd)</td>
+            <td>@Html.DisplayFor(modelItem => item.Language)</td>
+            <td>@Html.DisplayFor(modelItem => item.AccTitle)</td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,17 +1,18 @@
 @model CSR.Models.User
 
-<tr>
+<tr style="cursor: pointer;" onclick="window.location.href = '@Url.Action("Details", "User", new { id = Model.UserId })';">
     <td>@Html.DisplayFor(modelItem => modelItem.UserId)</td>
     <td>@Html.DisplayFor(modelItem => modelItem.UserName)</td>
-    <td>@Html.DisplayFor(modelItem => modelItem.EmpNo)</td>
+    <td>@Html.DisplayFor(modelItem => modelItem.DeptCd)</td>
+    <td>@Html.DisplayFor(modelItem => modelItem.TeamCd)</td>
     <td>@Html.DisplayFor(modelItem => modelItem.EmailAddr)</td>
+    <td>@Html.DisplayFor(modelItem => modelItem.UseYn)</td>
     <td>@(Model.AdminFlag ? "예" : "아니오")</td>
-    <td>@Html.DisplayFor(modelItem => modelItem.RegDate)</td>
+    <td>@Model.RegDate.ToString("yyyy-MM-dd")</td>
     <td>
-        <div class="btn-group btn-group-sm">
-            <a asp-action="Details" asp-route-id="@Model.UserId" class="btn btn-sm btn-outline-info">상세보기</a>
-            <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-sm btn-outline-primary">수정</a>
-            <a asp-action="Delete" asp-route-id="@Model.UserId" class="btn btn-sm btn-outline-danger">삭제</a>
+        <div class="btn-group btn-group-sm" onclick="event.stopPropagation();">
+            <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-sm btn-outline-secondary">수정</a>
+            <a asp-action="Delete" asp-route-id="@Model.UserId" class="btn btn-sm btn-outline-secondary">삭제</a>
         </div>
     </td>
 </tr>

@@ -1,8 +1,12 @@
-@model IEnumerable<CSR.Models.User>
+@model CSR.Models.UserIndexViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "사용자 관리";
+    ViewData["Title"] = Localizer["UserManagement"];
 }
+
+<partial name="_PageTitlePartial" />
 
 @if (ViewBag.Error != null)
 {
@@ -11,35 +15,103 @@
     </div>
 }
 
-<p class="text-end">
-    <a asp-action="Create" class="btn btn-primary">새 사용자 추가</a>
-</p>
+<div class="search-area card">
+    <div class="search-body">
+        <form asp-action="Index" method="get">
+            <table class="table table-bordered">
+                <tbody>
+                    <colgroup>
+                        <col width="8%"></col>
+                        <col width="15%"></col>
+                        <col width="8%"></col>
+                        <col width="15%"></col>
+                        <col width="8%"></col>
+                        <col width="15%"></col>
+                        <col width="8%"></col>
+                        <col width="15%"></col>
+                    </colgroup>
+                    <tr>
+                        <th class="align-middle text-center"><label asp-for="Search.CorCd"></label></th>
+                        <td><input asp-for="Search.CorCd" class="form-control" /></td>
+                        <th class="align-middle text-center"><label asp-for="Search.BizCd"></label></th>
+                        <td><input asp-for="Search.BizCd" class="form-control" /></td>
+                        <th class="align-middle text-center"><label asp-for="Search.DeptCd"></label></th>
+                        <td><input asp-for="Search.DeptCd" class="form-control" /></td>
+                        <th class="align-middle text-center"><label asp-for="Search.TeamCd"></label></th>
+                        <td><input asp-for="Search.TeamCd" class="form-control" /></td>
+                        
+                    </tr>
+                    <tr>
+                        <th class="align-middle text-center"><label asp-for="Search.UserId"></label></th>
+                        <td><input asp-for="Search.UserId" class="form-control" /></td>
+                        <th class="align-middle text-center"><label asp-for="Search.UserName"></label></th>
+                        <td><input asp-for="Search.UserName" class="form-control" /></td>
+                        <td colspan="4" class="text-end">
+                            <button type="submit" class="btn btn-light search-btn">@Localizer["Search"]</button>
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table> 
+            
+        </form>
+    </div>
+</div>
 
-@if (Model != null && Model.Any())
+
+<div class="d-flex justify-content-between mb-3 align-items-center">
+    <div>
+        @if (Model.Users.TotalCount > 0)
+        {
+            <p class="text-muted mb-0">@Localizer["TotalUsers", Model.Users.TotalCount]</p>
+        }
+    </div>
+    <div>
+        <a asp-action="Create" class="btn btn-info">@Localizer["AddUser"]</a>
+    </div>
+</div>
+
+
+@if (Model.Users.Items != null && Model.Users.Items.Any())
 {
     <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead class="table-light">
+                <colgroup>
+                    <col width="8%"/>
+                    <col width="8%"/>
+                    <col width="8%"/>
+                    <col width="8%"/>
+                    <col width="15%"/>
+                    <col width="8%"/>                    
+                    <col width="8%"/>
+                    <col width="8%"/>
+                    <col width="8%"/>
+                </colgroup>
                 <tr>
-                    <th>@Html.DisplayNameFor(model => model.UserId)</th>
-                    <th>@Html.DisplayNameFor(model => model.UserName)</th>
-                    <th>@Html.DisplayNameFor(model => model.EmpNo)</th>
-                    <th>@Html.DisplayNameFor(model => model.EmailAddr)</th>
-                    <th>@Html.DisplayNameFor(model => model.AdminFlag)</th>
-                    <th>@Html.DisplayNameFor(model => model.RegDate)</th>
-                    <th>작업</th>
+                    <th>@Html.DisplayNameFor(model => model.Users.Items.First().UserId)</th>
+                    <th>@Html.DisplayNameFor(model => model.Users.Items.First().UserName)</th>
+                    <th>@Html.DisplayNameFor(model => model.Users.Items.First().DeptCd)</th>
+                    <th>@Html.DisplayNameFor(model => model.Users.Items.First().TeamCd)</th>
+                    <th>@Html.DisplayNameFor(model => model.Users.Items.First().EmailAddr)</th>
+                    <th>@Html.DisplayNameFor(model => model.Users.Items.First().UseYn)</th>
+                    <th>@Html.DisplayNameFor(model => model.Users.Items.First().AdminFlag)</th>
+                    <th>@Html.DisplayNameFor(model => model.Users.Items.First().RegDate)</th>
+                    <th>@Localizer["Operation"]</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var user in Model)
+                @foreach (var user in Model.Users.Items)
                 {
                     @await Html.PartialAsync("_UserRow", user)
                 }
             </tbody>
         </table>
     </div>
+
+    <partial name="_PagingPartial" model="Model.Users" />
 }
 else
 {
-    <p class="text-muted">사용자가 없습니다.</p>
+    <p class="text-muted">@Localizer["NoUsersToDisplay"]</p>
 }

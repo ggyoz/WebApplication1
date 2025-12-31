@@ -75,18 +75,20 @@ namespace CSR.Services
                 {
                     if (menuDict.TryGetValue(menu.ParentId, out var parent))
                     {
-                        parent.Children ??= new List<Menu>();
+                        parent.Children ??= new List<Menu>(); // Children이 null일 경우 초기화
                         parent.Children.Add(menu);
+                        menu.Parent = parent; // Set the parent property
                     }
                 }
             }
             
-            // Ensure children are sorted
+            // 자식메뉴 정렬
             foreach(var menu in allMenus.Where(m => m.Children != null))
             {
                 menu.Children = menu.Children.OrderBy(m => m.SortOrder).ToList();
             }
 
+            // 메뉴 레벨 설정
             foreach (var rootMenu in rootMenus)
             {
                 SetMenuLevels(rootMenu, 1);
@@ -317,6 +319,57 @@ namespace CSR.Services
             var result = await _dbConnection.QueryAsync<Menu>(sql, new { MenuLevel = level });
             return result.ToList();
         }
+
+        /// <summary>
+        /// 주어진 메뉴를 시작점으로 하여, 가장 깊은 레벨에 있으면서 정렬 순서가 가장 빠른 하위 메뉴를 찾습니다.
+        /// </summary>
+        /// <param name="startMenu">탐색을 시작할 메뉴</param>
+        /// <returns>찾은 메뉴. 하위 메뉴가 없으면 시작 메뉴 자신을 반환합니다.</returns>
+        public Menu? FindDeepestAndFirstMenu(Menu startMenu)
+        {
+            if (startMenu == null)
+            {
+                return null;
+            }
+        
+            // 탐색을 위한 스택을 생성하고 시작 메뉴를 추가합니다. (깊이 우선 탐색)
+            var stack = new Stack<Menu>();
+            stack.Push(startMenu);
+    
+            Menu lastMenu = startMenu;
+    
+            while (stack.Count > 0)
+            {
+                var currentMenu = stack.Pop();
+    
+                // 조건 1: 더 깊은 레벨의 메뉴를 우선
+                if (currentMenu.MenuLevel > lastMenu.MenuLevel)
+                {
+                    lastMenu = currentMenu;
+                }
+                // 조건 2: 같은 레벨이면 SortOrder가 더 낮은(빠른) 메뉴를 우선
+                else if (currentMenu.MenuLevel == lastMenu.MenuLevel)
+                {
+                    if (currentMenu.SortOrder < lastMenu.SortOrder)
+                    {
+                        lastMenu = currentMenu;
+                    }
+                }
+    
+                // 자식 메뉴들을 스택에 추가합니다.
+                // (정렬 순서의 역순으로 넣어야 스택에서 꺼낼 때 정렬 순서대로 처리됩니다)
+                if (currentMenu.Children != null && currentMenu.Children.Any())
+                {
+                    for (int i = currentMenu.Children.Count - 1; i >= 0; i--)
+                    {
+                        stack.Push(currentMenu.Children[i]);
+                    }
+                }
+            }
+    
+            return lastMenu;
+        }
+
     }
 }
 

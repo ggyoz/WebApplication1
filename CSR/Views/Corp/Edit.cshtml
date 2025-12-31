@@ -1,0 +1,62 @@
+@model CSR.Models.Corp
+
+@{
+    ViewData["Title"] = "법인 수정";
+}
+
+<partial name="_PageTitlePartial" />
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CorCd" />
+            <table class="table-layout">
+                 <tr>
+                    <td><label asp-for="CorCd" class="control-label"></label></td>
+                    <td>
+                        <input asp-for="CorCd" class="form-control" readonly />
+                    </td>
+                    <td><label asp-for="CorNm" class="control-label"></label></td>
+                    <td>
+                        <input asp-for="CorNm" class="form-control" />
+                        <span asp-validation-for="CorNm" class="text-danger"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label asp-for="NationCd" class="control-label"></label></td>
+                    <td>
+                        <input asp-for="NationCd" class="form-control" />
+                        <span asp-validation-for="NationCd" class="text-danger"></span>
+                    </td>
+                    <td><label asp-for="CoinCd" class="control-label"></label></td>
+                    <td>
+                        <input asp-for="CoinCd" class="form-control" />
+                        <span asp-validation-for="CoinCd" class="text-danger"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label asp-for="Language" class="control-label"></label></td>
+                    <td>
+                        <input asp-for="Language" class="form-control" />
+                        <span asp-validation-for="Language" class="text-danger"></span>
+                    </td>
+                    <td><label asp-for="AccTitle" class="control-label"></label></td>
+                    <td>
+                        <input asp-for="AccTitle" class="form-control" />
+                        <span asp-validation-for="AccTitle" class="text-danger"></span>
+                    </td>
+                </tr>
+            </table>
+            <div class="button-area mt-3">
+                <input type="submit" value="저장" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">목록으로</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,8 +1,48 @@
 ﻿@using CSR.Models
 @inject CSR.Services.MenuService MenuService
 @{
-    // Get the entire menu tree for sidebar and top-level for navbar
+    
     var menuTree = await MenuService.GetMenuTreeAsync(activeOnly: true);
+    
+    var activeMenuIds = new HashSet<string>();
+    Menu? activeMenu = null;
+    
+    var currentPath = Context.Request.Path;
+    
+    Func<List<Menu>, string, Menu?>? findMenuByPath = null;
+    findMenuByPath = (menus, path) => {
+        foreach (var menu in menus)
+        {
+            if (menu.GetLink().Equals(path, StringComparison.OrdinalIgnoreCase))
+            {
+                return menu;
+            }
+            if (menu.Children != null)
+            {
+                var found = findMenuByPath!(menu.Children, path);
+                if (found != null)
+                {
+                    return found;
+                }
+            }
+        }
+        return null;
+    };
+
+    activeMenu = findMenuByPath(menuTree, currentPath);
+
+    if (activeMenu != null)
+    {
+        var tempMenu = activeMenu;
+        while (tempMenu != null)
+        {
+            activeMenuIds.Add(tempMenu.MenuId);
+            tempMenu = tempMenu.Parent;
+        }
+    }
+    
+    ViewData["ActiveMenuIds"] = activeMenuIds;
+    ViewData["CurrentPath"] = currentPath;
 }
 
 <!DOCTYPE html>
@@ -33,7 +73,7 @@
                         @foreach(var menu in menuTree)
                         {
                             <li class="nav-item">
-                                <a class="nav-link nav-link-custom" href="@menu.GetLink()">@menu.MenuName</a>
+                                <a class="nav-link nav-link-custom" href="@MenuService.FindDeepestAndFirstMenu(menu).GetLink()">@menu.MenuName</a>
                             </li>
                         }
                     </ul>
@@ -49,7 +89,7 @@
 
     <div id="wrapper">
         <!-- Sidebar -->
-        <div id="sidebar-wrapper" class="flex-shrink-0 p-3 bg-white" style="width: 250px;">
+        <div id="sidebar-wrapper" class="flex-shrink-0 p-3 bg-white" style="width: 230px;">
             <ul class="list-unstyled ps-0">
                 @await Html.PartialAsync("_MenuPartial", menuTree)
                 
