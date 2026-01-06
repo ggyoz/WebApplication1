@@ -1,10 +1,13 @@
 @model CSR.Models.User
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
 
 @{
-    ViewData["Title"] = "사용자 추가";
+    ViewData["Title"] = Localizer["PageTitle"];
 }
 
-<h1>사용자 추가</h1>
+<h1>@Localizer["PageTitle"]</h1>
 
 <hr />
 <div class="row">
@@ -13,8 +16,8 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             
             <table class="table-layout">
-                <tr>
-                    <td><label asp-for="UserId" class="control-label">사용자 ID *</label></td>
+                <tr>                    
+                    <td><label asp-for="UserId" class="control-label">@SharedLocalizer["Label_UserId"]</label></td>
                     <td>
                         <input asp-for="UserId" class="form-control" />
                         <span asp-validation-for="UserId" class="text-danger"></span>
@@ -23,12 +26,13 @@
                     <td></td>
                     <td></td>                    
                 </tr>
-                    <td><label asp-for="UserPwd" class="control-label">비밀번호 *</label></td>
+                <tr>
+                    <td><label asp-for="UserPwd" class="control-label">@SharedLocalizer["Label_Password"]</label></td>
                     <td>
                         <input asp-for="UserPwd" class="form-control" type="password" />
                         <span asp-validation-for="UserPwd" class="text-danger"></span>
                     </td>
-                    <td><label class="control-label">비밀번호 확인 *</label></td>
+                    <td><label class="control-label">@Localizer["Label_ConfirmPassword"]</label></td>
                     <td>
                         <input id="UserPwdCheck" class="form-control" type="password" />
                         <span class="text-danger"></span>
@@ -36,103 +40,107 @@
                     
                 </tr>
                 <tr>
-                    <td><label asp-for="EmpNo" class="control-label">사원 번호</label></td>
+                    <td><label asp-for="EmpNo" class="control-label">@SharedLocalizer["Label_EmployeeNo"]</label></td>
                     <td> 
-                        <input asp-for="EmpNo" class="form-control" />
+                        <input asp-for="EmpNo" class="form-control" oninput="this.value = NumberOnly(this.value)" maxlength=9 />
                         <span asp-validation-for="EmpNo" class="text-danger"></span>
                     </td>
-                    <td><label asp-for="UserName" class="control-label">이름 *</label></td>
+                    <td><label asp-for="UserName" class="control-label">@SharedLocalizer["Label_UserName"]</label></td>
                     <td>
                         <input asp-for="UserName" class="form-control" />
                         <span asp-validation-for="UserName" class="text-danger"></span>
                     </td>
 
-                    <td><label asp-for="SysCd" class="control-label">시스템 코드</label></td>
+                    <td><label asp-for="SysCd" class="control-label">@SharedLocalizer["Label_SystemCode"]</label></td>
                     <td>
                         <input asp-for="SysCd" class="form-control" />
                         <span asp-validation-for="SysCd" class="text-danger"></span>
                     </td>
                 </tr>
                 <tr>
-                    <td><label asp-for="CorCd" class="control-label">법인 코드</label></td>
+                    <td><label asp-for="CorCd" class="control-label">@SharedLocalizer["Label_CorporationCode"]</label></td>
                     <td>
-                        <input asp-for="CorCd" class="form-control" />
-                        <span asp-validation-for="CorCd" class="text-danger"></span>
+                        <div class="autocomplete">
+                            <input asp-for="CorCd" class="form-control" id="CorCd" type="text" name="CorCd" autocomplete="off" placeholder="">
+                        </div>
+                        <!-- <span asp-validation-for="CorCd" class="text-danger"></span> -->
                                                 
                     </td>
-                    <td><label asp-for="DeptCd" class="control-label">사업부 코드</label></td>
+                    <td><label asp-for="DeptCd" class="control-label">@SharedLocalizer["Label_BusinessUnitCode"]</label></td>
                     <td>
-                        <input asp-for="DeptCd" class="form-control" />
-                        <span asp-validation-for="DeptCd" class="text-danger"></span>
+                        <div class="autocomplete">
+                            <input asp-for="DeptCd" class="form-control" autocomplete="off" />
+                        </div>
+                        <!-- <span asp-validation-for="DeptCd" class="text-danger"></span> -->
                     </td>
-                    <td><label asp-for="OfficeCd" class="control-label">실 코드</label></td>
+                    <td><label asp-for="OfficeCd" class="control-label">@SharedLocalizer["Label_OfficeCode"]</label></td>
                     <td>
-                        <input asp-for="OfficeCd" class="form-control" />
-                        <span asp-validation-for="OfficeCd" class="text-danger"></span>
+                        <input asp-for="OfficeCd" class="form-control" autocomplete="off" />
+                        <!-- <span asp-validation-for="OfficeCd" class="text-danger"></span> -->
                     </td>
-                    <td><label asp-for="TeamCd" class="control-label">팀 코드</label></td>
+                    <td><label asp-for="TeamCd" class="control-label">@SharedLocalizer["Label_TeamCode"]</label></td>
                     <td>
-                        <input asp-for="TeamCd" class="form-control" />
-                        <span asp-validation-for="TeamCd" class="text-danger"></span>
+                        <input asp-for="TeamCd" class="form-control" autocomplete="off" />
+                        <!-- <span asp-validation-for="TeamCd" class="text-danger"></span> -->
                     </td>
                     <td>
-                        <button>조직도 검색</button>
+                        <button type="button" class="btn btn-secondary">@SharedLocalizer["Button_SearchOrganization"]</button>
                     </td>
 
                 </tr>
                 <tr>
-                    <td><label asp-for="TelNo" class="control-label">전화 번호</label></td>
+                    <td><label asp-for="TelNo" class="control-label">@SharedLocalizer["Label_PhoneNumber"]</label></td>
                     <td>
-                        <input asp-for="TelNo" class="form-control" />
-                        <span asp-validation-for="TelNo" class="text-danger"></span>
+                        <input asp-for="TelNo" class="form-control" oninput="this.value=formatPhoneNumber(this.value)" maxlength="13" />
+                        <!-- <span asp-validation-for="TelNo" class="text-danger"></span> -->
                     </td>
-                    <td><label asp-for="MobPhoneNo" class="control-label">휴대폰 번호</label></td>
+                    <td><label asp-for="MobPhoneNo" class="control-label">@SharedLocalizer["Label_MobilePhoneNumber"]</label></td>
                     <td>
-                        <input asp-for="MobPhoneNo" class="form-control" />
-                        <span asp-validation-for="MobPhoneNo" class="text-danger"></span>
+                        <input asp-for="MobPhoneNo" class="form-control" oninput="this.value=formatPhoneNumber(this.value)" maxlength="13" />
+                        <!-- <span asp-validation-for="MobPhoneNo" class="text-danger"></span> -->
                     </td>
-                    <td><label asp-for="EmailAddr" class="control-label">전자메일 주소</label></td>
+                    <td><label asp-for="EmailAddr" class="control-label">@SharedLocalizer["Label_EmailAddress"]</label></td>
                     <td>
                         <input asp-for="EmailAddr" class="form-control" type="email" />
-                        <span asp-validation-for="EmailAddr" class="text-danger"></span>
+                        <!-- <span asp-validation-for="EmailAddr" class="text-danger"></span> -->
                     </td>
-                    <td><label asp-for="RetireDate" class="control-label">퇴사일 (YYYYMMDD)</label></td>
+                    <td><label asp-for="RetireDate" class="control-label">@SharedLocalizer["Label_RetirementDate"]</label></td>
                     <td>
                         <input asp-for="RetireDate" class="form-control" />
-                        <span asp-validation-for="RetireDate" class="text-danger"></span>
+                        <!-- <span asp-validation-for="RetireDate" class="text-danger"></span> -->
                     </td>
                 </tr>
                 <tr>
                     
 
-                    <td><label asp-for="AdminFlag" class="control-label">관리자 권한</label></td>
+                    <td><label asp-for="AdminFlag" class="control-label">@SharedLocalizer["Label_AdminPrivileges"]</label></td>
                     <td>
                         <div class="form-check">
                             <input asp-for="AdminFlag" class="form-check-input" type="checkbox" />
                         </div>
-                        <span asp-validation-for="AdminFlag" class="text-danger"></span>
+                        <!-- <span asp-validation-for="AdminFlag" class="text-danger"></span> -->
                     </td>
-                    <td><label asp-for="UserDiv" class="control-label">사용자 구분</label></td>
+                    <td><label asp-for="UserDiv" class="control-label">@SharedLocalizer["Label_UserDivision"]</label></td>
                     <td>
                         <input asp-for="UserDiv" class="form-control" />
-                        <span asp-validation-for="UserDiv" class="text-danger"></span>
+                        <!-- <span asp-validation-for="UserDiv" class="text-danger"></span> -->
                     </td>
                 </tr>
                 <tr>
-                    <td><label asp-for="BizCd" class="control-label">사업장 코드</label></td>
+                    <td><label asp-for="BizCd" class="control-label">@SharedLocalizer["Label_BusinessPlaceCode"]</label></td>
                     <td>
                         <input asp-for="BizCd" class="form-control" />
-                        <span asp-validation-for="BizCd" class="text-danger"></span>
+                        <!-- <span asp-validation-for="BizCd" class="text-danger"></span> -->
                     </td>
-                    <td><label asp-for="CustCd" class="control-label">고객사 코드</label></td>
+                    <td><label asp-for="CustCd" class="control-label">@SharedLocalizer["Label_CustomerCode"]</label></td>
                     <td>
                         <input asp-for="CustCd" class="form-control" />
-                        <span asp-validation-for="CustCd" class="text-danger"></span>
+                        <!-- <span asp-validation-for="CustCd" class="text-danger"></span> -->
                     </td>
-                    <td><label asp-for="VendCd" class="control-label">협력사 코드</label></td>
+                    <td><label asp-for="VendCd" class="control-label">@SharedLocalizer["Label_VendorCode"]</label></td>
                     <td>
                         <input asp-for="VendCd" class="form-control" />
-                        <span asp-validation-for="VendCd" class="text-danger"></span>
+                        <!-- <span asp-validation-for="VendCd" class="text-danger"></span> -->
                     </td>
                     
                     <td></td>
@@ -140,9 +148,9 @@
                 </tr>
             </table>
 
-            <div class="button-area">
-                <input type="submit" value="생성" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">목록으로</a>
+            <div class="button-area text-end mt-5 m-3">
+                <input type="submit" value="@SharedLocalizer["Button_RegisterUser"]" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
             </div>
 
         </form>
@@ -150,5 +158,68 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}   
+    <script>
+    
+    // --- Autocomplete setup ---
+    const corCdInput = document.getElementById("CorCd");
+    const deptCdInput = document.getElementById("DeptCd");
+
+    async function getCorpData(searchString) {
+        if (!searchString) return [];
+        try {
+            const response = await fetch(`/Corp/GetAutoCompleteCorp?searchString=${searchString}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json(); // data is [{value: 'COR01', text: 'Corp Name'}]
+            return data;
+        } catch (error) {
+            console.error('Failed to fetch corporation data:', error);
+            return [];
+        }
+    }
+
+    async function getDeptData(searchString) {
+
+        if (!searchString) return [];
+        try {
+            const response = await fetch(`/Dept/GetAutoCompleteDept?searchString=${searchString}&corCd=${corCdInput.value}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json(); // data is [{value: 'COR01', text: 'Corp Name'}]
+            return data;
+        } catch (error) {
+            console.error('Failed to fetch department data:', error);
+            return [];
+        }
+    }
+
+    // 법인코드 자동완성
+    autocomplete(corCdInput, getCorpData);
+
+    // 사업부 코드 자동완성
+    deptCdInput.addEventListener("input", function(event){
+
+        // 법인코드 체크
+        if( _.isEmpty(corCdInput.value)){
+            event.target.value = '';
+            alert("법인코드를 입력해주세요");            
+            return false;
+        }
+
+        // 사업부 코드 자동완성
+        autocomplete(deptCdInput, getDeptData);
+        
+    });
+
+    // 사무실 코드 자동완성
+
+    // 팀코드 자동완성
+
+    // validation 작업
+    
+
+    </script>
 }

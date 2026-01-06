@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="PageTitle" xml:space="preserve">
+    <value>사용자 삭제</value>
+  </data>
+  <data name="ConfirmationMessage" xml:space="preserve">
+    <value>정말로 이 사용자를 삭제하시겠습니까?</value>
+  </data>
+</root>

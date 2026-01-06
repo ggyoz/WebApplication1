@@ -1,6 +1,7 @@
 @model CSR.Models.UserIndexViewModel
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
 
 @{
     ViewData["Title"] = Localizer["UserManagement"];
@@ -31,20 +32,20 @@
                         <col width="15%"></col>
                     </colgroup>
                     <tr>
-                        <th class="align-middle text-center"><label asp-for="Search.CorCd"></label></th>
+                        <th class="align-middle text-center">@SharedLocalizer["Label_CorporationCode"]</th>
                         <td><input asp-for="Search.CorCd" class="form-control" /></td>
-                        <th class="align-middle text-center"><label asp-for="Search.BizCd"></label></th>
+                        <th class="align-middle text-center">@SharedLocalizer["Label_BusinessUnitCode"]</th>
                         <td><input asp-for="Search.BizCd" class="form-control" /></td>
-                        <th class="align-middle text-center"><label asp-for="Search.DeptCd"></label></th>
+                        <th class="align-middle text-center">@SharedLocalizer["Label_DepartmentCode"]</th>
                         <td><input asp-for="Search.DeptCd" class="form-control" /></td>
-                        <th class="align-middle text-center"><label asp-for="Search.TeamCd"></label></th>
+                        <th class="align-middle text-center">@SharedLocalizer["Label_TeamCode"]</th>
                         <td><input asp-for="Search.TeamCd" class="form-control" /></td>
                         
                     </tr>
                     <tr>
-                        <th class="align-middle text-center"><label asp-for="Search.UserId"></label></th>
+                        <th class="align-middle text-center">@SharedLocalizer["Label_UserId"]</th>
                         <td><input asp-for="Search.UserId" class="form-control" /></td>
-                        <th class="align-middle text-center"><label asp-for="Search.UserName"></label></th>
+                        <th class="align-middle text-center">@SharedLocalizer["Label_UserName"]</th>
                         <td><input asp-for="Search.UserName" class="form-control" /></td>
                         <td colspan="4" class="text-end">
                             <button type="submit" class="btn btn-light search-btn">@Localizer["Search"]</button>
@@ -67,7 +68,7 @@
         }
     </div>
     <div>
-        <a asp-action="Create" class="btn btn-info">@Localizer["AddUser"]</a>
+        <a asp-action="Create" class="btn btn-add">@Localizer["AddUser"]</a>
     </div>
 </div>
 
@@ -89,14 +90,14 @@
                     <col width="8%"/>
                 </colgroup>
                 <tr>
-                    <th>@Html.DisplayNameFor(model => model.Users.Items.First().UserId)</th>
-                    <th>@Html.DisplayNameFor(model => model.Users.Items.First().UserName)</th>
-                    <th>@Html.DisplayNameFor(model => model.Users.Items.First().DeptCd)</th>
-                    <th>@Html.DisplayNameFor(model => model.Users.Items.First().TeamCd)</th>
-                    <th>@Html.DisplayNameFor(model => model.Users.Items.First().EmailAddr)</th>
-                    <th>@Html.DisplayNameFor(model => model.Users.Items.First().UseYn)</th>
-                    <th>@Html.DisplayNameFor(model => model.Users.Items.First().AdminFlag)</th>
-                    <th>@Html.DisplayNameFor(model => model.Users.Items.First().RegDate)</th>
+                    <th>@SharedLocalizer["TableHeader_UserId"]</th>
+                    <th>@SharedLocalizer["TableHeader_UserName"]</th>
+                    <th>@SharedLocalizer["TableHeader_DepartmentCode"]</th>
+                    <th>@SharedLocalizer["TableHeader_TeamCode"]</th>
+                    <th>@SharedLocalizer["TableHeader_Email"]</th>
+                    <th>@SharedLocalizer["TableHeader_InUse"]</th>
+                    <th>@SharedLocalizer["TableHeader_AdminPrivileges"]</th>
+                    <th>@SharedLocalizer["TableHeader_RegistrationDate"]</th>
                     <th>@Localizer["Operation"]</th>
                 </tr>
             </thead>

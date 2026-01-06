@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 @inject CSR.Services.MenuService MenuService
 @inject IOptions<RequestLocalizationOptions> LocOptions
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
 @{
     var menuTree = await MenuService.GetMenuTreeAsync(activeOnly: true);
     
@@ -56,15 +57,21 @@
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@requestCulture.RequestCulture.UICulture.Name">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - CSR</title>
     <link rel="stylesheet" href="~/dist/bundle.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/autocomplete.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/table.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/CSR.styles.css" asp-append-version="true" />
+    <script src="~/js/common.js"></script>
+    <script src="~/js/autocomplete.js"></script>
+    <script src="~/js/lodash.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
 </head>
 
 <body>
@@ -88,17 +95,26 @@
                         }
                     </ul>
 
-                    <form class="d-flex">
+                    <div class="d-flex">
                         <!-- 여기에 다국어 설정 추가 -->
-                        <form asp-controller="Home" asp-action="SetLanguage" asp-route-returnUrl="@Context.Request.Path" method="post" class="d-inline-flex">
+                        <form id="setLanguageForm" asp-controller="Home" asp-action="SetLanguage" asp-route-returnUrl="@Context.Request.Path" method="post" class="d-inline-flex me-2">
                             <select name="culture" asp-for="@requestCulture.RequestCulture.UICulture.Name" asp-items="cultureItems"
-                                    onchange="this.form.submit();" class="form-select form-select-sm me-2">
+                                    onchange="this.form.submit();" class="form-select form-select-sm">
                             </select>
                         </form>
-                        <span>Cultures: @LocOptions.Value.SupportedUICultures.Count()</span>
-                        <span class="navbar-text me-2">사용자 이름</span>
-                        <button class="btn btn-outline-secondary" type="submit">logout</button>
-                    </form>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <span class="navbar-text me-2">@User.FindFirst("UserName")?.Value 님</span>
+                            <form asp-controller="Account" asp-action="Logout" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-outline-secondary">@SharedLocalizer["Button_Logout"]</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="btn btn-outline-primary" asp-controller="Account" asp-action="Login">@SharedLocalizer["Button_Login"]</a>
+                        }
+                    </div>
                 </div>
             </div>
         </nav>

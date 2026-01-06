@@ -87,7 +87,7 @@ body {
 }
 
 #sidebar-wrapper {
-    min-height: 100vh;
+    min-height: 88vh;
     width: 250px;
     background-color: #f8f9fa; /* A light grey background */
     border-right: 1px solid #dee2e6;

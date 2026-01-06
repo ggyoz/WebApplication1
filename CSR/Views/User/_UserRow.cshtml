@@ -1,4 +1,6 @@
 @model CSR.Models.User
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
 
 <tr style="cursor: pointer;" onclick="window.location.href = '@Url.Action("Details", "User", new { id = Model.UserId })';">
     <td>@Html.DisplayFor(modelItem => modelItem.UserId)</td>
@@ -7,12 +9,12 @@
     <td>@Html.DisplayFor(modelItem => modelItem.TeamCd)</td>
     <td>@Html.DisplayFor(modelItem => modelItem.EmailAddr)</td>
     <td>@Html.DisplayFor(modelItem => modelItem.UseYn)</td>
-    <td>@(Model.AdminFlag ? "예" : "아니오")</td>
+    <td>@(Model.AdminFlag ? SharedLocalizer["Yes"] : SharedLocalizer["No"])</td>
     <td>@Model.RegDate.ToString("yyyy-MM-dd")</td>
     <td>
         <div class="btn-group btn-group-sm" onclick="event.stopPropagation();">
-            <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-sm btn-outline-secondary">수정</a>
-            <a asp-action="Delete" asp-route-id="@Model.UserId" class="btn btn-sm btn-outline-secondary">삭제</a>
+            <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-sm btn-outline-secondary">@SharedLocalizer["Button_Edit"]</a>
+            <!-- <a asp-action="Delete" asp-route-id="@Model.UserId" class="btn btn-sm btn-outline-secondary">@SharedLocalizer["Button_Delete"]</a> -->
         </div>
     </td>
 </tr>

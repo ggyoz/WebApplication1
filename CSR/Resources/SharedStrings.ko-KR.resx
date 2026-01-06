@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Button_Save" xml:space="preserve">
+    <value>저장</value>
+  </data>
+  <data name="Button_Edit" xml:space="preserve">
+    <value>수정</value>
+  </data>
+  <data name="Button_Delete" xml:space="preserve">
+    <value>삭제</value>
+  </data>
+  <data name="Button_Cancel" xml:space="preserve">
+    <value>취소</value>
+  </data>
+  <data name="Button_List" xml:space="preserve">
+    <value>목록</value>
+  </data>
+  <data name="Button_BackToList" xml:space="preserve">
+    <value>목록으로</value>
+  </data>
+  <data name="Button_SearchOrganization" xml:space="preserve">
+    <value>조직도 검색</value>
+  </data>
+  <data name="Button_RegisterUser" xml:space="preserve">
+    <value>사용자 등록</value>
+  </data>
+  <data name="Button_ResetPassword" xml:space="preserve">
+    <value>비밀번호 초기화</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>예</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>아니오</value>
+  </data>
+  <data name="Label_UserId" xml:space="preserve">
+    <value>사용자 ID</value>
+  </data>
+  <data name="Label_Password" xml:space="preserve">
+    <value>비밀번호</value>
+  </data>
+  <data name="Label_ConfirmPassword" xml:space="preserve">
+    <value>비밀번호 확인</value>
+  </data>
+  <data name="Label_EmployeeNo" xml:space="preserve">
+    <value>사원 번호</value>
+  </data>
+  <data name="Label_UserName" xml:space="preserve">
+    <value>이름</value>
+  </data>
+  <data name="Label_SystemCode" xml:space="preserve">
+    <value>시스템 코드</value>
+  </data>
+  <data name="Label_CorporationCode" xml:space="preserve">
+    <value>법인 코드</value>
+  </data>
+  <data name="Label_BusinessUnitCode" xml:space="preserve">
+    <value>사업부 코드</value>
+  </data>
+  <data name="Label_OfficeCode" xml:space="preserve">
+    <value>실 코드</value>
+  </data>
+  <data name="Label_TeamCode" xml:space="preserve">
+    <value>팀 코드</value>
+  </data>
+  <data name="Label_PhoneNumber" xml:space="preserve">
+    <value>전화 번호</value>
+  </data>
+  <data name="Label_MobilePhoneNumber" xml:space="preserve">
+    <value>휴대전화 번호</value>
+  </data>
+  <data name="Label_EmailAddress" xml:space="preserve">
+    <value>전자메일 주소</value>
+  </data>
+  <data name="Label_RetirementDate" xml:space="preserve">
+    <value>퇴사일 (YYYYMMDD)</value>
+  </data>
+  <data name="Label_AdminPrivileges" xml:space="preserve">
+    <value>관리자 권한</value>
+  </data>
+  <data name="Label_UserDivision" xml:space="preserve">
+    <value>사용자 구분</value>
+  </data>
+  <data name="Label_BusinessPlaceCode" xml:space="preserve">
+    <value>사업장 코드</value>
+  </data>
+  <data name="Label_CustomerCode" xml:space="preserve">
+    <value>고객사 코드</value>
+  </data>
+  <data name="Label_VendorCode" xml:space="preserve">
+    <value>협력사 코드</value>
+  </data>
+  <data name="Label_DepartmentCode" xml:space="preserve">
+    <value>부서 코드</value>
+  </data>
+  <data name="Label_InUse" xml:space="preserve">
+    <value>사용 여부</value>
+  </data>
+  <data name="Label_UserStat" xml:space="preserve">
+    <value>상태</value>
+  </data>
+  <data name="Label_Authorization" xml:space="preserve">
+    <value>권한 권한</value>
+  </data>
+  <data name="Label_RegistrationDate" xml:space="preserve">
+    <value>등록일</value>
+  </data>
+  <data name="Label_Registrant" xml:space="preserve">
+    <value>등록자</value>
+  </data>
+  <data name="Label_ModificationDate" xml:space="preserve">
+    <value>수정일</value>
+  </data>
+  <data name="Label_Modifier" xml:space="preserve">
+    <value>수정자</value>
+  </data>
+  <data name="Label_PasswordFailCount" xml:space="preserve">
+    <value>비밀번호 실패 횟수</value>
+  </data>
+  <data name="Placeholder_Password" xml:space="preserve">
+    <value>변경할 경우에만 입력</value>
+  </data>
+  <data name="TableHeader_UserId" xml:space="preserve">
+    <value>사용자ID</value>
+  </data>
+  <data name="TableHeader_UserName" xml:space="preserve">
+    <value>사용자 이름</value>
+  </data>
+  <data name="TableHeader_DepartmentCode" xml:space="preserve">
+    <value>부서 코드</value>
+  </data>
+  <data name="TableHeader_TeamCode" xml:space="preserve">
+    <value>팀코드</value>
+  </data>
+  <data name="TableHeader_Email" xml:space="preserve">
+    <value>이메일</value>
+  </data>
+  <data name="TableHeader_InUse" xml:space="preserve">
+    <value>사용 여부</value>
+  </data>
+  <data name="TableHeader_AdminPrivileges" xml:space="preserve">
+    <value>관리자 권한</value>
+  </data>
+  <data name="TableHeader_RegistrationDate" xml:space="preserve">
+    <value>등록일</value>
+  </data>
+  <data name="InvalidLoginAttempt" xml:space="preserve">
+    <value>사용자 ID 또는 비밀번호가 올바르지 않습니다.</value>
+  </data>
+  <data name="Button_Login" xml:space="preserve">
+    <value>로그인</value>
+  </data>
+  <data name="Button_Logout" xml:space="preserve">
+    <value>로그아웃</value>
+  </data>
+  <data name="Used" xml:space="preserve">
+    <value>사용</value>
+  </data>
+  <data name="NotUsed" xml:space="preserve">
+    <value>미사용</value>
+  </data>
+  <data name="Label_SortOrder" xml:space="preserve">
+    <value>정렬 순서</value>
+  </data>
+  <data name="Label_Actions" xml:space="preserve">
+    <value>작업</value>
+  </data>
+  <data name="Title_DeptManagement" xml:space="preserve">
+    <value>조직도 관리</value>
+  </data>
+  <data name="Title_CreateDept" xml:space="preserve">
+    <value>부서 생성</value>
+  </data>
+  <data name="Title_EditDept" xml:space="preserve">
+    <value>부서 수정</value>
+  </data>
+  <data name="Title_DeleteDept" xml:space="preserve">
+    <value>부서 삭제</value>
+  </data>
+  <data name="Label_DeptName" xml:space="preserve">
+    <value>부서명</value>
+  </data>
+  <data name="Label_DeptCode" xml:space="preserve">
+    <value>부서코드</value>
+  </data>
+  <data name="Label_ParentDept" xml:space="preserve">
+    <value>상위 부서</value>
+  </data>
+  <data name="Label_Description" xml:space="preserve">
+    <value>설명</value>
+  </data>
+  <data name="Button_AddTopLevelDept" xml:space="preserve">
+    <value>최상위 부서 추가</value>
+  </data>
+  <data name="Button_AddSubItem" xml:space="preserve">
+    <value>하위 추가</value>
+  </data>
+  <data name="Option_NoParent" xml:space="preserve">
+    <value>상위 부서 없음</value>
+  </data>
+  <data name="Message_NoDepts" xml:space="preserve">
+    <value>표시할 부서가 없습니다.</value>
+  </data>
+  <data name="Confirmation_DeleteDept" xml:space="preserve">
+    <value>정말로 이 부서를 삭제하시겠습니까?</value>
+  </data>
+  <data name="Warning_CannotBeUndone" xml:space="preserve">
+    <value>이 작업은 되돌릴 수 없습니다.</value>
+  </data>
+  <data name="Warning_HasSubDepts" xml:space="preserve">
+    <value>{0}개의 하위 부서가 있어 삭제할 수 없습니다.</value>
+  </data>
+  <data name="Button_Create" xml:space="preserve">
+    <value>생성</value>
+  </data>
+</root>

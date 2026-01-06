@@ -3,12 +3,25 @@ using Oracle.ManagedDataAccess.Client;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // 다국어 서비스 등록
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+// 인증 서비스 등록
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        options.SlidingExpiration = true;
+    });
+
 builder.Services.AddControllersWithViews()
     .AddViewLocalization() // 뷰에서 다국어를 지원하도록 설정
     .AddDataAnnotationsLocalization(); // 데이터 유효성 검사 메시지에서 다국어를 지원하도록 설정
@@ -99,6 +112,7 @@ app.UseRequestLocalization(); // 요청 파이프라인에 미들웨어 추가
 
 app.UseRouting();
 
+app.UseAuthentication(); // 인증 미들웨어 추가
 app.UseAuthorization();
 
 app.MapControllerRoute(

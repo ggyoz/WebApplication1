@@ -1,0 +1,42 @@
+@model CSR.Models.Dept
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
+
+@{
+    ViewData["Title"] = SharedLocalizer["Title_DeleteDept"];
+}
+
+<partial name="_PageTitlePartial" />
+
+<h3>@SharedLocalizer["Confirmation_DeleteDept"]</h3>
+<p class="text-danger">@SharedLocalizer["Warning_CannotBeUndone"]</p>
+
+<div>
+    <h4>@Model.DeptName</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">@SharedLocalizer["Label_DeptCode"]</dt>
+        <dd class = "col-sm-10">@Html.DisplayFor(model => model.DeptCd)</dd>
+        
+        <dt class = "col-sm-2">@SharedLocalizer["Label_CorporationCode"]</dt>
+        <dd class = "col-sm-10">@Html.DisplayFor(model => model.CorCd)</dd>
+
+        <dt class = "col-sm-2">@SharedLocalizer["Label_InUse"]</dt>
+        <dd class = "col-sm-10">@(Model.UseYn == "Y" ? SharedLocalizer["Used"] : SharedLocalizer["NotUsed"])</dd>
+    </dl>
+    
+    @if (Model.ChildCount > 0)
+    {
+        <div class="alert alert-danger">
+            <strong>@SharedLocalizer["Warning_HasSubDepts", Model.ChildCount]</strong>
+        </div>
+    }
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="DeptId" />
+        @if (Model.ChildCount == 0)
+        {
+            <input type="submit" value="@SharedLocalizer["Button_Delete"]" class="btn btn-danger" />
+        }
+        <a asp-action="Index" class="btn btn-secondary">@SharedLocalizer["Button_BackToList"]</a>
+    </form>
+</div>

@@ -1,0 +1,69 @@
+@model CSR.Models.Dept
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
+
+@{
+    var indent = (Model.DeptLevel - 1) * 20;
+    var marginLeft = $"{indent}px";
+}
+
+<tr data-dept-id="@Model.DeptId" data-parent-id="@Model.ParentId" data-level="@Model.DeptLevel">
+    <td>
+        <span style="margin-left: @marginLeft;">
+            @if (Model.Children != null && Model.Children.Any())
+            {
+                <button type="button" class="btn btn-sm btn-link p-0 me-1" onclick="toggleChildren(this, '@Model.DeptId')" style="text-decoration: none;">
+                    <i class="dept1-btn"></i>
+                </button>
+            }
+            else
+            {
+                <span style="width: 24px; display: inline-block;"></span>
+            }
+            <strong>@Model.DeptName</strong>
+        </span>
+    </td>
+    <td>@Model.DeptCd</td>
+    <td>@Model.CorCd</td>
+    <td>
+        <div class="btn-group btn-group-sm">
+            <a asp-action="MoveUp" asp-route-id="@Model.DeptId" class="btn btn-outline-secondary" title="Up">
+                <i class="bi bi-arrow-up"></i>
+            </a>
+            <span class="btn btn-outline-secondary disabled">@Model.SortOrder</span>
+            <a asp-action="MoveDown" asp-route-id="@Model.DeptId" class="btn btn-outline-secondary" title="Down">
+                <i class="bi bi-arrow-down"></i>
+            </a>
+        </div>
+    </td>
+    <td>
+        @if (Model.UseYn == "Y")
+        {
+            <span class="badge bg-success">@SharedLocalizer["Used"]</span>
+        }
+        else
+        {
+            <span class="badge bg-secondary">@SharedLocalizer["NotUsed"]</span>
+        }
+    </td>
+    <td>
+        <div class="btn-group btn-group-sm">
+            <a asp-action="Create" asp-route-parentId="@Model.DeptId" class="btn btn-sm btn-outline-primary" title="Add Sub-department">
+                <i class="bi bi-plus-circle"></i> @SharedLocalizer["Button_AddSubItem"]
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.DeptId" class="btn btn-sm btn-outline-secondary" title="Edit">
+                <i class="bi bi-pencil"></i> @SharedLocalizer["Button_Edit"]
+            </a>
+            <a asp-action="Delete" asp-route-id="@Model.DeptId" class="btn btn-sm btn-outline-danger" title="Delete">
+                 <i class="bi bi-trash"></i> @SharedLocalizer["Button_Delete"]
+            </a>
+        </div>
+    </td>
+</tr>
+
+@if (Model.Children != null && Model.Children.Any())
+{
+    @foreach (var child in Model.Children.OrderBy(c => c.SortOrder))
+    {
+        @await Html.PartialAsync("_DeptRow", child)
+    }
+}

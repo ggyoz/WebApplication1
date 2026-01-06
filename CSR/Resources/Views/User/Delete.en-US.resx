@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="PageTitle" xml:space="preserve">
+    <value>Delete User</value>
+  </data>
+  <data name="ConfirmationMessage" xml:space="preserve">
+    <value>Are you sure you want to delete this user?</value>
+  </data>
+</root>

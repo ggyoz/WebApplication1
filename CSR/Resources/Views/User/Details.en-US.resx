@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="PageTitle" xml:space="preserve">
+    <value>User Details</value>
+  </data>
+  <data name="button_ResetPassword" xml:space="preserve">
+    <value>Password Reset</value>
+  </data>
+</root>

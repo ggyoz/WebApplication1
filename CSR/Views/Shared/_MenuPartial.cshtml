@@ -3,8 +3,6 @@
 @{
     var activeMenuIds = ViewData["ActiveMenuIds"] as HashSet<string> ?? new HashSet<string>();
     var currentPath = ViewData["CurrentPath"] as string ?? "";
-    Console.WriteLine("currentPath : "  + ViewData["CurrentPath"]);
-        
 }
 
 @foreach (var menu in Model)
@@ -12,9 +10,6 @@
     var hasChildren = menu.Children != null && menu.Children.Any();
     var isExpanded = activeMenuIds.Contains(menu.MenuId);
     var isActive = menu.GetLink().Equals(currentPath, StringComparison.OrdinalIgnoreCase);
-
-    Console.WriteLine(menu.GetLink());
-
     var collapseId = $"menu-collapse-{menu.MenuId.Replace(".", "_")}";
 
     <li class="mb-1">

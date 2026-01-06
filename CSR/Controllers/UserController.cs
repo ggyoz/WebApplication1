@@ -76,16 +76,18 @@ namespace CSR.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            [Bind("UserId,UserPwd,UserName,EmpNo,CorCd,DeptCd,OfficeCd,TeamCd,SysCd,BizCd,TelNo,MobPhoneNo,EmailAddr,Status,RetireDate,AdminFlag,CustCd,VendCd,AuthFlag,UserDiv,PwMissCount,RegUserId,UpdateUserId,UseYn")]
+            [Bind("UserId,UserPwd,UserName,EmpNo,CorCd,DeptCd,OfficeCd,TeamCd,SysCd,MobPhoneNo,EmailAddr")]
             User user)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    // RegUserId should be set, let DB handle RegDate
-                    if (string.IsNullOrEmpty(user.RegUserId)) user.RegUserId = "ADMIN"; // Replace with actual user later
-                    if (string.IsNullOrEmpty(user.UpdateUserId)) user.UpdateUserId = "ADMIN"; // Replace with actual user later
+                    if (string.IsNullOrEmpty(user.RegUserId)) user.RegUserId = "ADMIN";        
+                    if (string.IsNullOrEmpty(user.UseYn)) user.UseYn = "Y";
+                    if (string.IsNullOrEmpty(user.CustCd)) user.CustCd = "";
+                    if (string.IsNullOrEmpty(user.VendCd)) user.VendCd = "";                    
+                    if (string.IsNullOrEmpty(user.UserDiv)) user.UserDiv = "";                    
 
                     await _userService.CreateUserAsync(user);
                     return RedirectToAction(nameof(Index));
@@ -119,7 +121,7 @@ namespace CSR.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id,
-            [Bind("UserId,UserPwd,UserName,EmpNo,CorCd,DeptCd,OfficeCd,TeamCd,SysCd,BizCd,TelNo,MobPhoneNo,EmailAddr,Status,RetireDate,AdminFlag,CustCd,VendCd,AuthFlag,UserDiv,PwMissCount,RegDate,RegUserId,UpdateUserId,UseYn")]
+            [Bind("UserId,UserPwd,UserName,EmpNo,CorCd,DeptCd,OfficeCd,TeamCd,SysCd,BizCd,TelNo,MobPhoneNo,EmailAddr,UserStat,RetireDate,AdminFlag,CustCd,VendCd,AuthFlag,UserDiv,PwMissCount,RegDate,RegUserId,UpdateUserId,UseYn")]
             User user)
         {
             if (id != user.UserId)
@@ -179,6 +181,35 @@ namespace CSR.Controllers
                 TempData["Error"] = $"사용자 삭제에 실패했습니다: {ex.Message}";
                 return RedirectToAction(nameof(Index));
             }
+        }
+
+        // POST: User/ResetPassword/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(string id)
+        {
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "사용자 ID가 제공되지 않았습니다.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                string newPassword = await _userService.ResetPasswordAsync(id);
+                TempData["SuccessMessage"] = $"사용자 ID '{id}'의 비밀번호가 성공적으로 사원번호({newPassword})로 초기화되었습니다.";
+            }
+            catch (InvalidOperationException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "비밀번호 초기화 중 오류 발생: {Message}", ex.Message);
+                TempData["ErrorMessage"] = "비밀번호 초기화 중 오류가 발생했습니다.";
+            }
+
+            return RedirectToAction(nameof(Details), new { id = id });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -1,0 +1,104 @@
+@model IEnumerable<CSR.Models.Dept>
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
+
+@{
+    ViewData["Title"] = SharedLocalizer["Title_DeptManagement"];
+}
+
+<partial name="_PageTitlePartial" />
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+
+<div class="d-flex justify-content-end mb-3">
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> @SharedLocalizer["Button_AddTopLevelDept"]
+    </a>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <div class="table-responsive">
+        <table class="board-tabl">
+            <thead class="table-light">
+                <tr>
+                    <th>@SharedLocalizer["Label_DeptName"]</th>
+                    <th>@SharedLocalizer["Label_DeptCode"]</th>
+                    <th>@SharedLocalizer["Label_CorporationCode"]</th>
+                    <th>@SharedLocalizer["Label_SortOrder"]</th>
+                    <th>@SharedLocalizer["Label_InUse"]</th>
+                    <th style="width: 25%;">@SharedLocalizer["Label_Actions"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var dept in Model)
+                {
+                    @await Html.PartialAsync("_DeptRow", dept)
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p class="text-muted">@SharedLocalizer["Message_NoDepts"]</p>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initially hide all but the top-level departments
+            var allRows = document.querySelectorAll('tr[data-level]');
+            allRows.forEach(function(row) {
+                if (row.dataset.level > 1) {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        function toggleChildren(button, deptId) {
+            var icon = button.querySelector('i');
+            var isShown = icon.classList.contains('show');
+            
+            var childrenRows = document.querySelectorAll(`tr[data-parent-id='${deptId}']`);
+
+            if (isShown) {
+                icon.classList.remove('show');
+                // Hide all descendants
+                hideAllChildren(deptId);
+            } else {
+                icon.classList.add('show');
+                // Show direct children
+                childrenRows.forEach(function(childRow) {
+                    childRow.style.display = '';
+                });
+            }
+        }
+        
+        function hideAllChildren(parentId) {
+            var children = document.querySelectorAll(`tr[data-parent-id='${parentId}']`);
+            children.forEach(function(child) {
+                child.style.display = 'none';
+                var icon = child.querySelector('.dept1-btn');
+                if(icon && icon.classList.contains('show')) {
+                    icon.classList.remove('show');
+                }
+                var childId = child.dataset.deptId;
+                hideAllChildren(childId); // Recursive call
+            });
+        }
+    </script>
+}

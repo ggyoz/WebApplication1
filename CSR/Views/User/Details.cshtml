@@ -1,92 +1,117 @@
 @model CSR.Models.User
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
 
 @{
-    ViewData["Title"] = "사용자 상세 정보";
+    ViewData["Title"] = Localizer["PageTitle"];
 }
 
-<h1>사용자 상세 정보</h1>
+<h1>@Localizer["PageTitle"]</h1>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
 <div>
     <hr />
-    <dl class="row">
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UserId)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.UserId)</dd>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table-layout Details">
 
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UserName)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.UserName)</dd>
-        
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Status)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.Status)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.EmpNo)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.EmpNo)</dd>
-        
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CorCd)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.CorCd)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.DeptCd)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.DeptCd)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.OfficeCd)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.OfficeCd)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TeamCd)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.TeamCd)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.SysCd)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.SysCd)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.BizCd)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.BizCd)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TelNo)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.TelNo)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.MobPhoneNo)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.MobPhoneNo)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.EmailAddr)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.EmailAddr)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RetireDate)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.RetireDate)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CustCd)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.CustCd)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.VendCd)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.VendCd)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UserDiv)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.UserDiv)</dd>
-        
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.AdminFlag)</dt>
-        <dd class="col-sm-9">@(Model.AdminFlag ? "예" : "아니오")</dd>
-        
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.AuthFlag)</dt>
-        <dd class="col-sm-9">@(Model.AuthFlag == 1 ? "예" : "아니오")</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UseYn)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.UseYn)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.PwMissCount)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.PwMissCount)</dd>
-        
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RegDate)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.RegDate)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RegUserId)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.RegUserId)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UpdateDate)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.UpdateDate)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UpdateUserId)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.UpdateUserId)</dd>
-    </dl>
+                    <colgroup>
+                        <col width="8%"></col>
+                        <col width="10%"></col>
+                        <col width="8%"></col>
+                        <col width="10%"></col>
+                        <col width="8%"></col>
+                        <col width="10%"></col>
+                        <col width="8%"></col>
+                        <col width="10%"></col>
+                    </colgroup>
+                
+                <tr>
+                    <td><label class="control-label">@SharedLocalizer["Label_UserId"]</label></td>
+                    <td>@Html.DisplayFor(model => model.UserId)</td>
+                    <td><label class="control-label">@SharedLocalizer["Label_UserName"]</label></td>
+                    <td>@Html.DisplayFor(model => model.UserName)</td>
+                    <td><label class="control-label">@SharedLocalizer["Label_EmployeeNo"]</label></td>
+                    <td>@Html.DisplayFor(model => model.EmpNo)</td>
+                    <td><label class="control-label">@SharedLocalizer["Label_InUse"]</label></td>
+                    <td>@(Model.UseYn == "Y" ? SharedLocalizer["Used"] : SharedLocalizer["NotUsed"])</td>
+                </tr>
+                <tr>
+                    <td><label class="control-label">@SharedLocalizer["Label_PhoneNumber"]</label></td>
+                    <td>@Html.DisplayFor(model => model.TelNo)</td>
+                    <td><label class="control-label">@SharedLocalizer["Label_MobilePhoneNumber"]</label></td>
+                    <td>@Html.DisplayFor(model => model.MobPhoneNo)</td>
+                    <td><label class="control-label">@SharedLocalizer["Label_EmailAddress"]</label></td>
+                    <td>@Html.DisplayFor(model => model.EmailAddr)</td>
+                    <td><label class="control-label">@SharedLocalizer["Label_RetirementDate"]</label></td>
+                    <td>@Html.DisplayFor(model => model.RetireDate)</td>
+                </tr>                
+                <tr>
+                    <td><label class="control-label">@SharedLocalizer["Label_CorporationCode"]</label></td>
+                    <td>@Html.DisplayFor(model => model.CorCd)</td>
+                    <td><label class="control-label">@SharedLocalizer["Label_BusinessUnitCode"]</label></td>
+                    <td>@Html.DisplayFor(model => model.DeptCd)</td>
+                    <td><label class="control-label">@SharedLocalizer["Label_OfficeCode"]</label></td>
+                    <td>@Html.DisplayFor(model => model.OfficeCd)</td>
+                    <td><label class="control-label">@SharedLocalizer["Label_TeamCode"]</label></td>
+                    <td>@Html.DisplayFor(model => model.TeamCd)</td>
+                </tr>
+                
+                <tr>
+                    <td><label class="control-label">@SharedLocalizer["Label_SystemCode"]</label></td>
+                    <td>@Html.DisplayFor(model => model.SysCd)</td>
+                    <td><label class="control-label">@SharedLocalizer["Label_BusinessPlaceCode"]</label></td>
+                    <td>@Html.DisplayFor(model => model.BizCd)</td>
+                    <td><label class="control-label">@SharedLocalizer["Label_CustomerCode"]</label></td>
+                    <td>@Html.DisplayFor(model => model.CustCd)</td>
+                    <td><label class="control-label">@SharedLocalizer["Label_VendorCode"]</label></td>
+                    <td>@Html.DisplayFor(model => model.VendCd)</td>
+                </tr>
+                <tr>
+                    <td><label class="control-label">@SharedLocalizer["Label_UserStat"]</label></td>
+                    <td>@Html.DisplayFor(model => model.UserStat)</td>
+                    <td><label class="control-label">@SharedLocalizer["Label_UserDivision"]</label></td>
+                    <td>@Html.DisplayFor(model => model.UserDiv)</td>
+                    <td><label class="control-label">@SharedLocalizer["Label_AdminPrivileges"]</label></td>
+                    <td>@(Model.AdminFlag ? SharedLocalizer["Yes"] : SharedLocalizer["No"])</td>
+                    <td><label class="control-label">@SharedLocalizer["Label_Authorization"]</label></td>
+                    <td>@(Model.AuthFlag == 1 ? SharedLocalizer["Yes"] : SharedLocalizer["No"])</td>
+                </tr>
+                <tr>
+                    <td><label class="control-label">@SharedLocalizer["Label_PasswordFailCount"]</label></td>
+                    <td>@Html.DisplayFor(model => model.PwMissCount)</td>
+                </tr>
+            </table>
+        </div>
+    </div>
 </div>
-<div class="text-end mt-3">
-    <a asp-action="Edit" asp-route-id="@Model?.UserId" class="btn btn-primary">수정</a> |
-    <a asp-action="Delete" asp-route-id="@Model?.UserId" class="btn btn-danger">삭제</a> |
-    <a asp-action="Index" class="btn btn-secondary">목록으로</a>
+
+<!-- 버튼영역 -->
+<div class="d-flex justify-content-between align-items-center mt-5">
+    <div>
+        <a asp-action="Delete" asp-route-id="@Model?.UserId" class="btn btn-danger">@SharedLocalizer["Button_Delete"]</a>
+    </div>
+    <div>
+        <form asp-action="ResetPassword" asp-route-id="@Model?.UserId" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-outline-dark">@SharedLocalizer["Button_ResetPassword"]</button>
+        </form>
+        <a asp-action="Edit" asp-route-id="@Model?.UserId" class="btn btn-primary">@SharedLocalizer["Button_Edit"]</a>
+        <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_BackToList"]</a>
+    </div>
 </div>
+<!-- 버튼영역 -->

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="PageTitle" xml:space="preserve">
+    <value>사용자 상세 정보</value>
+  </data>
+  <data name="button_ResetPassword" xml:space="preserve">
+    <value>비밀번호 초기화</value>
+  </data>
+
+</root>

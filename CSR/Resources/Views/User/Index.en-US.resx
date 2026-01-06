@@ -3,19 +3,19 @@
   <data name="UserManagement" xml:space="preserve">
     <value>User Management</value>
   </data>
-  <data name="TotalUsers" xml:space="preserve">
-    <value>There are {0} users in total.</value>
-  </data>
-  <data name="AddUser" xml:space="preserve">
-    <value>Add New User</value>
-  </data>
   <data name="Search" xml:space="preserve">
     <value>Search</value>
   </data>
-  <data name="NoUsersToDisplay" xml:space="preserve">
-    <value>No users to display.</value>
+  <data name="TotalUsers" xml:space="preserve">
+    <value>Total {0} users.</value>
+  </data>
+  <data name="AddUser" xml:space="preserve">
+    <value>Add User</value>
   </data>
   <data name="Operation" xml:space="preserve">
     <value>Operation</value>
+  </data>
+  <data name="NoUsersToDisplay" xml:space="preserve">
+    <value>No users to display.</value>
   </data>
 </root>

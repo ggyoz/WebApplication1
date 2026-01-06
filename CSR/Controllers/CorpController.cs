@@ -1,7 +1,8 @@
 using CSR.Models;
 using CSR.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
+
 
 namespace CSR.Controllers
 {
@@ -138,5 +139,21 @@ namespace CSR.Controllers
             await _corpService.DeleteCorpAsync(id);
             return RedirectToAction(nameof(Index));
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetAutoCompleteCorp(string searchString)
+        {            
+            // MenuService에 특정 레벨의 메뉴를 가져오는 메서드를 호출
+            var searchCorCd = await _corpService.GetAutoCompleteCorpAsync(searchString);
+
+            // JavaScript에서 사용하기 쉽도록 필요한 데이터만 가공 (Value, Text)
+            var result = searchCorCd.Select(m => new { value = m.CorCd, text = m.CorNm });
+            
+            Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(result, Formatting.Indented));
+
+            return Json(result);
+        }
+
     }
 }

@@ -1,0 +1,67 @@
+@model CSR.Models.LoginViewModel
+
+@{
+    Layout = null;
+    ViewData["Title"] = "로그인";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CSR</title>
+    <link rel="stylesheet" href="~/dist/bundle.css" asp-append-version="true" />
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f5f5;
+        }
+
+        .login-form {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px;
+            margin: auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-form">
+        <h1 class="text-center mb-4">로그인</h1>
+        <form asp-action="Login">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="UserId" class="form-control" placeholder="사용자 ID" />
+                <label asp-for="UserId">사용자 ID</label>
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Password" class="form-control" placeholder="비밀번호" />
+                <label asp-for="Password">비밀번호</label>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-check text-start my-3">
+                <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault" asp-for="RememberMe">
+                <label class="form-check-label" for="flexCheckDefault" asp-for="RememberMe">
+                    로그인 상태 유지
+                </label>
+            </div>
+            <button class="w-100 btn btn-lg btn-primary" type="submit">로그인</button>
+            <p class="mt-5 mb-3 text-muted text-center">&copy; 2025</p>
+        </form>
+    </div>
+
+    <script src="~/dist/bundle.js" asp-append-version="true"></script>
+</body>
+</html>

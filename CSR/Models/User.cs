@@ -61,9 +61,9 @@ namespace CSR.Models
         [Display(Name = "전자메일 주소")]
         public string EmailAddr { get; set; } = string.Empty;
 
-        [Column("STATUS")] // NEW
+        [Column("USERSTAT")] // NEW
         [Display(Name = "계정 상태")]
-        public string Status { get; set; } = string.Empty;
+        public string UserStat { get; set; } = string.Empty;
 
         [Column("RETIRE_DATE")]
         [Display(Name = "퇴사일")]
