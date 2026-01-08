@@ -1,8 +1,1 @@
-// Import Bootstrap's JavaScript
-import 'bootstrap';
-
-// Import jQuery
-import $ from 'jquery';
-
-// You can add your own custom JS here
-console.log('app.js loaded');
+// The content of this file is now handled by Bootstrap CDN in _Layout.cshtml.

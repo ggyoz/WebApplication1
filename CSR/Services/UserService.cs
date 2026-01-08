@@ -116,21 +116,25 @@ namespace CSR.Services
                 whereClauses.Add("UPPER(USERNAME) LIKE '%' || UPPER(:UserName) || '%'");
                 parameters.Add("UserName", search.UserName);
             }
+            // 법인코드
             if (!string.IsNullOrWhiteSpace(search.CorCd))
             {
                 whereClauses.Add("CORCD = :CorCd");
                 parameters.Add("CorCd", search.CorCd);
             }
-            if (!string.IsNullOrWhiteSpace(search.BizCd))
-            {
-                whereClauses.Add("BIZCD = :BizCd");
-                parameters.Add("BizCd", search.BizCd);
-            }
+            // 사업부 코드
             if (!string.IsNullOrWhiteSpace(search.DeptCd))
             {
                 whereClauses.Add("DEPTCD = :DeptCd");
                 parameters.Add("DeptCd", search.DeptCd);
             }
+            // 사무실 코드드
+            if (!string.IsNullOrWhiteSpace(search.OfficeCd))
+            {
+                whereClauses.Add("OFFICECD = :OfficeCd");
+                parameters.Add("OfficeCd", search.OfficeCd);
+            }
+            // 팀코드
             if (!string.IsNullOrWhiteSpace(search.TeamCd))
             {
                 whereClauses.Add("TEAMCD = :TeamCd");
@@ -192,13 +196,8 @@ namespace CSR.Services
                     :AuthFlag, :UserDiv, SYSDATE, :RegUserId, 'Y'
                 )";
 
-            // --- 여기부터 추가되는 코드 ---
-    Console.WriteLine("Executing CreateUserAsync Query:");
-    Console.WriteLine(sql);
-    Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(user, Formatting.Indented));
-    // --- 여기까지 추가되는 코드 ---
-
-    await _connection.ExecuteAsync(sql, user);
+            
+            await _connection.ExecuteAsync(sql, user);
         }
 
         public async Task UpdateUserAsync(User user)
@@ -241,7 +240,21 @@ namespace CSR.Services
                 UPDATE TB_USER_INFO SET
                     {string.Join(", \n", setClauses)}
                 WHERE USERID = :UserId";
+            
 
+            // 관리자권한 bool > int로 변경 ( 나중에 수정해야함 )
+            if( !user.AdminFlag ){
+                parameters.Add("AdminFlag", 0);
+            }else{
+                parameters.Add("AdminFlag", 1);                
+            }
+
+            // --- 쿼리디버킹코드 ---
+            // Console.WriteLine("Executing CreateUserAsync Query:");
+            // Console.WriteLine(sql);
+            // Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(user, Formatting.Indented));
+            // --- 쿼리디버킹코드 ---
+            
             await _connection.ExecuteAsync(sql, parameters);
         }
 

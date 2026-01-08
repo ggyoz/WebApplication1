@@ -14,14 +14,19 @@ table.board-tabl {
 table.board-tabl thead tr {
     background-color: #dadada; /* A modern dark grey for the header */
     color: #000000;
-    text-align: left;    
+    text-align: left;
 }
 
 /* Table Cells (Header and Data) */
 table.board-tabl th,
 table.board-tabl td {
+    vertical-align : middle;
     padding: 12px 15px;
     border-bottom: 1px solid #e2e8f0; /* Light grey border for rows */
+}
+
+table.board-tabl tbody tr{
+    height: 3rem;
 }
 
 /* Table Body Rows - Hover Effect */

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using CSR.Models;
 using CSR.Services;
+using Newtonsoft.Json;
 
 namespace CSR.Controllers
 {
@@ -81,26 +82,18 @@ namespace CSR.Controllers
             return View(menu);
         }
 
-        // GET: Menu/Edit/5
-        public async Task<IActionResult> Edit(string id)
-        {
-            var menu = await _menuService.GetMenuByIdAsync(id);
-            if (menu == null)
-            {
-                return NotFound();
-            }
-
-            return View(menu);
-        }
-
         // POST: Menu/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("MenuId,MenuName,Url,Controller,Action,Icon,SortOrder,UseYn,ParentId,MenuLevel")] Menu menu)
+        public async Task<IActionResult> Edit(string id, [Bind("MenuId,MenuName,Url,Controller,Action,Icon,SortOrder,UseYn,ParentId,MenuLevel,CreateDate")] Menu menu)
         {
+
+            Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(menu, Formatting.Indented));
+
+
             if (id != menu.Id)
             {
-                return NotFound();
+                return Json(new { success = false, errors = new[] { "ID mismatch." } });
             }
 
             if (ModelState.IsValid)
@@ -108,19 +101,38 @@ namespace CSR.Controllers
                 try
                 {
                     await _menuService.UpdateMenuAsync(menu);
-                    return RedirectToAction(nameof(Index));
+                    return Json(new { success = true });
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "메뉴 수정 중 오류 발생");
-                    ModelState.AddModelError("", $"메뉴 수정에 실패했습니다: {ex.Message}");
+                    return Json(new { success = false, errors = new[] { $"메뉴 수정에 실패했습니다: {ex.Message}" } });
                 }
             }
-
-            return View(menu);
+            
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return Json(new { success = false, errors });
         }
 
-        // GET: Menu/Delete/5
+        // GET: Menu/GetMenuDetails/5
+        [HttpGet]
+        public async Task<IActionResult> GetMenuDetails(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest("ID cannot be null or empty.");
+            }
+
+            var menu = await _menuService.GetMenuByIdAsync(id);
+            if (menu == null)
+            {
+                return NotFound();
+            }
+            
+            return PartialView("_MenuEditForm", menu);
+        }
+
+        // 삭제 페이지에서 내용 조회용
         public async Task<IActionResult> Delete(string id)
         {
             var menu = await _menuService.GetMenuByIdAsync(id);
@@ -133,6 +145,7 @@ namespace CSR.Controllers
         }
 
         // POST: Menu/Delete/5
+        // 실제 삭제 기능
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
@@ -173,7 +186,7 @@ namespace CSR.Controllers
         }
 
 
-
+        // 부모메뉴 목록 출력 
         [HttpGet]
         public async Task<IActionResult> GetParentMenusForLevel(int level)
         {

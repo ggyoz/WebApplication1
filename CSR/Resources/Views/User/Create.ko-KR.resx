@@ -4,6 +4,6 @@
     <value>사용자 추가</value>
   </data>
   <data name="Label_ConfirmPassword" xml:space="preserve">
-    <value>비밀번호 확인 *</value>
+    <value>비밀번호 확인</value>
   </data>
 </root>

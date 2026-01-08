@@ -1,0 +1,63 @@
+<script>
+    
+    // --- Autocomplete setup ---
+    const corCdInput = document.getElementById("CorCd");
+    const deptCdInput = document.getElementById("DeptCd");
+
+    async function getCorpData(searchString) {
+        if (!searchString) return [];
+        try {
+            const response = await fetch(`/Corp/GetAutoCompleteCorp?searchString=${searchString}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json(); // data is [{value: 'COR01', text: 'Corp Name'}]
+            return data;
+        } catch (error) {
+            console.error('Failed to fetch corporation data:', error);
+            return [];
+        }
+    }
+
+    async function getDeptData(searchString) {
+
+        if (!searchString) return [];
+        try {
+            const response = await fetch(`/Dept/GetAutoCompleteDept?searchString=${searchString}&corCd=${corCdInput.value}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json(); // data is [{value: 'COR01', text: 'Corp Name'}]
+            return data;
+        } catch (error) {
+            console.error('Failed to fetch department data:', error);
+            return [];
+        }
+    }
+
+    // 법인코드 자동완성
+    autocomplete(corCdInput, getCorpData);
+
+    // 사업부 코드 자동완성
+    deptCdInput.addEventListener("input", function(event){
+
+        // 법인코드 체크
+        if( _.isEmpty(corCdInput.value)){
+            event.target.value = '';
+            alert("법인코드를 입력해주세요");            
+            return false;
+        }
+
+        // 사업부 코드 자동완성
+        autocomplete(deptCdInput, getDeptData);
+        
+    });
+
+    // 사무실 코드 자동완성
+
+    // 팀코드 자동완성
+
+    // validation 작업
+    
+
+</script>

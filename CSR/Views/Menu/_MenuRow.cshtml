@@ -5,23 +5,21 @@
     var marginLeft = $"{indent}px";
 }
 
-<tr data-menu-id="@Model.Id" data-parent-id="@Model.ParentId" data-level="@Model.MenuLevel" style="margin-left: @marginLeft;">
+<tr data-menu-id="@Model.Id" data-parent-id="@Model.ParentId" data-level="@Model.MenuLevel" onclick="editMenu('@Model.Id')" style="cursor:pointer;">
     <td>
         <span style="margin-left: @marginLeft;">
             @if (Model.Children != null && Model.Children.Any())
             {
-                <button type="button" class="btn btn-sm btn-link p-0" onclick="toggleChildren(this, @Model.Id)" style="text-decoration: none; ">                    
+                <button type="button" class="btn btn-sm btn-link p-0" onclick="event.stopPropagation(); toggleChildren(this, '@Model.Id')" style="text-decoration: none; ">                    
                     <i class="dept1-btn"></i>
                 </button>
             }
             else
             {
-                <i class="bi bi-dash"></i>
-            }            
-            <!-- @if (!string.IsNullOrEmpty(Model.Icon))
-            {
-                <i class="@Model.Icon"></i>
-            } -->
+                <span style="display: inline-block; width: 1.3rem;">
+                
+                </span> 
+            }
             <strong>@Model.Name</strong>
         </span>
     </td>
@@ -38,42 +36,13 @@
         {
             <span class="text-muted">-</span>
         }
-    </td>    
-    <td>
+    </td>
+    <!-- <td>
         <div class="btn-group btn-group-sm">
-            <a asp-action="MoveUp" asp-route-id="@Model.MenuId" class="btn btn-outline-secondary" title="위로">
-                <i class="bi bi-arrow-up"></i>
-            </a>
-            <span class="btn btn-outline-secondary">@Model.SortOrder</span>
-            <a asp-action="MoveDown" asp-route-id="@Model.MenuId" class="btn btn-outline-secondary" title="아래로">
-                <i class="bi bi-arrow-down"></i>
-            </a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary" title="수정"><i class="bi bi-pencil"></i></a>
+            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-danger" title="삭제"><i class="bi bi-trash"></i></a>
         </div>
-    </td>
-    <td>
-        @if (Model.UseYn == "Y")
-        {
-            <span class="badge bg-success">활성</span>
-        }
-        else
-        {
-            <span class="badge bg-secondary">비활성</span>
-        }
-    </td>
-    <td>
-        <div class="btn-group btn-group-sm">
-            @if (Model.MenuLevel < 3)
-            {
-                <a asp-action="Create" asp-route-parentId="@Model.MenuId" class="btn btn-sm btn-outline" title="하위 메뉴 추가">
-                    <i class="bi bi-plus-circle">메뉴 추가</i>
-                </a>
-            }
-            <a asp-action="Edit" asp-route-id="@Model.MenuId" class="btn btn-sm btn-outline" title="수정">
-                <i class="bi bi-pencil"></i>
-            </a>
-            
-        </div>
-    </td>
+    </td> -->
 </tr>
 
 @if (Model.Children != null && Model.Children.Any())

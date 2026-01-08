@@ -24,7 +24,18 @@
                     <td>
                         <input asp-for="UserId" class="form-control" readonly />
                         <span asp-validation-for="UserId" class="text-danger"></span>
+                    </td>                    
+                </tr>
+                <tr>
+                    <td><label asp-for="UserPwd" class="control-label">@SharedLocalizer["Label_Password"] *</label></td>
+                    <td>
+                        <input asp-for="UserPwd" class="form-control" type="password" placeholder="@Localizer["Placeholder_Password"]" />
+                        <span asp-validation-for="UserPwd" class="text-danger"></span>
                     </td>
+                    <td></td><td></td><td></td><td></td>
+                </tr>
+
+                <tr>
                     <td><label asp-for="UserName" class="control-label">@SharedLocalizer["Label_UserName"] *</label></td>
                     <td>
                         <input asp-for="UserName" class="form-control" />
@@ -35,40 +46,8 @@
                         <input asp-for="EmpNo" class="form-control" oninput="this.value = NumberOnly(this.value)" maxlength=9  />
                         <span asp-validation-for="EmpNo" class="text-danger"></span>
                     </td>
-                </tr>
-                <tr>
-                    <td><label asp-for="UserPwd" class="control-label">@SharedLocalizer["Label_Password"] *</label></td>
-                    <td>
-                        <input asp-for="UserPwd" class="form-control" type="password" placeholder="@Localizer["Placeholder_Password"]" />
-                        <span asp-validation-for="UserPwd" class="text-danger"></span>
-                    </td>
-                    <td></td><td></td><td></td><td></td>
-                </tr>
-                <tr>
-                    <td><label asp-for="CorCd" class="control-label">@SharedLocalizer["Label_CorporationCode"]</label></td>
-                    <td>
-                        <input asp-for="CorCd" class="form-control" />
-                        <span asp-validation-for="CorCd" class="text-danger"></span>
-                    </td>
-                    <td><label asp-for="DeptCd" class="control-label">@SharedLocalizer["Label_BusinessUnitCode"]</label></td>
-                    <td>
-                        <input asp-for="DeptCd" class="form-control" />
-                        <span asp-validation-for="DeptCd" class="text-danger"></span>
-                    </td>
-                    <td><label asp-for="OfficeCd" class="control-label">@SharedLocalizer["Label_OfficeCode"]</label></td>
-                    <td>
-                        <input asp-for="OfficeCd" class="form-control" />
-                        <span asp-validation-for="OfficeCd" class="text-danger"></span>
-                    </td>
-                    <td><label asp-for="TeamCd" class="control-label">@SharedLocalizer["Label_TeamCode"]</label></td>
-                    <td>
-                        <input asp-for="TeamCd" class="form-control" />
-                        <span asp-validation-for="TeamCd" class="text-danger"></span>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-secondary">@SharedLocalizer["Button_SearchOrganization"]</button>
-                    </td>
-                </tr>
+                </tr>                
+                <partial name="_OrganizationFieldsPartial" />
                 <tr>
                     <td><label asp-for="SysCd" class="control-label">@SharedLocalizer["Label_SystemCode"]</label></td>
                     <td>
@@ -94,13 +73,13 @@
                 <tr>
                     <td><label asp-for="TelNo" class="control-label">@SharedLocalizer["Label_PhoneNumber"]</label></td>
                     <td>
-                        <input asp-for="TelNo" class="form-control" oninput="this.value=formatPhoneNumber(this.value)" maxlength="13"  />
-                        <span asp-validation-for="TelNo" class="text-danger"></span>
+                        <input asp-for="TelNo" class="form-control" oninput="this.value=formatPhoneNumber(this.value)" maxlength="13" />
+                        <!-- <span asp-validation-for="TelNo" class="text-danger"></span> -->
                     </td>
                     <td><label asp-for="MobPhoneNo" class="control-label">@SharedLocalizer["Label_MobilePhoneNumber"]</label></td>
                     <td>
                         <input asp-for="MobPhoneNo" class="form-control" oninput="this.value=formatPhoneNumber(this.value)" maxlength="13" />
-                        <span asp-validation-for="MobPhoneNo" class="text-danger"></span>
+                        <!-- <span asp-validation-for="MobPhoneNo" class="text-danger"></span> -->
                     </td>
                     <td><label asp-for="EmailAddr" class="control-label">@SharedLocalizer["Label_EmailAddress"]</label></td>
                     <td>
@@ -110,7 +89,7 @@
                     <td><label asp-for="RetireDate" class="control-label">@SharedLocalizer["Label_RetirementDate"]</label></td>
                     <td>
                         <input asp-for="RetireDate" class="form-control" />
-                        <span asp-validation-for="RetireDate" class="text-danger"></span>
+                        <!-- <span asp-validation-for="RetireDate" class="text-danger"></span> -->
                     </td>
                 </tr>
                 <tr>
@@ -151,21 +130,7 @@
                         <span asp-validation-for="AuthFlag" class="text-danger"></span>
                     </td> -->
                     <td></td><td></td><td></td><td></td>
-                </tr>
-                <tr>
-                    <td><label class="control-label">@SharedLocalizer["Label_RegistrationDate"]</label></td>
-                    <td><input asp-for="RegDate" class="form-control" readonly /></td>
-                    <td><label class="control-label">@SharedLocalizer["Label_Registrant"]</label></td>
-                    <td><input asp-for="RegUserId" class="form-control" readonly /></td>
-                    <td></td><td></td><td></td><td></td>
-                </tr>
-                <tr>
-                    <td><label class="control-label">@SharedLocalizer["Label_ModificationDate"]</label></td>
-                    <td><input asp-for="UpdateDate" class="form-control" readonly /></td>
-                    <td><label class="control-label">@SharedLocalizer["Label_Modifier"]</label></td>
-                    <td><input asp-for="UpdateUserId" class="form-control" readonly /></td>
-                    <td></td><td></td><td></td><td></td>
-                </tr>
+                </tr>                
             </table>
 
             <div class="button-area text-end mt-5 m-3">
@@ -178,4 +143,5 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_OrganizationFieldsPartial.Scripts" />
 }

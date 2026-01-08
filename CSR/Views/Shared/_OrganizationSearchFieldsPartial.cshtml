@@ -1,0 +1,26 @@
+@model CSR.Models.UserSearchViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
+
+<tr>
+    <th class="align-middle text-center"><label asp-for="CorCd">@SharedLocalizer["Label_CorporationCode"]</label></th>
+    <td>
+        <div class="autocomplete">
+            <input asp-for="CorCd" class="form-control" id="CorCd" type="text" autocomplete="off" placeholder="">
+        </div>
+    </td>
+    <th class="align-middle text-center"><label asp-for="DeptCd">@SharedLocalizer["Label_BusinessUnitCode"]</label></th>
+    <td>
+        <div class="autocomplete">
+            <input asp-for="DeptCd" class="form-control" autocomplete="off" />
+        </div>
+    </td>
+    <th class="align-middle text-center"><label asp-for="OfficeCd">@SharedLocalizer["Label_OfficeCode"]</label></th>
+    <td>
+        <input asp-for="OfficeCd" class="form-control" autocomplete="off" />
+    </td>
+    <th class="align-middle text-center"><label asp-for="TeamCd">@SharedLocalizer["Label_TeamCode"]</label></th>
+    <td>
+        <input asp-for="TeamCd" class="form-control" autocomplete="off" />
+    </td>
+</tr>

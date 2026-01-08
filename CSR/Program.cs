@@ -5,8 +5,14 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using CSR.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Dapper bool<->number(1/0) 타입 핸들러 등록
+Dapper.SqlMapper.AddTypeHandler(new BooleanNumericTypeHandler());
 
 // Add services to the container.
 // 다국어 서비스 등록
@@ -25,6 +31,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddControllersWithViews()
     .AddViewLocalization() // 뷰에서 다국어를 지원하도록 설정
     .AddDataAnnotationsLocalization(); // 데이터 유효성 검사 메시지에서 다국어를 지원하도록 설정
+
+// FluentValidation 등록
+// builder.Services.AddFluentValidationAutoValidation(); // 비동기 검증을 위해 자동 유효성 검사는 비활성화
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 // Supabase 클라이언트 등록
 var supabaseUrl = builder.Configuration["Supabase:Url"];

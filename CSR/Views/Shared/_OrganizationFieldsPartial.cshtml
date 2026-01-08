@@ -1,0 +1,35 @@
+@model CSR.Models.User
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
+
+<tr>
+    <td><label asp-for="CorCd" class="control-label">@SharedLocalizer["Label_CorporationCode"]</label></td>
+    <td>
+        <div class="autocomplete">
+            <input asp-for="CorCd" class="form-control" id="CorCd" type="text" name="CorCd" autocomplete="off" placeholder="">
+        </div>
+        <!-- <span asp-validation-for="CorCd" class="text-danger"></span> -->
+                                
+    </td>
+    <td><label asp-for="DeptCd" class="control-label">@SharedLocalizer["Label_BusinessUnitCode"]</label></td>
+    <td>
+        <div class="autocomplete">
+            <input asp-for="DeptCd" class="form-control" autocomplete="off" />
+        </div>
+        <!-- <span asp-validation-for="DeptCd" class="text-danger"></span> -->
+    </td>
+    <td><label asp-for="OfficeCd" class="control-label">@SharedLocalizer["Label_OfficeCode"]</label></td>
+    <td>
+        <input asp-for="OfficeCd" class="form-control" autocomplete="off" />
+        <!-- <span asp-validation-for="OfficeCd" class="text-danger"></span> -->
+    </td>
+    <td><label asp-for="TeamCd" class="control-label">@SharedLocalizer["Label_TeamCode"]</label></td>
+    <td>
+        <input asp-for="TeamCd" class="form-control" autocomplete="off" />
+        <!-- <span asp-validation-for="TeamCd" class="text-danger"></span> -->
+    </td>
+    <td>
+        <button type="button" class="btn btn-secondary">@SharedLocalizer["Button_SearchOrganization"]</button>
+    </td>
+
+</tr>

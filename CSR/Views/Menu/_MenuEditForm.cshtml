@@ -1,0 +1,153 @@
+@model CSR.Models.Menu
+
+<form asp-action="Edit" asp-route-id="@Model.Id" id="menuEditForm">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="MenuId" />
+    <input type="hidden" asp-for="ParentId" />
+    <input type="hidden" asp-for="CreateDate" />
+    <input type="hidden" asp-for="UpdateDate" />
+
+    <div class="form-group mb-3">
+        <label asp-for="MenuName" class="control-label">메뉴 이름 *</label>
+        <input asp-for="MenuName" class="form-control" />
+        <span asp-validation-for="MenuName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="MenuLevel" class="control-label">레벨 *</label>
+        <select asp-for="MenuLevel" class="form-control" id="levelSelect" disabled>
+            <option value="1">1단계 (최상위 메뉴)</option>
+            <option value="2">2단계 (서브 메뉴)</option>
+            <option value="3">3단계 (서브 서브 메뉴)</option>
+        </select>
+        <span asp-validation-for="MenuLevel" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3" id="parentMenuGroup" style="display: none;">
+        <label class="control-label">부모 메뉴</label>
+        <select id="parentMenu" class="form-control" disabled>                    
+        </select>
+        <span asp-validation-for="ParentId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label class="control-label">링크 설정</label>
+        <div class="card">
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">컨트롤러 이름</small>
+                            <input asp-for="Controller" class="form-control" placeholder="Controller (예: Home)" />
+                            
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">액션 이름</small>
+                            <input asp-for="Action" class="form-control" placeholder="Action (예: Index)" />
+                            
+                        </div>
+                    </div>
+                </div>
+                
+                <hr />
+                
+                <div class="mb-2">
+                    <input asp-for="Url" class="form-control" placeholder="예: /Home/Index 또는 https://example.com" />
+                </div>
+                
+                <div class="alert alert-info mt-3 mb-0">
+                    <small>
+                        <strong>사용 방법:</strong><br/>
+                        • 내부 페이지: Controller와 Action만 입력 (예: Home, Index)<br/>
+                        • 외부 링크: URL만 입력 (예: https://example.com)<br/>
+                        • 둘 다 입력 시: URL이 우선 사용됩니다
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="form-group mb-3">
+        <label asp-for="Icon" class="control-label">아이콘 (CSS 클래스)</label>
+        <input asp-for="Icon" class="form-control" placeholder="예: bi bi-house" />
+        <small class="form-text text-muted">Bootstrap Icons 사용 예: bi bi-house, bi bi-file-text</small>
+    </div> -->
+
+    <div class="form-group mb-3">
+        <label asp-for="SortOrder" class="control-label">표시 순서</label>
+        <input asp-for="SortOrder" class="form-control" type="number" />
+        <span asp-validation-for="SortOrder" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label class="control-label mb-3">사용 여부</label>
+        <div class="form-check">
+            <input type="radio" asp-for="UseYn" id="useYnYes" value="Y" class="form-check-input" />
+            <label class="form-check-label" for="useYnYes">활성화</label>
+        </div>
+        <div class="form-check">
+            <input type="radio" asp-for="UseYn" id="useYnNo" value="N" class="form-check-input" />
+            <label class="form-check-label" for="useYnNo">비활성화</label>
+        </div>
+        <span asp-validation-for="UseYn" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="저장" class="btn btn-primary" />
+        <!-- <button type="button" class="btn btn-secondary" onclick="window.location.reload();">새로고침</button> -->
+    </div>
+</form>
+
+<script id="menuEditFormScript">
+    (function() {
+        const levelSelect = document.getElementById('levelSelect');
+        const parentIdSelect = document.getElementById('parentMenu');
+        const parentMenuGroup = document.getElementById('parentMenuGroup');
+        const currentParentId = '@Model.ParentId';
+
+        function updateParentMenus() {
+            const selectedLevel = parseInt(levelSelect.value);
+
+            // Clear previous options
+            parentIdSelect.innerHTML = '';
+
+            if (selectedLevel === 1) {
+                parentMenuGroup.style.display = 'none';
+                parentIdSelect.innerHTML = '<option value="">없음 (최상위 메뉴)</option>';
+                return;
+            }
+
+            parentMenuGroup.style.display = 'block';
+
+            fetch(`/Menu/GetParentMenusForLevel?level=${selectedLevel}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    parentIdSelect.innerHTML = '<option value="">없음 (최상위 메뉴)</option>';
+
+                    data.forEach(menu => {
+                        const option = new Option(menu.text, menu.value);
+                        parentIdSelect.add(option);
+                    });
+
+                    // 현재 모델의 ParentId가 있으면 해당 값을 선택
+                    if (currentParentId) {
+                        parentIdSelect.value = currentParentId;
+                    }
+                })
+                .catch(error => {
+                    console.error('부모 메뉴를 불러오는 중 오류 발생:', error);
+                    parentIdSelect.innerHTML = '<option value="">목록 로드 실패</option>';
+                });
+        }
+
+        levelSelect.addEventListener('change', updateParentMenus);
+
+        // 초기 로드 시 실행
+        updateParentMenus();
+    })();
+</script>

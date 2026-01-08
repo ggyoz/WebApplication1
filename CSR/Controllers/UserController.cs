@@ -5,6 +5,10 @@ using System.Diagnostics;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using FluentValidation.Results;
+using CSR.Filters;
 
 namespace CSR.Controllers
 {
@@ -12,11 +16,13 @@ namespace CSR.Controllers
     {
         private readonly UserService _userService;
         private readonly ILogger<UserController> _logger;
+        private readonly IValidator<User> _validator;
 
-        public UserController(UserService userService, ILogger<UserController> logger)
+        public UserController(UserService userService, ILogger<UserController> logger, IValidator<User> validator)
         {
             _userService = userService;
             _logger = logger;
+            _validator = validator;
         }
 
         // GET: User
@@ -75,9 +81,8 @@ namespace CSR.Controllers
         // POST: User/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("UserId,UserPwd,UserName,EmpNo,CorCd,DeptCd,OfficeCd,TeamCd,SysCd,MobPhoneNo,EmailAddr")]
-            User user)
+        [AsyncValidationFilter]
+        public async Task<IActionResult> Create([Bind("UserId,UserPwd,UserName,EmpNo,CorCd,DeptCd,OfficeCd,TeamCd,SysCd,MobPhoneNo,EmailAddr")] User user)
         {
             if (ModelState.IsValid)
             {
@@ -120,8 +125,9 @@ namespace CSR.Controllers
         // POST: User/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AsyncValidationFilter]
         public async Task<IActionResult> Edit(string id,
-            [Bind("UserId,UserPwd,UserName,EmpNo,CorCd,DeptCd,OfficeCd,TeamCd,SysCd,BizCd,TelNo,MobPhoneNo,EmailAddr,UserStat,RetireDate,AdminFlag,CustCd,VendCd,AuthFlag,UserDiv,PwMissCount,RegDate,RegUserId,UpdateUserId,UseYn")]
+            [Bind("UserId,UserName,EmpNo,CorCd,DeptCd,OfficeCd,TeamCd,SysCd,BizCd,TelNo,MobPhoneNo,EmailAddr,UserStat,RetireDate,AdminFlag,CustCd,VendCd,AuthFlag,UserDiv,PwMissCount,RegDate,RegUserId,UpdateUserId,UseYn")]
             User user)
         {
             if (id != user.UserId)
@@ -133,8 +139,7 @@ namespace CSR.Controllers
             {
                 try
                 {
-                    // UpdateUserId should be set, let DB handle UpdateDate
-                    if (string.IsNullOrEmpty(user.UpdateUserId)) user.UpdateUserId = "ADMIN"; // Replace with actual user later
+                    if (string.IsNullOrEmpty(user.UpdateUserId)) user.UpdateUserId = "ADMIN";
 
                     await _userService.UpdateUserAsync(user);
                     return RedirectToAction(nameof(Index));
@@ -197,7 +202,7 @@ namespace CSR.Controllers
             try
             {
                 string newPassword = await _userService.ResetPasswordAsync(id);
-                TempData["SuccessMessage"] = $"사용자 ID '{id}'의 비밀번호가 성공적으로 사원번호({newPassword})로 초기화되었습니다.";
+                TempData["SuccessMessage"] = $"사용자 '{id}'의 비밀번호가 사원번호({newPassword})로 초기화되었습니다.";
             }
             catch (InvalidOperationException ex)
             {

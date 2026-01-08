@@ -1,0 +1,166 @@
+/* General Button Styles - Converted from CSS Variables */
+
+/* 버튼 테두리 삭제 */
+.btn:active, .btn.active:focus {
+    outline: none !important;
+    box-shadow: none !important;    
+}
+
+.btn, .btn:focus{
+    outline: none !important;
+    box-shadow: none !important;    
+}
+
+.page-link {
+    color: #000000;    
+    background-color: #fff;
+    border: 1px solid #dee2e6;    
+}
+
+.page-item, .page-link {
+    outline: none !important;
+    box-shadow: none !important;  
+}
+
+.page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: #27374D;
+    border-color: #27374D;    
+}
+
+.page-link:hover {
+    color: #000000 !important;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+/* .btn-save */
+.btn-save {
+    color: #fff;
+    background-color: #9DB2BF;
+    border-color: #9DB2BF;
+}
+.btn-save:hover {
+    color: #000000;
+    background-color: #9DB2BF;
+    border-color: #9DB2BF;
+}
+.btn-save:focus, .btn-save.focus {
+    box-shadow: 0 0 0 0.25rem rgba(49, 132, 253, 0.5);
+}
+.btn-save:active, .btn-save.active {
+    color: #fff;
+    background-color: #6C7A89;
+    border-color: #6C7A89;
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn-save:disabled, .btn-save.disabled {
+    color: #fff;
+    background-color: #6C7A89;
+    border-color: #6C7A89;
+}
+
+/* .btn-save2 */
+.btn-save2 {
+    color: #fff;
+    background-color: #B8CFCE;
+    border-color: #B8CFCE;
+}
+.btn-save2:hover {
+    color: #000000;
+    background-color: #B8CFCE;
+    border-color: #B8CFCE;
+}
+.btn-save2:focus, .btn-save2.focus {
+    box-shadow: 0 0 0 0.25rem rgba(49, 132, 253, 0.5);
+}
+.btn-save2:active, .btn-save2.active {
+    color: #fff;
+    background-color: #6C7A89;
+    border-color: #6C7A89;
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn-save2:disabled, .btn-save2.disabled {
+    color: #fff;
+    background-color: #6C7A89;
+    border-color: #6C7A89;
+}
+
+/* .btn-list */
+.btn-list {
+    color: #fff;
+    background-color: #9DB2BF;
+    border-color: #9DB2BF;
+}
+.btn-list:hover {
+    color: #000000;
+    background-color: #9DB2BF;
+    border-color: #9DB2BF;
+}
+.btn-list:focus, .btn-list.focus {
+    box-shadow: 0 0 0 0.25rem rgba(49, 132, 253, 0.5);
+}
+.btn-list:active, .btn-list.active {
+    color: #fff;
+    background-color: #6C7A89;
+    border-color: #6C7A89;
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn-list:disabled, .btn-list.disabled {
+    color: #fff;
+    background-color: #6C7A89;
+    border-color: #6C7A89;
+}
+
+/* .btn-add */
+.btn-add {
+    color: #fff;
+    background-color: #27374D;
+    border-color: #27374D;
+}
+.btn-add:hover {
+    color: #fff;
+    background-color: #526D82;
+    border-color: #526D82;
+}
+.btn-add:focus, .btn-add.focus {
+    box-shadow: 0 0 0 0.25rem rgba(49, 132, 253, 0.5);
+}
+.btn-add:active, .btn-add.active {
+    color: #fff;
+    background-color: #27374D;
+    border-color: #27374D;
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn-add:disabled, .btn-add.disabled {
+    color: #fff;
+    background-color: #6C7A89;
+    border-color: #6C7A89;
+}
+
+/* .btn-delete */
+.btn-delete {
+    color: #fff;
+    background-color: #27374D;
+    border-color: #27374D;
+}
+.btn-delete:hover {
+    color: #000000;
+    background-color: #27374D;
+    border-color: #27374D;
+}
+.btn-delete:focus, .btn-delete.focus {
+    box-shadow: 0 0 0 0.25rem rgba(49, 132, 253, 0.5);
+}
+.btn-delete:active, .btn-delete.active {
+    color: #fff;
+    background-color: #27374D;
+    border-color: #27374D;
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn-delete:disabled, .btn-delete.disabled {
+    color: #fff;
+    background-color: #6C7A89;
+    border-color: #6C7A89;
+}

@@ -1,7 +1,1 @@
-/* Import Bootstrap's CSS */
-@import '~bootstrap/dist/css/bootstrap.css';
-/* Import Bootstrap-icons CSS */
-@import '~bootstrap-icons/font/bootstrap-icons.css';
-
-
-/* You can add your own custom CSS here */
+/* The content of this file is now handled by Bootstrap CDN in _Layout.cshtml. */

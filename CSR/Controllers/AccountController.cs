@@ -33,7 +33,7 @@ namespace CSR.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userService.AuthenticateAsync(model.UserId, model.Password);
+                var user = await _userService.AuthenticateAsync(model.UserId!, model.Password!);
 
                 if (user != null)
                 {

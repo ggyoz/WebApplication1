@@ -4,6 +4,6 @@
     <value>Add User</value>
   </data>
   <data name="Label_ConfirmPassword" xml:space="preserve">
-    <value>Confirm Password *</value>
+    <value>Confirm Password</value>
   </data>
 </root>

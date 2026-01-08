@@ -30,18 +30,11 @@
                         <col width="15%"></col>
                         <col width="8%"></col>
                         <col width="15%"></col>
-                    </colgroup>
-                    <tr>
-                        <th class="align-middle text-center">@SharedLocalizer["Label_CorporationCode"]</th>
-                        <td><input asp-for="Search.CorCd" class="form-control" /></td>
-                        <th class="align-middle text-center">@SharedLocalizer["Label_BusinessUnitCode"]</th>
-                        <td><input asp-for="Search.BizCd" class="form-control" /></td>
-                        <th class="align-middle text-center">@SharedLocalizer["Label_DepartmentCode"]</th>
-                        <td><input asp-for="Search.DeptCd" class="form-control" /></td>
-                        <th class="align-middle text-center">@SharedLocalizer["Label_TeamCode"]</th>
-                        <td><input asp-for="Search.TeamCd" class="form-control" /></td>
-                        
-                    </tr>
+                    </colgroup>                    
+
+                    <!-- 조직도 tr -->
+                    <partial name="_OrganizationSearchFieldsPartial" model="Model.Search" />
+                    <!-- 조직도 tr -->
                     <tr>
                         <th class="align-middle text-center">@SharedLocalizer["Label_UserId"]</th>
                         <td><input asp-for="Search.UserId" class="form-control" /></td>
@@ -115,4 +108,24 @@
 else
 {
     <p class="text-muted">@Localizer["NoUsersToDisplay"]</p>
+}
+
+@section Scripts {    
+    <partial name="_OrganizationFieldsPartial.Scripts" />
+
+    <script>
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const paramsCorcd = urlParams.get("CorCd");
+        const paramsDeptCd = urlParams.get("DeptCd");
+        const paramsOfficeCd = urlParams.get("OfficeCd");
+        const paramsTeamCd = urlParams.get("TeamCd");
+
+        console.log(paramsCorcd);
+        console.log(paramsDeptCd);
+        console.log(paramsOfficeCd);
+        console.log(paramsTeamCd);
+
+    </script>
+
 }

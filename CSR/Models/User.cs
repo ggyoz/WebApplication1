@@ -11,59 +11,59 @@ namespace CSR.Models
     {
         [PrimaryKey("USERID", false)] // Oracle VARCHAR2 PK, so false for autoincrement
         [Display(Name = "사용자 ID")]
-        public string UserId { get; set; } = string.Empty;
+        public string? UserId { get; set; } = string.Empty;
 
         [Column("USERPWD")]
         [Display(Name = "비밀번호")]
-        public string UserPwd { get; set; } = string.Empty;
+        public string? UserPwd { get; set; } = string.Empty;
 
         [Column("USERNAME")]
         [Display(Name = "사용자 이름")]
-        public string UserName { get; set; } = string.Empty;
+        public string? UserName { get; set; } = string.Empty;
 
         [Column("EMPNO")]
         [Display(Name = "사원 번호")]
-        public string EmpNo { get; set; } = string.Empty;
+        public string? EmpNo { get; set; } = string.Empty;
 
         [Column("CORCD")]
         [Display(Name = "법인 코드")]
-        public string CorCd { get; set; } = string.Empty;
+        public string? CorCd { get; set; } = string.Empty;
 
         [Column("DEPTCD")]
         [Display(Name = "부서 코드")]
-        public string DeptCd { get; set; } = string.Empty;
+        public string? DeptCd { get; set; } = string.Empty;
 
         [Column("OFFICECD")] // NEW
         [Display(Name = "실 코드")]
-        public string OfficeCd { get; set; } = string.Empty;
+        public string? OfficeCd { get; set; } = string.Empty;
 
         [Column("TEAMCD")]
         [Display(Name = "팀 코드")]
-        public string TeamCd { get; set; } = string.Empty;
+        public string? TeamCd { get; set; } = string.Empty;
 
         [Column("SYSCD")]
         [Display(Name = "시스템 코드")]
-        public string SysCd { get; set; } = string.Empty;
+        public string? SysCd { get; set; } = string.Empty;
 
         [Column("BIZCD")]
         [Display(Name = "사업장 코드")]
-        public string BizCd { get; set; } = string.Empty;
+        public string? BizCd { get; set; } = string.Empty;
 
         [Column("TELNO")]
         [Display(Name = "전화 번호")]
-        public string TelNo { get; set; } = string.Empty;
+        public string? TelNo { get; set; } = string.Empty;
 
         [Column("MOB_PHONE_NO")]
         [Display(Name = "휴대폰 번호")]
-        public string MobPhoneNo { get; set; } = string.Empty;
+        public string? MobPhoneNo { get; set; } = string.Empty;
 
         [Column("EMAIL_ADDR")]
         [Display(Name = "전자메일 주소")]
-        public string EmailAddr { get; set; } = string.Empty;
+        public string? EmailAddr { get; set; } = string.Empty;
 
         [Column("USERSTAT")] // NEW
         [Display(Name = "계정 상태")]
-        public string UserStat { get; set; } = string.Empty;
+        public string? UserStat { get; set; } = string.Empty;
 
         [Column("RETIRE_DATE")]
         [Display(Name = "퇴사일")]
@@ -75,11 +75,11 @@ namespace CSR.Models
 
         [Column("CUSTCD")]
         [Display(Name = "고객사 코드")]
-        public string CustCd { get; set; } = string.Empty;
+        public string? CustCd { get; set; } = string.Empty;
 
         [Column("VENDCD")]
         [Display(Name = "협력사 코드")]
-        public string VendCd { get; set; } = string.Empty;
+        public string? VendCd { get; set; } = string.Empty;
 
         [Column("AUTH_FLAG")]
         [Display(Name = "메뉴 부여 권한")]
@@ -87,7 +87,7 @@ namespace CSR.Models
 
         [Column("USER_DIV")]
         [Display(Name = "사용자 구분")]
-        public string UserDiv { get; set; } = string.Empty;
+        public string? UserDiv { get; set; } = string.Empty;
 
         [Column("PW_MISS_COUNT")]
         [Display(Name = "로그인 실패 횟수")]

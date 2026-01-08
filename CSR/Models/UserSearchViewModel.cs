@@ -14,10 +14,10 @@ namespace CSR.Models
         public string? CorCd { get; set; }
 
         [Display(Name = "사업부코드")]
-        public string? BizCd { get; set; }
-
-        [Display(Name = "부서코드")]
         public string? DeptCd { get; set; }
+
+        [Display(Name = "사무실실코드")]
+        public string? OfficeCd { get; set; }
         
         [Display(Name = "팀코드")]
         public string? TeamCd { get; set; }
