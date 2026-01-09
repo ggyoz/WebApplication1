@@ -1,0 +1,179 @@
+@model IEnumerable<CSR.Models.CommCode>
+
+@{ 
+    ViewData["Title"] = "공통코드 관리";
+}
+
+<partial name="_PageTitlePartial" />
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="d-flex">
+    @* Left Section (30%) *@
+    <div style="flex-basis: 30%; flex-grow: 0; flex-shrink: 0; margin-right: 1.5rem; padding:4px;">
+        <div class="d-flex justify-content-end mb-3 align-items-center">
+            <a asp-action="Create" class="btn btn-add">코드 추가</a>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="board-tabl">
+                    <colgroup>
+                        <col width="40%"/>
+                        <col width="60%"/>                        
+                    </colgroup>
+                    <thead class="table-light">
+                        <tr>
+                            <th>이름</th>
+                            <th>코드</th>                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var code in Model)
+                        {
+                            @await Html.PartialAsync("_CommCodeRow", code)
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">코드가 없습니다.</p>
+        }
+    </div>
+
+    <div class="vertical-line"></div>
+
+    @* Right Section (60%) *@
+    <div id="codeEditFormContainer" style="flex-basis: 60%; flex-grow: 1; flex-shrink: 0; padding:1.5rem; margin-right:1rem;">
+        <p>왼쪽 코드를 선택하여 수정하세요.</p>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const codeEditFormContainer = document.getElementById('codeEditFormContainer');     
+
+        // Hide non-root nodes on initial load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll("tr[data-parent-id]:not([data-parent-id='0'])").forEach(row => {
+                row.style.display = 'none';
+            });
+        });
+
+        function toggleChildren(buttonElement, codeId) {
+            let icon = buttonElement.querySelector('i');
+            if(icon) {
+                icon.classList.toggle("show");
+            }
+
+            const childrenRows = document.querySelectorAll(`tr[data-parent-id="${codeId}"]`);
+            childrenRows.forEach(childRow => {
+                const isVisible = childRow.style.display !== 'none';
+                if (isVisible) {
+                    // Hide all descendants of the child before hiding the child itself
+                    const descendants = childRow.querySelectorAll(`tr[data-parent-id]`); // This selector seems wrong, let's correct it
+                    const childCodeId = childRow.getAttribute('data-code-id');
+                    hideAllDescendants(childCodeId);
+                    childRow.style.display = 'none';
+                } else {
+                    childRow.style.display = ''; // Use empty string to revert to default (or 'table-row')
+                }
+            });
+        }
+
+        // Helper function to recursively hide all descendants and reset their toggle icons
+        function hideAllDescendants(parentCodeId) {
+            const children = document.querySelectorAll(`tr[data-parent-id="${parentCodeId}"]`);
+            children.forEach(child => {
+                child.style.display = 'none';
+                const childCodeId = child.getAttribute('data-code-id');
+                const childToggleButton = document.querySelector(`tr[data-code-id="${childCodeId}"] button`);
+                if (childToggleButton) {
+                    let icon = childToggleButton.querySelector('i');
+                    if (icon) {
+                        icon.classList.remove('show');
+                    }
+                }
+                hideAllDescendants(childCodeId);
+            });
+        }
+
+
+        function editCode(codeId) {
+            document.querySelectorAll('.board-tabl tbody tr').forEach(tr => {
+                tr.classList.remove('selected');
+            });
+
+            // Using a more robust selector to avoid issues with nested tables
+            const clickedRow = document.querySelector(`tr[data-code-id='${codeId}']`);
+            if (clickedRow) {
+                clickedRow.classList.add('selected');
+            }
+
+
+            fetch(`/CommCode/Edit/${codeId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    codeEditFormContainer.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error loading code details:', error);
+                    codeEditFormContainer.innerHTML = '<p class="text-danger">코드 정보를 불러오는데 실패했습니다.</p>';
+                });
+        }
+
+        codeEditFormContainer.addEventListener('submit', function(event) {
+            if (event.target && event.target.tagName === 'FORM') {
+                event.preventDefault();
+                const form = event.target;
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'RequestVerificationToken': formData.get('__RequestVerificationToken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('코드가 성공적으로 업데이트되었습니다.', 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        showToast('코드 업데이트에 실패했습니다: ' + (data.errors ? data.errors.join("\\n") : '알 수 없는 오류'), 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating code:', error);
+                    showToast('코드 업데이트 중 오류가 발생했습니다.', 'error');
+                });
+            }
+        });
+    </script>
+}
+
+<style>
+    .board-tabl tbody tr.selected {
+        background-color: #e9ecef; /* 선택된 행 배경색 */
+    }
+    .board-tabl tbody tr:hover {
+        cursor: pointer;
+        background-color: #f8f9fa; /* 마우스 오버시 배경색 */
+    }
+</style>

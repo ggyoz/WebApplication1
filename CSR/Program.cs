@@ -8,6 +8,7 @@ using System;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using CSR.Data;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +29,23 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.SlidingExpiration = true;
     });
 
-builder.Services.AddControllersWithViews()
+// 권한 정책 정의
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireTeamLeaderOrHigher", policy => 
+        policy.RequireRole("R2", "R3", "R4"));
+
+    options.AddPolicy("RequireManagerOrHigher", policy => 
+        policy.RequireRole("R3", "R4"));
+
+    options.AddPolicy("RequireSuperAdmin", policy => 
+        policy.RequireRole("R4"));
+});
+
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new AuthorizeFilter());
+})
     .AddViewLocalization() // 뷰에서 다국어를 지원하도록 설정
     .AddDataAnnotationsLocalization(); // 데이터 유효성 검사 메시지에서 다국어를 지원하도록 설정
 
@@ -95,7 +112,9 @@ foreach (var service in serviceTypes)
 // 다국어 옵션 설정
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
-    var supportedCultures = new[] { "ko-KR", "en-US", "hi-IN", "zh-CN" };
+
+    var supportedCultures = new[] { "ko-KR", "en-US" };
+    // var supportedCultures = new[] { "ko-KR", "en-US", "hi-IN", "zh-CN" };
     options.SetDefaultCulture(supportedCultures[1]); // en-US
     options.AddSupportedCultures(supportedCultures);
     options.AddSupportedUICultures(supportedCultures);

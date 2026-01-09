@@ -1,17 +1,27 @@
 @model CSR.Models.LoginViewModel
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IOptions<RequestLocalizationOptions> LocOptions
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
 
 @{
     Layout = null;
-    ViewData["Title"] = "로그인";
+    // 다국어 선택을 위한 준비
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var cultureItems = LocOptions.Value.SupportedUICultures
+        .Select(c => new SelectListItem { Value = c.Name, Text = c.NativeName })
+        .ToList();
+    ViewData["Title"] = SharedLocalizer["Button_Login"];
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@requestCulture.RequestCulture.UICulture.Name">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - CSR</title>
-    <link rel="stylesheet" href="~/dist/bundle.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <style>
         html, body {
             height: 100%;
@@ -33,35 +43,48 @@
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
+        .lang-selector {
+            max-width: 150px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
     <div class="login-form">
-        <h1 class="text-center mb-4">로그인</h1>
+        <form id="setLanguageForm" asp-controller="Home" asp-action="SetLanguage" asp-route-returnUrl="@Context.Request.Path" method="post" class="lang-selector">
+            <select name="culture" asp-for="@requestCulture.RequestCulture.UICulture.Name" asp-items="cultureItems"
+                    onchange="this.form.submit();" class="form-select form-select-sm">
+            </select>
+        </form>
+
+        <h1 class="text-center mb-4">@SharedLocalizer["Button_Login"]</h1>
         <form asp-action="Login">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-floating mb-3">
-                <input asp-for="UserId" class="form-control" placeholder="사용자 ID" />
-                <label asp-for="UserId">사용자 ID</label>
+                <input asp-for="UserId" class="form-control" placeholder="@SharedLocalizer["Label_UserId"]" />
+                <label asp-for="UserId">@SharedLocalizer["Label_UserId"]</label>
                 <span asp-validation-for="UserId" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Password" class="form-control" placeholder="비밀번호" />
-                <label asp-for="Password">비밀번호</label>
+                <input asp-for="Password" class="form-control" placeholder="@SharedLocalizer["Label_Password"]" />
+                <label asp-for="Password">@SharedLocalizer["Label_Password"]</label>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
+
             <div class="form-check text-start my-3">
-                <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault" asp-for="RememberMe">
-                <label class="form-check-label" for="flexCheckDefault" asp-for="RememberMe">
-                    로그인 상태 유지
+                <input class="form-check-input" type="checkbox" id="flexCheckDefault" asp-for="RememberMe">
+                <label class="form-check-label" for="flexCheckDefault">
+                    @SharedLocalizer["Label_RememberMe"]
                 </label>
             </div>
-            <button class="w-100 btn btn-lg btn-primary" type="submit">로그인</button>
+            <button class="w-100 btn btn-lg btn-primary" type="submit">@SharedLocalizer["Button_Login"]</button>
             <p class="mt-5 mb-3 text-muted text-center">&copy; 2025</p>
         </form>
     </div>
 
-    <script src="~/dist/bundle.js" asp-append-version="true"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

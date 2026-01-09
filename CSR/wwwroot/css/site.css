@@ -136,9 +136,15 @@ body {
 
 .search-body{
   margin-top: 1rem;
+  margin-right: 2rem;
 }
 
 .vertical-line{
   border-left: thin solid rgb(168, 168, 168); 
-  height: 80vh;
+  height:auto;
+  min-height: 80vh;
+}
+
+.control-label{
+  margin-bottom: 5px;
 }

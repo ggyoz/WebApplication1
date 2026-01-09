@@ -126,11 +126,17 @@
   <data name="TableHeader_UserName" xml:space="preserve">
     <value>사용자 이름</value>
   </data>
+  <data name="TableHeader_CorperationCode" xml:space="preserve">
+    <value>법인 코드</value>
+  </data>
   <data name="TableHeader_DepartmentCode" xml:space="preserve">
     <value>부서 코드</value>
   </data>
+  <data name="TableHeader_OfficeCode" xml:space="preserve">
+    <value>사무실 코드</value>
+  </data>
   <data name="TableHeader_TeamCode" xml:space="preserve">
-    <value>팀코드</value>
+    <value>팀 코드</value>
   </data>
   <data name="TableHeader_Email" xml:space="preserve">
     <value>이메일</value>
@@ -212,5 +218,8 @@
   </data>
   <data name="Button_Create" xml:space="preserve">
     <value>생성</value>
+  </data>
+  <data name="Label_RememberMe" xml:space="preserve">
+    <value>로그인 상태 유지</value>
   </data>
 </root>

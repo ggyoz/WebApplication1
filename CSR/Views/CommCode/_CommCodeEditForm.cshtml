@@ -1,0 +1,65 @@
+@model CSR.Models.CommCode
+
+@{
+    ViewData["Title"] = "공통코드 수정";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CODEID" />
+
+            <div class="mb-3">
+                <label asp-for="PARENTID" class="form-label"></label>
+                <input asp-for="PARENTID" class="form-control" />
+                <span asp-validation-for="PARENTID" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="CODENM" class="form-label"></label>
+                <input asp-for="CODENM" class="form-control" />
+                <span asp-validation-for="CODENM" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="CODE" class="form-label"></label>
+                <input asp-for="CODE" class="form-control" />
+                <span asp-validation-for="CODE" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SORTORDER" class="form-label"></label>
+                <input asp-for="SORTORDER" class="form-control" type="number" />
+                <span asp-validation-for="SORTORDER" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="NOTE" class="form-label"></label>
+                <textarea asp-for="NOTE" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="NOTE" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="USEYN" class="form-label"></label>
+                <select asp-for="USEYN" class="form-select">
+                    <option value="Y">Y</option>
+                    <option value="N">N</option>
+                </select>
+                <span asp-validation-for="USEYN" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">저장</button>
+                <a asp-action="Create" asp-route-parentId="@Model.CODEID" class="btn btn-add" onclick="event.stopPropagation();">하위 추가</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using CSR.Models;
 using CSR.Services;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CSR.Controllers
 {
+    [Authorize(Policy = "RequireManagerOrHigher")]
     public class MenuController : Controller
     {
         private readonly MenuService _menuService;

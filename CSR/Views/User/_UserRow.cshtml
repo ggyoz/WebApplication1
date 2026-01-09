@@ -5,12 +5,13 @@
 <tr style="cursor: pointer;" onclick="window.location.href = '@Url.Action("Details", "User", new { id = Model.UserId })';">
     <td>@Html.DisplayFor(modelItem => modelItem.UserId)</td>
     <td>@Html.DisplayFor(modelItem => modelItem.UserName)</td>
+    <td>@Html.DisplayFor(modelItem => modelItem.CorCd)</td>
     <td>@Html.DisplayFor(modelItem => modelItem.DeptCd)</td>
     <td>@Html.DisplayFor(modelItem => modelItem.TeamCd)</td>
     <td>@Html.DisplayFor(modelItem => modelItem.EmailAddr)</td>
     <td>@Html.DisplayFor(modelItem => modelItem.UseYn)</td>
     <td>@(Model.AdminFlag ? SharedLocalizer["Yes"] : SharedLocalizer["No"])</td>
-    <td>@Model.RegDate.ToString("yyyy-MM-dd")</td>
+    <!-- <td>@Model.RegDate.ToString("yyyy-MM-dd")</td> -->
     <td>
         <div class="btn-group btn-group-sm" onclick="event.stopPropagation();">
             <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-sm btn-outline-secondary">@SharedLocalizer["Button_Edit"]</a>

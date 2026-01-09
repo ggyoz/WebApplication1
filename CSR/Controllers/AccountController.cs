@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CSR.Controllers
 {
@@ -22,6 +23,7 @@ namespace CSR.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Login()
         {
             return View();
@@ -29,6 +31,7 @@ namespace CSR.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
             if (ModelState.IsValid)
@@ -44,11 +47,12 @@ namespace CSR.Controllers
                         new Claim("UserName", user.UserName),
                     };
 
-                    if (user.AdminFlag)
+                    // Add UserDiv as a role claim if it exists
+                    if (!string.IsNullOrEmpty(user.UserDiv))
                     {
-                        claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+                        claims.Add(new Claim(ClaimTypes.Role, user.UserDiv));
                     }
-
+                    
                     var claimsIdentity = new ClaimsIdentity(
                         claims, CookieAuthenticationDefaults.AuthenticationScheme);
 

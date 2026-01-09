@@ -7,6 +7,12 @@
 
 @foreach (var menu in Model)
 {
+    // "시스템 관리" 메뉴 (MenuId = "1" or name "시스템관리")는 R3(관리자) 또는 R4(슈퍼관리자)만 접근 가능
+    @if (menu.MenuId == "1" && !(User.IsInRole("R3") || User.IsInRole("R4")))
+    {
+        continue; // 해당 역할이 아니면 건너뛰기
+    }
+
     var hasChildren = menu.Children != null && menu.Children.Any();
     var isExpanded = activeMenuIds.Contains(menu.MenuId);
     var isActive = menu.GetLink().Equals(currentPath, StringComparison.OrdinalIgnoreCase);

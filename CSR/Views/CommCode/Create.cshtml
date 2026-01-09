@@ -1,0 +1,75 @@
+@model CSR.Models.CommCode
+@using CSR.Models
+@{
+    ViewData["Title"] = "공통코드 생성";
+    var allCodes = ViewBag.AllCodes as List<CommCode> ?? new List<CommCode>();
+}
+
+<partial name="_PageTitlePartial" />
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="PARENTID" class="control-label">부모 코드</label>
+                <select asp-for="PARENTID" class="form-select">
+                    <option value="0">최상위 코드</option>
+                    @foreach (var code in allCodes)
+                    {
+                        <option value="@code.CODEID">@code.CODENM (@code.CODE)</option>
+                    }
+                </select>
+                <span asp-validation-for="PARENTID" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="CODENM" class="control-label">이름 *</label>
+                <input asp-for="CODENM" class="form-control" />
+                <span asp-validation-for="CODENM" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="CODE" class="control-label">코드값</label>
+                <input asp-for="CODE" class="form-control" />
+                <span asp-validation-for="CODE" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="SORTORDER" class="control-label">표시 순서</label>
+                <input asp-for="SORTORDER" class="form-control" type="number" value="0" />
+                <span asp-validation-for="SORTORDER" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="NOTE" class="control-label">설명</label>
+                <textarea asp-for="NOTE" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="NOTE" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="control-label">사용 여부</label>
+                <div class="form-check form-check-inline">
+                    <input type="radio" asp-for="USEYN" id="useYnYes" value="Y" class="form-check-input" checked />
+                    <label class="form-check-label" for="useYnYes">사용</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input type="radio" asp-for="USEYN" id="useYnNo" value="N" class="form-check-input" />
+                    <label class="form-check-label" for="useYnNo">미사용</label>
+                </div>
+                <span asp-validation-for="USEYN" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">생성</button>
+                <a asp-action="Index" class="btn btn-secondary">목록으로</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

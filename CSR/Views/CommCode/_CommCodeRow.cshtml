@@ -1,0 +1,49 @@
+@model CSR.Models.CommCode
+
+@{
+    // Simple indentation based on ParentId to simulate hierarchy
+    var isRoot = Model.PARENTID == 0;
+    var indent = isRoot ? 0 : 20;
+    if (Model.Parent != null)
+    {
+        var parent = Model.Parent;
+        while(parent.Parent != null)
+        {
+            indent += 20;
+            parent = parent.Parent;
+        }
+    }
+    var marginLeft = $"{indent}px";
+}
+
+<tr data-code-id="@Model.CODEID" data-parent-id="@Model.PARENTID" onclick="editCode(@Model.CODEID)">
+    <td>
+        <span style="margin-left: @marginLeft;">
+            @if (Model.Children != null && Model.Children.Any())
+            {
+                <button type="button" class="btn btn-sm btn-link p-0" onclick="event.stopPropagation(); toggleChildren(this, '@Model.CODEID')" style="text-decoration: none; ">                    
+                    <i class="dept1-btn"></i>
+                </button>
+            }
+            else
+            {
+                <span style="display: inline-block; width: 1.3rem;"></span>
+            }
+            @Model.CODENM
+        </span>
+    </td>
+    <td>@Model.CODE</td>
+    <!-- <td>@Model.SORTORDER</td> -->
+    <!-- <td>@Model.USEYN</td> -->
+    <!-- <td>
+        <a asp-action="Create" asp-route-parentId="@Model.CODEID" class="btn btn-sm btn-info" onclick="event.stopPropagation();">하위 추가</a>
+    </td> -->
+</tr>
+
+@if (Model.Children != null && Model.Children.Any())
+{
+    foreach (var child in Model.Children.OrderBy(c => c.SORTORDER))
+    {
+        @await Html.PartialAsync("_CommCodeRow", child)
+    }
+}
