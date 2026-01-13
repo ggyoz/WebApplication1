@@ -153,7 +153,7 @@
   <data name="InvalidLoginAttempt" xml:space="preserve">
     <value>Invalid User ID or Password.</value>
   </data>
-  <data name="Button_Login" xml:space="preserve">
+  <data name="Button_Login" xmspace="preserve">
     <value>Login</value>
   </data>
   <data name="Button_Logout" xml:space="preserve">
@@ -221,5 +221,8 @@
   </data>
   <data name="Label_RememberMe" xml:space="preserve">
     <value>Remember me</value>
+  </data>
+  <data name="Label_Search" xml:space="preserve">
+    <value>Search</value>
   </data>
 </root>

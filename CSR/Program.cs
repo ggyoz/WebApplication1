@@ -107,6 +107,8 @@ builder.Services.AddScoped<IDbConnection>(sp =>
 });
 # endregion
 
+builder.Services.AddScoped<CSR.Services.INoticeService, CSR.Services.NoticeService>();
+
 # region 서비스 자동등록 
 // CSR.Services 네임스페이스의 모든 서비스를 자동으로 등록합니다.
 var serviceTypes = typeof(Program).Assembly.GetTypes()

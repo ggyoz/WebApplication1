@@ -1,0 +1,74 @@
+@model Notice
+@{
+    ViewData["Title"] = "공지사항 등록";
+}
+
+<partial name="_PageTitlePartial" />
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="CORCD" />
+
+            <table class="table-layout" width="70%">
+                    <colgroup>
+                        <col width="10%">
+                        <col width="80%">
+                    </colgroup>
+                <tbody>
+                    <tr>
+                        <td><label asp-for="TITLE" class="control-label">제목</label></td>
+                        <td colspan="3">
+                            <input asp-for="TITLE" class="form-control" />
+                            <span asp-validation-for="TITLE" class="text-danger"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label asp-for="NOTICETYPE" class="control-label">유형</label></td>
+                        <td colspan="3">
+                            <select asp-for="NOTICETYPE" asp-items="ViewBag.NoticeTypes" class="form-control">                                
+                            </select>
+                            <span asp-validation-for="NOTICETYPE" class="text-danger"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top;"><label asp-for="CONTENTS_HTML" class="control-label">내용</label></td>
+                        <td colspan="3">
+                            <div class="html-editor"></div>
+                            <input type="hidden" asp-for="CONTENTS_HTML" />
+                        </td>
+                    </tr>                    
+                    <tr>
+                        <td><label class="control-label">첨부파일</label></td>
+                        <td colspan="3">
+                            <input type="file" name="newFiles" multiple class="form-control" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="button-area text-end mt-5 m-3">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-list">목록</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        // 페이지 로드가 완료되면 스크립트 실행
+        $(function() {
+            // 공통 함수를 호출하여 에디터를 초기화합니다.
+            initializeHtmlEditor(
+                '.html-editor',                                  // 에디터 div
+                'input[name="@Html.NameFor(m => m.CONTENTS_HTML)"]', // 값을 저장할 input
+                '.value-content'                                 // 미리보기 div
+            );
+        });
+    </script>
+}

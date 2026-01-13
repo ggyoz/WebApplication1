@@ -1,0 +1,13 @@
+테이블 설명 : 공지사항 테이블
+NO	컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
+1	ID	number	pk			ID	
+2	TITLE	varchar2(50)		Y		제목	
+3	CONTENTS_HTML	clob				내용(HTML)	
+4	CONTENTS_TEXT	clob				내용(TEXT)	
+5	NOTICETYPE	varchar2(10)		Y		공지 유형	
+6	CORCD	varchar2(10)		Y		법인코드	
+7	REG_DATE	date		Y	sysdate	등록일	
+8	REG_USERID	varchar2(10)		Y		등록자 ID	
+9	UPDATE_DATE	date				수정일	
+10	UPDATE_USERID	varchar2(10)				수정자 ID	
+11	USEYN	varchar2(1)		Y	'Y'	삭제여부	

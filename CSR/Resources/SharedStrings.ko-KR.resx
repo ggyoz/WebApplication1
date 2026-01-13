@@ -222,4 +222,7 @@
   <data name="Label_RememberMe" xml:space="preserve">
     <value>로그인 상태 유지</value>
   </data>
+  <data name="Label_Search" xml:space="preserve">
+    <value>검색</value>
+  </data>
 </root>

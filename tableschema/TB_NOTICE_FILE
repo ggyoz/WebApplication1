@@ -1,0 +1,11 @@
+테이블 설명 : 공지사항 첨부파일 테이블									
+NO	컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
+1	FILEID	number	PK	Y		파일 ID	
+2	NOTICEID	number		Y		요청글 ID	
+3	REQTYPE	varchar2(1)		Y		첨부파일 구분	
+4	UPLOAD_FILENAME	varchar2(64)		Y		서버에 저장하는 파일 명 ( 해시값 or 타입스탬프 기반 이름 )	
+5	REAL_FILENAME	varchar2(50)		Y		파일명	
+6	FILEPATH	varchar2(100)		Y		파일 저장 경로	
+7	REG_DATE	date		Y	sysdate	등록일	
+8	REG_USERID	varchar2(10)		Y		등록자 ID	
+9	USEYN	varchar2(1)		Y	'Y'	사용여부	
