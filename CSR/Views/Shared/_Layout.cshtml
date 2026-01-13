@@ -64,6 +64,7 @@
     <title>@ViewData["Title"] - CSR</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/autocomplete.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/table.css" asp-append-version="true" />
@@ -72,7 +73,20 @@
     <script src="~/js/common.js"></script>
     <script src="~/js/autocomplete.js"></script>
     <script src="~/js/lodash.js"></script>
+
+    <!-- ... -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <!-- DevExtreme theme -->
+    <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/24.2.12/css/dx.light.css">
+
+    <!-- DevExtreme styles -->
+    <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/24.2.12/css/dx.common.css">
+
+    <!-- DevExtreme 라이브러리 (이 중 하나만 참조하세요) -->
+    <script type = "text/javascript" src = "https://cdn3.devexpress.com/jslib/24.2.12/js/dx.all.js" ></script>  
+    <!-- 라이센스 -->
+    <script src="~/js/devextreme-license.js"></script>
 
 </head>
 
@@ -161,8 +175,9 @@
 
     <partial name="_ToastPartial" />
 
+    
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>    
     @await RenderSectionAsync("Scripts", required: false)
 
     <script>    

@@ -37,9 +37,10 @@
                     <!-- 조직도 tr -->
                     <tr>
                         <th class="align-middle text-center">@SharedLocalizer["Label_UserId"]</th>
-                        <td><input asp-for="Search.UserId" class="form-control" /></td>
+                        <!-- <td><input asp-for="Search.UserId" class="form-control" /></td> -->
+                        <td><input name="UserId" class="form-control" value="@Model.Search.UserId" /></td>
                         <th class="align-middle text-center">@SharedLocalizer["Label_UserName"]</th>
-                        <td><input asp-for="Search.UserName" class="form-control" /></td>
+                        <td><input name="UserName" class="form-control" value="@Model.Search.UserName" /></td> 
                         <td colspan="4" class="text-end">
                             <button type="submit" class="btn btn-light search-btn">@Localizer["Search"]</button>
                         </td>
@@ -76,8 +77,10 @@
                     <col width="8%"/>
                     <col width="8%"/>
                     <col width="8%"/>
+                    <col width="8%"/>
+                    
+                    <col width="8%"/>
                     <col width="15%"/>
-                    <col width="8%"/>                    
                     <col width="8%"/>
                     <col width="8%"/>
                     <col width="8%"/>
@@ -87,11 +90,12 @@
                     <th>@SharedLocalizer["TableHeader_UserName"]</th>
                     <th>@SharedLocalizer["TableHeader_CorperationCode"]</th>
                     <th>@SharedLocalizer["TableHeader_DepartmentCode"]</th>
+                    <th>@SharedLocalizer["TableHeader_OfficeCode"]</th>
+                    
                     <th>@SharedLocalizer["TableHeader_TeamCode"]</th>
                     <th>@SharedLocalizer["TableHeader_Email"]</th>
                     <th>@SharedLocalizer["TableHeader_InUse"]</th>
-                    <th>@SharedLocalizer["TableHeader_AdminPrivileges"]</th>
-                    <th>@SharedLocalizer["TableHeader_RegistrationDate"]</th>
+                    <th>@SharedLocalizer["TableHeader_AdminPrivileges"]</th>                    
                     <th>@Localizer["Operation"]</th>
                 </tr>
             </thead>
@@ -113,20 +117,4 @@ else
 
 @section Scripts {    
     <partial name="_OrganizationFieldsPartial.Scripts" />
-
-    <script>
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const paramsCorcd = urlParams.get("CorCd");
-        const paramsDeptCd = urlParams.get("DeptCd");
-        const paramsOfficeCd = urlParams.get("OfficeCd");
-        const paramsTeamCd = urlParams.get("TeamCd");
-
-        console.log(paramsCorcd);
-        console.log(paramsDeptCd);
-        console.log(paramsOfficeCd);
-        console.log(paramsTeamCd);
-
-    </script>
-
 }

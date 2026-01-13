@@ -9,6 +9,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using FluentValidation.Results;
 using CSR.Filters;
+using Newtonsoft.Json;
 
 namespace CSR.Controllers
 {
@@ -28,6 +29,10 @@ namespace CSR.Controllers
         // GET: User
         public async Task<IActionResult> Index([FromQuery] UserSearchViewModel search, int pageNumber = 1, int pageSize = 15)
         {
+
+            // --- 쿼리디버킹코드 ---            
+            Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(search, Formatting.Indented));
+            // --- 쿼리디버킹코드 ---
 
             try
             {

@@ -128,7 +128,7 @@ namespace CSR.Services
                 whereClauses.Add("DEPTCD = :DeptCd");
                 parameters.Add("DeptCd", search.DeptCd);
             }
-            // 사무실 코드드
+            // 사무실 코드
             if (!string.IsNullOrWhiteSpace(search.OfficeCd))
             {
                 whereClauses.Add("OFFICECD = :OfficeCd");
@@ -161,6 +161,12 @@ namespace CSR.Services
                 ORDER BY RN";
             
             var users = await _connection.QueryAsync<User>(pagedSql, parameters);
+
+            // // --- 쿼리디버킹코드 ---
+            // Console.WriteLine("Executing CreateUserAsync Query:");
+            // Console.WriteLine(pagedSql);
+            // Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(search, Formatting.Indented));
+            // // --- 쿼리디버킹코드 ---
             
             return new PagedResult<User>(users.ToList(), totalCount, pageNumber, pageSize);
         }

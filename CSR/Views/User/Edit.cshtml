@@ -88,7 +88,7 @@
                     </td>
                     <td><label asp-for="RetireDate" class="control-label">@SharedLocalizer["Label_RetirementDate"]</label></td>
                     <td>
-                        <input asp-for="RetireDate" class="form-control" />
+                        <div id="RetireDate"></div>
                         <!-- <span asp-validation-for="RetireDate" class="text-danger"></span> -->
                     </td>
                 </tr>
@@ -140,6 +140,22 @@
         </form>
     </div>
 </div>
+
+
+<script>
+
+    const labelMode = 'static';
+
+    const today = Date.now();
+
+    const birthDate = $('#RetireDate').dxDateBox({
+        placeholder: 'Select...',
+        inputAttr: { 'aria-label': 'Retire Date' },
+        labelMode,
+    }).dxDateBox('instance');
+
+</script>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

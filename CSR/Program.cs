@@ -29,6 +29,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.SlidingExpiration = true;
     });
 
+
+# region 권한 설정
 // 권한 정책 정의
 builder.Services.AddAuthorization(options =>
 {
@@ -42,18 +44,20 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole("R4"));
 });
 
+# endregion
+
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new AuthorizeFilter());
 })
-    .AddViewLocalization() // 뷰에서 다국어를 지원하도록 설정
-    .AddDataAnnotationsLocalization(); // 데이터 유효성 검사 메시지에서 다국어를 지원하도록 설정
+    .AddViewLocalization()                                              // 뷰에서 다국어를 지원하도록 설정
+    .AddDataAnnotationsLocalization();                                  // 데이터 유효성 검사 메시지에서 다국어를 지원하도록 설정
 
 // FluentValidation 등록
-// builder.Services.AddFluentValidationAutoValidation(); // 비동기 검증을 위해 자동 유효성 검사는 비활성화
+// builder.Services.AddFluentValidationAutoValidation();                // 비동기 검증을 위해 자동 유효성 검사는 비활성화
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-// Supabase 클라이언트 등록
+# region Supabase 클라이언트 등록
 var supabaseUrl = builder.Configuration["Supabase:Url"];
 var supabaseKey = builder.Configuration["Supabase:AnonKey"];
 
@@ -85,7 +89,9 @@ else
         Console.WriteLine("⚠️  경고: Supabase 설정이 없습니다. appsettings.json에 Supabase URL과 AnonKey를 설정해주세요.");
     }
 }
+# endregion 
 
+# region Oracle 클라이언트 등록
 // Oracle DB 연결을 위한 IDbConnection 등록
 builder.Services.AddScoped<IDbConnection>(sp =>
 {
@@ -99,7 +105,9 @@ builder.Services.AddScoped<IDbConnection>(sp =>
     
     return new OracleConnection(connectionString);
 });
+# endregion
 
+# region 서비스 자동등록 
 // CSR.Services 네임스페이스의 모든 서비스를 자동으로 등록합니다.
 var serviceTypes = typeof(Program).Assembly.GetTypes()
     .Where(t => t.IsClass && !t.IsAbstract && t.Namespace == "CSR.Services");
@@ -109,6 +117,9 @@ foreach (var service in serviceTypes)
     builder.Services.AddScoped(service);
 }
 
+# endregion
+
+# region 다국어 설정
 // 다국어 옵션 설정
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
@@ -119,6 +130,11 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.AddSupportedCultures(supportedCultures);
     options.AddSupportedUICultures(supportedCultures);
 });
+
+# endregion
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpContextAccessor>().HttpContext);
 
 var app = builder.Build();
 
