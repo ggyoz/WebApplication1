@@ -4,13 +4,14 @@ CSR/.vs/
 /WebApplication1.sln
 /WebApplication1/bin
 /WebApplication1/obj
- 
+CSR\wwwroot\js\devextreme-license.js
+
 # Build results
 [Dd]ebug/
 [Rr]elease/
 [Bb]in/
 [Oo]bj/
- 
+
 # Visual Studio files
 *.user
 *.suo
