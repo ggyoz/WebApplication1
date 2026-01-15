@@ -1,0 +1,139 @@
+@model ReqInfo
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
+
+@{
+    ViewData["Title"] = "요구사항 수정";
+}
+
+<partial name="_PageTitlePartial" />
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edit" asp-route-id="@Model.REQID" enctype="multipart/form-data">
+            <input type="hidden" asp-for="REQID" />
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <table class="table-layout" width="100%">
+                <colgroup>
+                    <col width="15%">
+                    <col width="35%">
+                    <col width="15%">
+                    <col width="35%">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td><label asp-for="TITLE" class="control-label"></label></td>
+                        <td colspan="3">
+                            <input asp-for="TITLE" class="form-control" />
+                            <span asp-validation-for="TITLE" class="text-danger"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label asp-for="REQDATE" class="control-label"></label></td>
+                        <td>
+                            <input asp-for="REQDATE" type="date" class="form-control" />
+                            <span asp-validation-for="REQDATE" class="text-danger"></span>
+                        </td>
+                        <td><label asp-for="EXPECTDATE" class="control-label"></label></td>
+                        <td>
+                            <input asp-for="EXPECTDATE" type="date" class="form-control" />
+                            <span asp-validation-for="EXPECTDATE" class="text-danger"></span>
+                        </td>
+                    </tr>
+                     <tr>
+                        <td><label asp-for="STARTDATE" class="control-label"></label></td>
+                        <td>
+                            <input asp-for="STARTDATE" type="date" class="form-control" />
+                        </td>
+                        <td><label asp-for="ENDDATE" class="control-label"></label></td>
+                        <td>
+                            <input asp-for="ENDDATE" type="date" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label asp-for="SYSTEMCD" class="control-label"></label></td>
+                        <td>
+                            <select asp-for="SYSTEMCD" asp-items="ViewBag.SystemCodes" class="form-select"></select>
+                        </td>
+                        <td><label asp-for="REQTYPE" class="control-label"></label></td>
+                        <td>
+                            <select asp-for="REQTYPE" asp-items="ViewBag.ReqTypes" class="form-select"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label asp-for="PRIORITYCD" class="control-label"></label></td>
+                        <td>
+                            <select asp-for="PRIORITYCD" asp-items="ViewBag.PriorityCodes" class="form-select"></select>
+                        </td>
+                        <td><label asp-for="PROC_STATUS" class="control-label"></label></td>
+                        <td>
+                             <select asp-for="PROC_STATUS" asp-items="ViewBag.ProcStatusCodes" class="form-select"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top;"><label asp-for="CONTENTS_HTML" class="control-label"></label></td>
+                        <td colspan="3">
+                            <div id="content-editor">@Html.Raw(Model.CONTENTS_HTML)</div>
+                            <input type="hidden" asp-for="CONTENTS_HTML" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top;"><label asp-for="NOTE_HTML" class="control-label"></label></td>
+                        <td colspan="3">
+                            <div id="note-editor">@Html.Raw(Model.NOTE_HTML)</div>
+                            <input type="hidden" asp-for="NOTE_HTML" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>@SharedLocalizer["Label_Attachments"]</td>
+                        <td colspan="3">
+                            @if (Model.AttachFiles.Any())
+                            {
+                                <ul class="list-group mb-3">
+                                    @foreach (var file in Model.AttachFiles)
+                                    {
+                                        <li class="list-group-item">
+                                            <input type="checkbox" name="deletedFiles" value="@file.FILEID" id="del-@file.FILEID" class="form-check-input" />
+                                            <label for="del-@file.FILEID" class="form-check-label ms-2">@SharedLocalizer["Button_Delete"]</label>
+                                            <a asp-action="DownloadFile" asp-route-id="@file.FILEID" class="ms-3">@file.REAL_FILENAME</a>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            <div>
+                                <div id="file-uploader"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="button-area text-end mt-5 m-3">
+                <input type="submit" value="@SharedLocalizer["Button_Save"]" class="btn btn-primary" />
+                <a asp-action="Details" asp-route-id="@Model.REQID" class="btn btn-secondary">@SharedLocalizer["Button_Cancel"]</a>
+                <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        #file-uploader .dx-fileuploader-input-wrapper { min-height: 150px; border: 2px dashed #ccc; padding: 20px; background-color: #f8f9fa; }
+    </style>
+    <script>
+        $(function() {
+            initializeHtmlEditor('#content-editor', 'input[name="@Html.NameFor(m => m.CONTENTS_HTML)"]');
+            initializeHtmlEditor('#note-editor', 'input[name="@Html.NameFor(m => m.NOTE_HTML)"]');
+
+            $("#file-uploader").dxFileUploader({
+                name: 'newFiles',
+                multiple: true,
+                uploadMode: 'useForm'
+            });
+        });
+    </script>
+}

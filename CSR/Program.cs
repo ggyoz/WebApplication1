@@ -108,15 +108,48 @@ builder.Services.AddScoped<IDbConnection>(sp =>
 # endregion
 
 builder.Services.AddScoped<CSR.Services.INoticeService, CSR.Services.NoticeService>();
+builder.Services.AddScoped<CSR.Services.IReqService, CSR.Services.ReqService>();
 
 # region 서비스 자동등록 
+
 // CSR.Services 네임스페이스의 모든 서비스를 자동으로 등록합니다.
+
 var serviceTypes = typeof(Program).Assembly.GetTypes()
+
     .Where(t => t.IsClass && !t.IsAbstract && t.Namespace == "CSR.Services");
 
-foreach (var service in serviceTypes)
+
+
+foreach (var type in serviceTypes)
+
 {
-    builder.Services.AddScoped(service);
+
+    // 'I' + 클래스 이름 규칙을 따르는 인터페이스를 찾습니다.
+
+    var serviceInterface = type.GetInterfaces().FirstOrDefault(i => i.Name == "I" + type.Name);
+
+
+
+    if (serviceInterface != null)
+
+    {
+
+        // 매칭되는 인터페이스가 있으면, <인터페이스, 구현체>로 등록합니다.
+
+        builder.Services.AddScoped(serviceInterface, type);
+
+    }
+
+    else
+
+    {
+
+        // 매칭되는 인터페이스가 없으면, 클래스 자체를 등록합니다. (예: UserService)
+
+        builder.Services.AddScoped(type);
+
+    }
+
 }
 
 # endregion

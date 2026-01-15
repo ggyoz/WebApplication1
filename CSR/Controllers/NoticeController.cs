@@ -10,10 +10,10 @@ namespace CSR.Controllers
     public class NoticeController : Controller
     {
         private readonly INoticeService _noticeService;
-        private readonly CommCodeService _commCodeService;
+        private readonly ICommCodeService _commCodeService;
         private readonly ILogger<NoticeController> _logger;
 
-        public NoticeController(INoticeService noticeService, CommCodeService commCodeService, ILogger<NoticeController> logger)
+        public NoticeController(INoticeService noticeService, ICommCodeService commCodeService, ILogger<NoticeController> logger)
         {
             _noticeService = noticeService;
             _commCodeService = commCodeService;

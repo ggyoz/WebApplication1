@@ -1,0 +1,76 @@
+@model PagedResult<ReqInfo>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
+
+@{
+    ViewData["Title"] = "요청사항 목록";
+}
+
+<partial name="_PageTitlePartial" />
+
+<div class="search-area card p-3">
+    <form asp-action="Index" method="get">
+        <div class="row">
+            <div class="col-md-10">
+                <input type="text" name="searchValue" value="@ViewData["SearchValue"]" class="form-control" placeholder="제목으로 검색" />
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-light search-btn w-100">@SharedLocalizer["Button_Search"]</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="text-end mb-3">
+    <a asp-action="Create" class="btn btn-add">@SharedLocalizer["Button_Create"]</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Items.First().REQID)</th>
+                <th>@Html.DisplayNameFor(model => model.Items.First().TITLE)</th>
+                <th>@Html.DisplayNameFor(model => model.Items.First().SystemName)</th>
+                <th>@Html.DisplayNameFor(model => model.Items.First().ReqUserName)</th>
+                <th>@Html.DisplayNameFor(model => model.Items.First().REQDATE)</th>
+                <th>@Html.DisplayNameFor(model => model.Items.First().EXPECTDATE)</th>
+                <th>@Html.DisplayNameFor(model => model.Items.First().ProcStatusName)</th>
+                <th>@Html.DisplayNameFor(model => model.Items.First().PROC_RATE)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Items.Any())
+            {
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@item.REQID</td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.REQID">@item.TITLE</a>
+                        </td>
+                        <td>@item.SystemName</td>
+                        <td>@item.ReqUserName</td>
+                        <td>@item.REQDATE.ToShortDateString()</td>
+                        <td>@item.EXPECTDATE.ToShortDateString()</td>
+                        <td>@item.ProcStatusName</td>
+                        <td>@item.PROC_RATE%</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.REQID" class="btn btn-sm btn-outline-secondary">@SharedLocalizer["Button_Edit"]</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="9" class="text-center">@SharedLocalizer["Message_NoData"]</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<partial name="_PagingPartial" model="Model" />

@@ -8,10 +8,10 @@ namespace CSR.Controllers
 {
     public class CommCodeController : Controller
     {
-        private readonly CommCodeService _commCodeService;
+        private readonly ICommCodeService _commCodeService;
         private readonly ILogger<CommCodeController> _logger;
 
-        public CommCodeController(CommCodeService commCodeService, ILogger<CommCodeController> logger)
+        public CommCodeController(ICommCodeService commCodeService, ILogger<CommCodeController> logger)
         {
             _commCodeService = commCodeService;
             _logger = logger;
@@ -110,6 +110,13 @@ namespace CSR.Controllers
             
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
             return Json(new { success = false, errors });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMenusBySystemCode(int systemCodeId)
+        {
+            var menus = await _commCodeService.GetSelectListByPCodeAsync(systemCodeId);
+            return Json(menus);
         }
     }
 }

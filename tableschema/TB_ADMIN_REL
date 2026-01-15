@@ -1,0 +1,8 @@
+테이블 정보 : 조치자별 담당시스템
+컬럼명	데이터 타입	KEY	NOT NULL	Default	Comment	
+ID	number	pk			ID	
+USERID	varchar2(10)				관리자 ID	
+MENUID	varchar2(50)				메뉴 ID	
+ROLE_TYPE	varchar2(10)				정 / 부	
+REG_DATE	date				등록일	
+REG_USERID	varchar2(10)				등록자 ID	

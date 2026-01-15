@@ -16,7 +16,8 @@ namespace CSR.Services
         Task<int> CreateCommCodeAsync(CommCode commCode);
         Task UpdateCommCodeAsync(CommCode commCode);
         Task<List<CommCode>> GetAllCommCodesAsync();
-        Task<IEnumerable<SelectListItem>> GetNoticeTypeSelectListAsync(); // New method
+        Task<IEnumerable<SelectListItem>> GetNoticeTypeSelectListAsync();        
+        Task<IEnumerable<SelectListItem>> GetSelectListByPCodeAsync(int pid);
     }
 
     public class CommCodeService : ICommCodeService
@@ -60,7 +61,7 @@ namespace CSR.Services
             
             foreach(var code in allCodes.Where(c => c.Children != null))
             {
-                code.Children = code.Children.OrderBy(c => c.SORTORDER).ToList();
+                code.Children = code.Children!.OrderBy(c => c.SORTORDER).ToList();
             }
 
             return rootCodes.OrderBy(c => c.SORTORDER).ToList();
@@ -114,15 +115,20 @@ namespace CSR.Services
         // New method implementation
         public async Task<IEnumerable<SelectListItem>> GetNoticeTypeSelectListAsync()
         {
+            return await GetSelectListByPCodeAsync(54);
+        }
+
+        public async Task<IEnumerable<SelectListItem>> GetSelectListByPCodeAsync(int pid)
+        {
             var allCodes = await GetAllCommCodesAsync();
-            var noticeTypes = allCodes.Where(c => c.PARENTID == 54 && c.USEYN == "Y") // Filter for notice types and active ones
-                                      .OrderBy(c => c.SORTORDER)
-                                      .Select(c => new SelectListItem
-                                      {
-                                          Value = c.CODE, // Assuming CODE is the value for SelectList
-                                          Text = c.CODENM // CODENM is the display text for SelectList
-                                      });
-            return noticeTypes;
+            var items = allCodes.Where(c => c.PARENTID == pid && c.USEYN == "Y")
+                                .OrderBy(c => c.SORTORDER)
+                                .Select(c => new SelectListItem
+                                {
+                                    Value = c.CODEID.ToString(),
+                                    Text = c.CODENM
+                                });
+            return items;
         }
     }
 }

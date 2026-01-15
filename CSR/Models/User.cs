@@ -112,5 +112,11 @@ namespace CSR.Models
         [Column("USEYN")] // NEW
         [Display(Name = "사용 여부")]
         public string UseYn { get; set; } = "Y";
+
+        // Properties from joined tables
+        public string? CorpName { get; set; }
+        public string? DeptName { get; set; }
+        public string? OfficeName { get; set; }
+        public string? TeamName { get; set; }
     }
 }

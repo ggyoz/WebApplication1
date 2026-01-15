@@ -1,0 +1,109 @@
+@model ReqInfo
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
+
+@{
+    ViewData["Title"] = "요구사항 상세";
+}
+
+<partial name="_PageTitlePartial" />
+
+<div>
+    <h4>@Model.TITLE</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.REQID)</dt>
+        <dd class="col-sm-10">@Model.REQID</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.SystemName)</dt>
+        <dd class="col-sm-4">@Model.SystemName</dd>
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.ReqTypeName)</dt>
+        <dd class="col-sm-4">@Model.ReqTypeName</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.ReqUserName)</dt>
+        <dd class="col-sm-4">@Model.ReqUserName</dd>
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.ResUserName)</dt>
+        <dd class="col-sm-4">@Model.ResUserName</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.REQDATE)</dt>
+        <dd class="col-sm-4">@Model.REQDATE.ToString("yyyy-MM-dd")</dd>
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.EXPECTDATE)</dt>
+        <dd class="col-sm-4">@Model.EXPECTDATE.ToString("yyyy-MM-dd")</dd>
+        
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.ProcStatusName)</dt>
+        <dd class="col-sm-4">@Model.ProcStatusName</dd>
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.PROC_RATE)</dt>
+        <dd class="col-sm-4">@Model.PROC_RATE%</dd>
+    </dl>
+
+    <div class="card mt-4">
+        <div class="card-header">@Html.DisplayNameFor(model => model.CONTENTS_HTML)</div>
+        <div class="card-body content-display">
+            @Html.Raw(Model.CONTENTS_HTML)
+        </div>
+    </div>
+    
+    @if (!string.IsNullOrEmpty(Model.NOTE_HTML))
+    {
+        <div class="card mt-4">
+            <div class="card-header">@Html.DisplayNameFor(model => model.NOTE_HTML)</div>
+            <div class="card-body content-display">
+                @Html.Raw(Model.NOTE_HTML)
+            </div>
+        </div>
+    }
+
+    @if (Model.AttachFiles.Any())
+    {
+        <div class="card mt-4">
+            <div class="card-header">@SharedLocalizer["Label_Attachments"]</div>
+            <ul class="list-group list-group-flush">
+                @foreach(var file in Model.AttachFiles)
+                {
+                    <li class="list-group-item">
+                        <a asp-action="DownloadFile" asp-route-id="@file.FILEID">@file.REAL_FILENAME</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+</div>
+
+<div class="mt-4">
+    <h5>@SharedLocalizer["Label_History"]</h5>
+    <table class="table table-sm table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.History.First().HISTORYID)</th>
+                <th>@SharedLocalizer["Label_ChangeDetails"]</th>
+                <th>@Html.DisplayNameFor(model => model.History.First().REG_USERID)</th>
+                <th>@Html.DisplayName-for(model => model.History.First().REG_DATE)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var hist in Model.History)
+            {
+                <tr>
+                    <td>@hist.HISTORYID</td>
+                    <td>@hist.REQHISTORY</td>
+                    <td>@hist.REG_USERID</td>
+                    <td>@hist.REG_DATE.ToString("yyyy-MM-dd HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="button-area text-end mt-5 m-3">
+    <a asp-action="Edit" asp-route-id="@Model.REQID" class="btn btn-primary">@SharedLocalizer["Button_Edit"]</a>
+    <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
+</div>
+
+@section Scripts {
+<style>
+    .content-display {
+        min-height: 150px;
+    }
+</style>
+}

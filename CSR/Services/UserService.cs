@@ -183,6 +183,33 @@ namespace CSR.Services
             return user;
         }
 
+        public async Task<User?> GetUserWithDetailsByIdAsync(string userId)
+        {
+            var sql = $@"
+                SELECT 
+                    u.USERID AS UserId, u.USERPWD AS UserPwd, u.USERNAME AS UserName, u.EMPNO AS EmpNo, u.CORCD AS CorCd, 
+                    u.DEPTCD AS DeptCd, u.OFFICECD AS OfficeCd, u.TEAMCD AS TeamCd, u.SYSCD AS SysCd, u.BIZCD AS BizCd, 
+                    u.TELNO AS TelNo, u.MOB_PHONE_NO AS MobPhoneNo, u.EMAIL_ADDR AS EmailAddr, u.USERSTAT AS UserStat, 
+                    u.RETIRE_DATE AS RetireDate, u.ADMIN_FLAG AS AdminFlag, u.CUSTCD AS CustCd, u.VENDCD AS VendCd, 
+                    u.AUTH_FLAG AS AuthFlag, u.USER_DIV AS UserDiv, u.PW_MISS_COUNT AS PwMissCount, 
+                    u.REG_DATE AS RegDate, u.REG_USERID AS RegUserId, u.UPDATE_DATE AS UpdateDate, 
+                    u.UPDATE_USERID AS UpdateUserId, u.USEYN AS UseYn,
+                    c.CORNM AS CorpName,
+                    d.DEPTNAME AS DeptName,
+                    o.DEPTNAME AS OfficeName,
+                    t.DEPTNAME AS TeamName
+                FROM 
+                    TB_USER_INFO u
+                    LEFT JOIN TB_COR_INFO c ON u.CORCD = c.CORCD
+                    LEFT JOIN TB_DEPT_INFO d ON u.DEPTCD = d.DEPTCD
+                    LEFT JOIN TB_DEPT_INFO o ON u.OFFICECD = o.DEPTCD
+                    LEFT JOIN TB_DEPT_INFO t ON u.TEAMCD = t.DEPTCD
+                WHERE u.USERID = :UserId";
+            
+            var user = await _connection.QueryFirstOrDefaultAsync<User>(sql, new { UserId = userId });
+            return user;
+        }
+
         public async Task CreateUserAsync(User user)
         {
             // Hash the password before saving
