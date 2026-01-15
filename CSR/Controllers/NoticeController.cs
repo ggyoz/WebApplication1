@@ -37,12 +37,12 @@ namespace CSR.Controllers
             }
             return View(notice);
         }
-
+        
+        [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> Create()
         {
-            var allCodes = await _commCodeService.GetAllCommCodesAsync();
-            var noticeTypes = allCodes.Where(c => c.PARENTID == 54).ToList();
-            ViewBag.NoticeTypes = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(noticeTypes, "CODE", "CODENM");
+            // 공지유형 selectbox option 생성
+            ViewBag.NoticeTypes = await _commCodeService.GetNoticeTypeSelectListAsync();
 
             var model = new Notice
             {
@@ -54,8 +54,11 @@ namespace CSR.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Notice notice, List<IFormFile> files)
+        [Authorize(Policy = "RequireManagerOrHigher")]
+        public async Task<IActionResult> Create(Notice notice)
         {
+            var files = Request.Form.Files;
+
             if (ModelState.IsValid)
             {
                 try
@@ -82,9 +85,15 @@ namespace CSR.Controllers
             return View(notice);
         }
 
+        [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> Edit(int id)
         {
+
             var notice = await _noticeService.GetNoticeByIdAsync(id);
+
+            // 공지유형 selectbox option 생성
+            ViewBag.NoticeTypes = await _commCodeService.GetNoticeTypeSelectListAsync();
+
             if (notice == null)
             {
                 return NotFound();
@@ -94,6 +103,7 @@ namespace CSR.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> Edit(int id, Notice notice, List<IFormFile> newFiles, [FromForm]List<int> deletedFiles)
         {
             if (id != notice.ID)
@@ -114,15 +124,7 @@ namespace CSR.Controllers
                         await _noticeService.AddNoticeFilesAsync(id, newFiles, notice.UPDATE_USERID);
                     }
 
-                    if (deletedFiles != null && deletedFiles.Count > 0)
-                    {
-                        foreach (var fileId in deletedFiles)
-                        {
-                            await _noticeService.DeleteNoticeFileAsync(fileId);
-                        }
-                    }
-
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Details), new { id = notice.ID });
                 }
                 catch (Exception ex)
                 {
@@ -138,6 +140,7 @@ namespace CSR.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _noticeService.DeleteNoticeAsync(id);
@@ -166,5 +169,7 @@ namespace CSR.Controllers
             memory.Position = 0;
             return File(memory, "application/octet-stream", file.REAL_FILENAME);
         }
+
+
     }
 }

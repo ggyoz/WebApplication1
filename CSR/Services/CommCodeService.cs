@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CSR.Services
 {
@@ -15,6 +16,7 @@ namespace CSR.Services
         Task<int> CreateCommCodeAsync(CommCode commCode);
         Task UpdateCommCodeAsync(CommCode commCode);
         Task<List<CommCode>> GetAllCommCodesAsync();
+        Task<IEnumerable<SelectListItem>> GetNoticeTypeSelectListAsync(); // New method
     }
 
     public class CommCodeService : ICommCodeService
@@ -107,6 +109,20 @@ namespace CSR.Services
                     UPDATE_DATE = SYSDATE
                 WHERE CODEID = :CODEID";
             await _dbConnection.ExecuteAsync(sql, commCode);
+        }
+
+        // New method implementation
+        public async Task<IEnumerable<SelectListItem>> GetNoticeTypeSelectListAsync()
+        {
+            var allCodes = await GetAllCommCodesAsync();
+            var noticeTypes = allCodes.Where(c => c.PARENTID == 54 && c.USEYN == "Y") // Filter for notice types and active ones
+                                      .OrderBy(c => c.SORTORDER)
+                                      .Select(c => new SelectListItem
+                                      {
+                                          Value = c.CODE, // Assuming CODE is the value for SelectList
+                                          Text = c.CODENM // CODENM is the display text for SelectList
+                                      });
+            return noticeTypes;
         }
     }
 }

@@ -138,6 +138,15 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpContextAccessor>().HttpContext);
 
+// 세션 서비스 등록
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -158,6 +167,8 @@ app.UseStaticFiles();
 app.UseRequestLocalization(); // 요청 파이프라인에 미들웨어 추가
 
 app.UseRouting();
+
+app.UseSession(); // 세션 미들웨어 추가
 
 app.UseAuthentication(); // 인증 미들웨어 추가
 app.UseAuthorization();

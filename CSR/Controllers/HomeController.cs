@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using CSR.Models;
 using Microsoft.AspNetCore.Localization; // 추가
+using Microsoft.AspNetCore.Authorization;
 
 namespace CSR.Controllers
 {
@@ -25,6 +26,7 @@ namespace CSR.Controllers
         }
 
         [HttpPost] // POST 요청으로만 동작하도록 설정
+        [AllowAnonymous]  //모든 사용자
         public IActionResult SetLanguage(string culture, string returnUrl)
         {
             Response.Cookies.Append(

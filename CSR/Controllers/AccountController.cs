@@ -67,6 +67,19 @@ namespace CSR.Controllers
                         new ClaimsPrincipal(claimsIdentity), 
                         authProperties);
 
+                    // User정보 세선 등록
+                    HttpContext.Session.SetString("UserId", user.UserId);
+                    HttpContext.Session.SetString("UserName", user.UserName);
+                    HttpContext.Session.SetString("CorCd", user.CorCd);
+                    HttpContext.Session.SetString("DeptCd", user.DeptCd);
+                    HttpContext.Session.SetString("OfficeCd", user.OfficeCd);
+                    HttpContext.Session.SetString("TeamCd", user.TeamCd);
+                    HttpContext.Session.SetString("SysCd", user.SysCd);
+                    // BizCd 건너뜀
+                    HttpContext.Session.SetString("TelNo", user.TelNo);
+                    HttpContext.Session.SetString("MobPhoneNo", user.MobPhoneNo);
+                    HttpContext.Session.SetString("EmailAddr", user.EmailAddr);
+
                     return LocalRedirect(returnUrl ?? "/Home/Index");
                 }
                 

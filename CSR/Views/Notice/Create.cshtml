@@ -1,6 +1,12 @@
 @model Notice
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IAuthorizationService AuthorizationService
+@inject IViewLocalizer Localizer
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
+
 @{
-    ViewData["Title"] = "공지사항 등록";
+    ViewData["Title"] = Localizer["PageTitle"];
 }
 
 <partial name="_PageTitlePartial" />
@@ -20,14 +26,14 @@
                     </colgroup>
                 <tbody>
                     <tr>
-                        <td><label asp-for="TITLE" class="control-label">제목</label></td>
+                        <td><label asp-for="TITLE" class="control-label">@SharedLocalizer["Label_Title"]</label></td>
                         <td colspan="3">
                             <input asp-for="TITLE" class="form-control" />
                             <span asp-validation-for="TITLE" class="text-danger"></span>
                         </td>
                     </tr>
                     <tr>
-                        <td><label asp-for="NOTICETYPE" class="control-label">유형</label></td>
+                        <td><label asp-for="NOTICETYPE" class="control-label">@SharedLocalizer["Label_Type"]</label></td>
                         <td colspan="3">
                             <select asp-for="NOTICETYPE" asp-items="ViewBag.NoticeTypes" class="form-control">                                
                             </select>
@@ -35,24 +41,34 @@
                         </td>
                     </tr>
                     <tr>
-                        <td style="vertical-align: top;"><label asp-for="CONTENTS_HTML" class="control-label">내용</label></td>
+                        <td style="vertical-align: top;"><label asp-for="CONTENTS_HTML" class="control-label">@SharedLocalizer["Label_Content"]</label></td>
                         <td colspan="3">
                             <div class="html-editor"></div>
                             <input type="hidden" asp-for="CONTENTS_HTML" />
                         </td>
                     </tr>                    
                     <tr>
-                        <td><label class="control-label">첨부파일</label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_Attachments"]</label></td>
                         <td colspan="3">
-                            <input type="file" name="newFiles" multiple class="form-control" />
+                            <!-- <input type="file" name="newFiles" multiple class="form-control" /> -->
+
+                            <div>
+                                <div id="file-uploader"></div>
+                            </div>
+                            
+                                <span class="note">Maximum file size: <span>4 MB</span>.</span>
+                                
                         </td>
                     </tr>
                 </tbody>
             </table>
 
             <div class="button-area text-end mt-5 m-3">
-                <input type="submit" value="Save" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-list">목록</a>
+                @if ((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded)
+                {
+                    <input type="submit" value="@SharedLocalizer["Button_Save"]" class="btn btn-primary" />
+                }
+                <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
             </div>
         </form>
     </div>
@@ -60,6 +76,9 @@
 
 
 @section Scripts {
+    <style>
+        
+    </style>
     <script>
         // 페이지 로드가 완료되면 스크립트 실행
         $(function() {
@@ -69,6 +88,17 @@
                 'input[name="@Html.NameFor(m => m.CONTENTS_HTML)"]', // 값을 저장할 input
                 '.value-content'                                 // 미리보기 div
             );
+            
+            $("#file-uploader").dxFileUploader({ 
+                name: 'files', // 컨트롤러 액션의 파라미터 이름과 일치시켜야 합니다.
+                multiple: true,
+                uploadMode: 'useForm',
+                allowCanceling: true,
+                accept: 'image/*,.pdf,.xlsx,.xls',
+                maxFileSize: 4000000, // 4mb
+                // dropZone 속성을 제거하여 파일 업로더 컴포넌트 자체가 드롭존이 되도록 합니다.
+            });
+            
         });
     </script>
 }

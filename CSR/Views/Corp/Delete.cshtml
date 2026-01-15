@@ -1,10 +1,12 @@
 @model CSR.Models.Corp
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "법인 삭제";
+    ViewData["Title"] = Localizer["PageTitle"];
 }
 
-<h1>법인 삭제</h1>
+<partial name="_PageTitlePartial" />
 
 <h3>정말로 이 항목을 삭제하시겠습니까?</h3>
 <div>

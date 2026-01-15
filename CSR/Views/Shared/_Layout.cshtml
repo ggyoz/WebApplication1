@@ -86,7 +86,7 @@
     <!-- HTMLEditor -->
     <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/24.2.12/js/dx-quill.min.js" ></script> 
 
-    <!-- DevExtreme 라이브러리 (이 중 하나만 참조하세요) -->
+    <!-- DevExtreme -->
     <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/24.2.12/js/dx.all.js" ></script>  
     <!-- 라이센스 -->
     <script src="~/js/devextreme-license.js"></script>
@@ -129,7 +129,7 @@
                         </form>
                         @if (User.Identity?.IsAuthenticated == true)
                         {
-                            <span class="navbar-text me-2">@User.FindFirst("UserName")?.Value 님</span>
+                            <span class="navbar-text me-2">@Context.Session.GetString("UserName") 님</span>
                             <form asp-controller="Account" asp-action="Logout" method="post">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-outline-secondary">@SharedLocalizer["Button_Logout"]</button>

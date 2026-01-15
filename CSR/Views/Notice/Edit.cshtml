@@ -1,6 +1,12 @@
 @model Notice
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
+@inject IAuthorizationService AuthorizationService
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "공지사항 수정";
+    ViewData["Title"] = Localizer["PageTitle"];
 }
 
 <partial name="_PageTitlePartial" />
@@ -11,6 +17,7 @@
         <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ID" />
+            <input type="hidden" asp-for="CORCD" />
             
             <table class="table-layout" width="70%">
                     <colgroup>
@@ -19,28 +26,29 @@
                     </colgroup>
                 <tbody>
                     <tr>
-                        <td><label asp-for="TITLE" class="control-label">제목</label></td>
+                        <td><label asp-for="TITLE" class="control-label">@SharedLocalizer["Label_Title"]</label></td>
                         <td colspan="3">
                             <input asp-for="TITLE" class="form-control" />
                             <span asp-validation-for="TITLE" class="text-danger"></span>
                         </td>
                     </tr>
                     <tr>
-                        <td><label asp-for="NOTICETYPE" class="control-label">유형</label></td>
+                        <td><label asp-for="NOTICETYPE" class="control-label">@SharedLocalizer["Label_Type"]</label></td>
                         <td colspan="3">
-                            <input asp-for="NOTICETYPE" class="form-control" />
+                            <select asp-for="NOTICETYPE" asp-items="ViewBag.NoticeTypes" class="form-control">                                
+                            </select>
                             <span asp-validation-for="NOTICETYPE" class="text-danger"></span>
                         </td>
                     </tr>
                     <tr>
-                        <td style="vertical-align: top;"><label asp-for="CONTENTS_HTML" class="control-label">내용</label></td>
+                        <td style="vertical-align: top;"><label asp-for="CONTENTS_HTML" class="control-label">@SharedLocalizer["Label_Content"]</label></td>
                         <td colspan="3">
                             <div class="html-editor"></div>
                             <input type="hidden" asp-for="CONTENTS_HTML" />
                         </td>
                     </tr>
                     <tr>
-                        <td style="vertical-align: top;"><label class="control-label">Current Files</label></td>
+                        <td style="vertical-align: top;"><label class="control-label">@Localizer["CurrentFiles"]</label></td>
                         <td colspan="3">
                             <ul class="list-group">
                                 @foreach (var file in Model.AttachFiles)
@@ -48,14 +56,14 @@
                                     <li class="list-group-item">
                                         @file.REAL_FILENAME
                                         <input type="checkbox" name="deletedFiles" value="@file.FILEID" class="float-right" />
-                                        <label class="float-right mr-2">Delete</label>
+                                        <label class="float-right mr-2">@SharedLocalizer["Button_Delete"]</label>
                                     </li>
                                 }
                             </ul>
                         </td>
                     </tr>
                     <tr>
-                        <td><label class="control-label">Add New Files</label></td>
+                        <td><label class="control-label">@Localizer["AddNewFiles"]</label></td>
                         <td colspan="3">
                             <input type="file" name="newFiles" multiple class="form-control" />
                         </td>
@@ -64,8 +72,11 @@
             </table>
 
             <div class="button-area text-end mt-5 m-3">
-                <input type="submit" value="Save" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-list">목록</a>
+                @if ((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded)
+                {
+                    <input type="submit" value="@SharedLocalizer["Button_Save"]" class="btn btn-primary" />
+                }
+                <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
             </div>
         </form>
     </div>

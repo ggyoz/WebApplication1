@@ -14,7 +14,9 @@ namespace CSR.Models
         public string? UPDATE_USERID { get; set; }
         public string? USEYN { get; set; }
         public string? RegUserName { get; set; }
+        public string? CodeName { get; set; }
 
+        // 첨부파일
         public List<NoticeFile> AttachFiles { get; set; } = new List<NoticeFile>();
     }
 }

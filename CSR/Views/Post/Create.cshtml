@@ -1,10 +1,12 @@
 @model CSR.Models.Post
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "게시물 작성";
+    ViewData["Title"] = Localizer["PageTitle"];
 }
 
-<h1>게시물 작성</h1>
+<partial name="_PageTitlePartial" />
 
 <hr />
 <div class="row">

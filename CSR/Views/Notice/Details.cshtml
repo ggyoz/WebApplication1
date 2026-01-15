@@ -1,10 +1,17 @@
 @model Notice
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Authorization
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
+@inject IViewLocalizer Localizer
+@inject IAuthorizationService AuthorizationService
 @{
-    ViewData["Title"] = Model.TITLE;
+    ViewData["Title"] = Localizer["PageTitle"];
 }
 
+<partial name="_PageTitlePartial" />
+
 <div class="page-header">
-    <h1>@Model.TITLE</h1>
+    <h1><span class="badge bg-secondary ms-3 me-3">@Model.CodeName</span>@Model.TITLE</h1>
     <p class="text-muted">By @Model.RegUserName on @Model.REG_DATE.ToString("yyyy-MM-dd")</p>
 </div>
 
@@ -17,18 +24,39 @@
 
     @if (Model.AttachFiles.Any())
     {
-        <h4>Attachments</h4>
+        <h4 class="m-3">@SharedLocalizer["Label_Attachments"]</h4>
         <ul class="list-group">
             @foreach (var file in Model.AttachFiles)
             {
                 <li class="list-group-item">
+                    <i class="bi bi-file-earmark-arrow-down me-1"></i>
                     <a asp-action="DownloadFile" asp-route-id="@file.FILEID">@file.REAL_FILENAME</a>
                 </li>
             }
         </ul>
     }
+
 </div>
+
 <div class="mt-3">
-    <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary">Edit</a> |
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    
+</div>
+
+<!-- 버튼영역 -->
+<div class="d-flex justify-content-between align-items-center mt-5">
+    <div>
+        @if ((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded)
+        {
+            <form asp-action="Delete" asp-route-id="@Model.ID" method="post" style="display:inline;" onsubmit="return confirm('@Localizer["DeleteConfirmation"]');">
+                <button type="submit" class="btn btn-outline-secondary">@SharedLocalizer["Button_Delete"]</button>
+            </form>
+        }
+    </div>
+    <div>
+        @if ((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary">@SharedLocalizer["Button_Edit"]</a>
+        }
+        <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_BackToList"]</a>
+    </div>
 </div>

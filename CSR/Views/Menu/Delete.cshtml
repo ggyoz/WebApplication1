@@ -1,10 +1,12 @@
 @model CSR.Models.Menu
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "메뉴 삭제";
+    ViewData["Title"] = Localizer["PageTitle"];
 }
 
-<h1>메뉴 삭제</h1>
+<partial name="_PageTitlePartial" />
 
 <h3>정말로 이 메뉴를 삭제하시겠습니까?</h3>
 <div>

@@ -7,7 +7,7 @@
     ViewData["Title"] = Localizer["PageTitle"];
 }
 
-<h1>@Localizer["PageTitle"]</h1>
+<partial name="_PageTitlePartial" />
 
 @if (TempData["SuccessMessage"] != null)
 {

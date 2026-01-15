@@ -1,10 +1,12 @@
 @model CSR.Models.Menu
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "메뉴 추가";
+    ViewData["Title"] = Localizer["PageTitle"];
 }
 
-<h1>메뉴 추가</h1>
+<partial name="_PageTitlePartial" />
 
 <hr />
 <div class="row">
