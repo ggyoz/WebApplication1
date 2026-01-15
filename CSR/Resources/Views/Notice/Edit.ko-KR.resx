@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="PageTitle" xml:space="preserve">
+    <value>공지사항 수정</value>
+  </data>
+  <data name="CurrentFiles" xml:space="preserve">
+    <value>현재 파일</value>
+  </data>
+  <data name="AddNewFiles" xml:space="preserve">
+    <value>새 파일 추가</value>
+  </data>
+</root>

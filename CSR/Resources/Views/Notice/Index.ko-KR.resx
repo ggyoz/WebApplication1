@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="PageTitle" xml:space="preserve">
+    <value>공지사항</value>
+  </data>
+  <data name="TotalNotices" xml:space="preserve">
+    <value>총 {0}개의 공지사항</value>
+  </data>
+  <data name="CreateNew" xml:space="preserve">
+    <value>새로 만들기</value>
+  </data>
+  <data name="Header_ID" xml:space="preserve">
+    <value>번호</value>
+  </data>
+  <data name="Header_Author" xml:space="preserve">
+    <value>작성자</value>
+  </data>
+  <data name="NoNotices" xml:space="preserve">
+    <value>표시할 공지사항이 없습니다.</value>
+  </data>
+</root>

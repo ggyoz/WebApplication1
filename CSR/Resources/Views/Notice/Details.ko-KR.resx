@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="PageTitle" xml:space="preserve">
+    <value>공지사항</value>
+  </data>
+  <data name="DeleteConfirmation" xml:space="preserve">
+    <value>정말로 이 공지사항을 삭제하시겠습니까?</value>
+  </data>
+</root>

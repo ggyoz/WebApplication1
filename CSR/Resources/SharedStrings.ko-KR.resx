@@ -225,4 +225,16 @@
   <data name="Label_Search" xml:space="preserve">
     <value>검색</value>
   </data>
+  <data name="Label_Title" xml:space="preserve">
+    <value>제목</value>
+  </data>
+  <data name="Label_Type" xml:space="preserve">
+    <value>유형</value>
+  </data>
+  <data name="Label_Content" xml:space="preserve">
+    <value>내용</value>
+  </data>
+  <data name="Label_Attachments" xml:space="preserve">
+    <value>첨부파일</value>
+  </data>
 </root>

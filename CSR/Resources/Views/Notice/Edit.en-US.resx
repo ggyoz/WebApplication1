@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="PageTitle" xml:space="preserve">
+    <value>Edit Notice</value>
+  </data>
+  <data name="CurrentFiles" xml:space="preserve">
+    <value>Current Files</value>
+  </data>
+  <data name="AddNewFiles" xml:space="preserve">
+    <value>Add New Files</value>
+  </data>
+</root>
