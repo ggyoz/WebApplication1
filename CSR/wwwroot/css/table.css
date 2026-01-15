@@ -26,7 +26,7 @@ table.board-tabl td {
 }
 
 table.board-tabl tbody tr{
-    height: 3rem;
+    height: 2rem;
 }
 
 /* Table Body Rows - Hover Effect */
@@ -88,5 +88,14 @@ table.table-layout tr:last-of-type {
 table.table-layout th {
     background-color: #ffffff;
     padding: 12px 1px;
+    vertical-align: middle;
+}
+
+table.table-striped tr{
+    height: 30px;
+    vertical-align: middle;
+}
+
+table.table-striped td{
     vertical-align: middle;
 }

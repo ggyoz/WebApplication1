@@ -4,7 +4,8 @@ CSR/.vs/
 /WebApplication1.sln
 /WebApplication1/bin
 /WebApplication1/obj
-CSR\wwwroot\js\devextreme-license.js
+CSR/wwwroot/js/devextreme-license.js
+CSR/wwwroot/uploads/
 
 # Build results
 [Dd]ebug/
