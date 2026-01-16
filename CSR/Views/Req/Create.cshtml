@@ -14,6 +14,13 @@
     <div class="col-md-12">
         <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="CORCD" />
+            <input type="hidden" asp-for="DEPTCD" />
+            <input type="hidden" asp-for="OFFICECD" />
+            <input type="hidden" asp-for="TEAMCD" />
+            <input type="hidden" asp-for="REG_USERID" />
+            <input type="hidden" asp-for="REQUSERID" />
             
             <table class="table-layout" width="100%">
                 <colgroup>
@@ -70,12 +77,12 @@
                         </td>
                         <td>요청메뉴</td>
                         <td>
-                            <select asp-for="REQMENU" id="ReqMenu" class="form-select">
-                                <option>메뉴 선택</option>
-                            </select>
+                            <select asp-for="REQMENU" id="ReqMenu" class="form-select"></select>
                         </td>
                         <td>조치자</td>
-                        <td></td>
+                        <td>
+                            <select asp-for="RESUSERID" class="form-select"></select>
+                        </td>
                     </tr>
                     
                     <tr>
@@ -84,10 +91,10 @@
                             <input asp-for="REQDATE" type="date" class="form-control" />
                             <span asp-validation-for="REQDATE" class="text-danger"></span>
                         </td>
-                        <td><label asp-for="EXPECTDATE" class="control-label"></label></td>
+                        <td><label asp-for="DUEDATE" class="control-label"></label></td>
                         <td>
-                            <input asp-for="EXPECTDATE" type="date" class="form-control" />
-                            <span asp-validation-for="EXPECTDATE" class="text-danger"></span>
+                            <input asp-for="DUEDATE" type="date" class="form-control" />
+                            <span asp-validation-for="DUEDATE" class="text-danger"></span>
                         </td>
                         <td><label asp-for="PRIORITYCD" class="control-label"></label></td>
                         <td>
@@ -95,7 +102,12 @@
                             <option>긴급도 선택</option>
                             </select>
                             <span asp-validation-for="PRIORITYCD" class="text-danger"></span>
-                        </td>   
+                        </td>  
+                        <td><label asp-for="REQTCODE" class="control-label"></label></td>
+                        <td>
+                            <input asp-for="REQTCODE" type="text" class="form-control" />
+                            <span asp-validation-for="REQTCODE" class="text-danger"></span>
+                        </td> 
                     </tr>
 
                     <tr>
@@ -184,6 +196,33 @@
                     });
                 }
             });
+
+            $('#ReqMenu').on('change', function() {
+                var menuId = $(this).val();
+                console.log(menuId);
+                var adminDropdown = $('#RESUSERID');
+
+                adminDropdown.empty();
+                adminDropdown.append($('<option></option>').val('').text('조치자 선택'));
+
+                if (menuId) {
+                    $.ajax({
+                        url: '@Url.Action("GetAdminRel", "Req")',
+                        type: 'GET',
+                        data: { menuId: menuId },
+                        success: function(data) {
+                            $.each(data, function(i, item) {
+                                adminDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+
+
         });
     </script>
 }

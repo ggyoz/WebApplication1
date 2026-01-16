@@ -117,6 +117,12 @@
   <data name="Label_PasswordFailCount" xml:space="preserve">
     <value>비밀번호 실패 횟수</value>
   </data>
+  <data name="Label_AssignedResponsibilities" xml:space="preserve">
+    <value>담당영역</value>
+  </data>
+  <data name="NoAssignedResponsibilities" xml:space="preserve">
+    <value>할당된 담당영역이 없습니다.</value>
+  </data>
   <data name="Placeholder_Password" xml:space="preserve">
     <value>변경할 경우에만 입력</value>
   </data>
@@ -236,5 +242,11 @@
   </data>
   <data name="Label_Attachments" xml:space="preserve">
     <value>첨부파일</value>
+  </data>
+  <data name="Label_History" xml:space="preserve">
+    <value>이력</value>
+  </data>
+  <data name="Confirmation_Delete" xml:space="preserve">
+    <value>정말로 삭제하시겠습니까?</value>
   </data>
 </root>

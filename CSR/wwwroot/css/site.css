@@ -113,7 +113,7 @@ body {
   font-style: normal;
   font-family: "bootstrap-icons";
   color: #333;
-  font-size: 20px;
+  font-size: 15px;
 }
 
 .dept1-btn::before {
@@ -121,7 +121,7 @@ body {
   font-style: normal;
   font-family: "bootstrap-icons";
   color: #333;
-  font-size: 20px;  
+  font-size: 15px;
 }
 
 .search-btn::after{

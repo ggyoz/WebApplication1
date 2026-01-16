@@ -281,12 +281,6 @@ namespace CSR.Services
             }else{
                 parameters.Add("AdminFlag", 1);                
             }
-
-            // --- 쿼리디버킹코드 ---
-            // Console.WriteLine("Executing CreateUserAsync Query:");
-            // Console.WriteLine(sql);
-            // Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(user, Formatting.Indented));
-            // --- 쿼리디버킹코드 ---
             
             await _connection.ExecuteAsync(sql, parameters);
         }

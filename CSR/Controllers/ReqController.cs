@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using System;
+using Newtonsoft.Json;
 
 namespace CSR.Controllers
 {
@@ -17,12 +18,14 @@ namespace CSR.Controllers
         private readonly IReqService _reqService;
         private readonly ICommCodeService _commCodeService;
         private readonly UserService _userService;
+        private readonly IAdminRelService _adminRelService;
         private readonly ILogger<ReqController> _logger;
 
-        public ReqController(IReqService reqService, ICommCodeService commCodeService, UserService userService, ILogger<ReqController> logger)
+        public ReqController(IReqService reqService, ICommCodeService commCodeService, UserService userService, IAdminRelService adminRelService, ILogger<ReqController> logger)
         {
             _reqService = reqService;
             _commCodeService = commCodeService;
+            _adminRelService = adminRelService;
             _userService = userService;
             _logger = logger;
         }
@@ -48,8 +51,11 @@ namespace CSR.Controllers
         [Authorize] // Authorization can be more specific if needed
         public async Task<IActionResult> Create()
         {
+            // 대상시스템
             ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
+            // 요청유형
             ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
+            // 긴급도 
             ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -59,14 +65,20 @@ namespace CSR.Controllers
             {
                 REQDATE = DateTime.Now,
                 EXPECTDATE = DateTime.Now.AddDays(7),
-                ReqUserName = user?.UserName,
+                ReqUserName = user?.UserName,                
                 ReqUserEmail = user?.EmailAddr,
                 ReqUserTel = user?.TelNo,
                 CorpName = user?.CorpName,
                 DeptName = user?.DeptName,
                 OfficeName = user?.OfficeName,
                 TeamName = user?.TeamName,
-                REQUSERID = userId
+                CORCD = user?.CorCd,
+                DEPTCD = user?.DeptCd,
+                OFFICECD = user?.OfficeCd,
+                TEAMCD = user?.TeamCd,
+                REQUSERID = userId,
+                REG_USERID = userId,
+
             };
 
             return View(reqInfo);
@@ -77,20 +89,29 @@ namespace CSR.Controllers
         [Authorize]
         public async Task<IActionResult> Create(ReqInfo reqInfo, List<IFormFile> files)
         {
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    reqInfo.REG_USERID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";
-                    
+                    reqInfo.REG_USERID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";                    
                     await _reqService.CreateReqInfoAsync(reqInfo, files);
-                    
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error creating requirement.");
                     ModelState.AddModelError("", "An error occurred while creating the requirement.");
+                }
+            }
+            else
+            {
+                // Log ModelState errors
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                _logger.LogWarning("ModelState is invalid. Errors:");
+                foreach (var error in errors)
+                {
+                    _logger.LogWarning(error.ErrorMessage);
                 }
             }
             
@@ -100,6 +121,24 @@ namespace CSR.Controllers
             ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
             return View(reqInfo);
         }
+
+        [Authorize]
+        public async Task<IActionResult> Answer(int id)
+        {
+            var reqInfo = await _reqService.GetReqInfoByIdAsync(id);
+            if (reqInfo == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
+            ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
+            ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
+            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(0); // 상태 수정해야됨
+
+            return View(reqInfo);
+        }
+
 
         [Authorize]
         public async Task<IActionResult> Edit(int id)
@@ -188,5 +227,14 @@ namespace CSR.Controllers
             memory.Position = 0;
             return File(memory, "application/octet-stream", file.REAL_FILENAME);
         }
+
+        // 조치자 목록 
+        [HttpGet]
+        public async Task<IActionResult> GetAdminRel(int menuId)
+        {
+            var admin = await _adminRelService.GetSelectListByAssignedUserAsync(menuId);            
+            return Json(admin);
+        }
+
     }
 }

@@ -114,9 +114,6 @@ namespace CSR.Models
         [Display(Name = "조치내역(TEXT)")]
         public string? NOTE_TEXT { get; set; }
         
-        [StringLength(1000)]
-        public string? REQHISTORY { get; set; }
-        
         public DateTime REG_DATE { get; set; }
         
         public string REG_USERID { get; set; }

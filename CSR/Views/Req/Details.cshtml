@@ -12,30 +12,48 @@
 <div>
     <h4>@Model.TITLE</h4>
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.REQID)</dt>
-        <dd class="col-sm-10">@Model.REQID</dd>
-
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.SystemName)</dt>
-        <dd class="col-sm-4">@Model.SystemName</dd>
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.ReqTypeName)</dt>
-        <dd class="col-sm-4">@Model.ReqTypeName</dd>
-
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.ReqUserName)</dt>
-        <dd class="col-sm-4">@Model.ReqUserName</dd>
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.ResUserName)</dt>
-        <dd class="col-sm-4">@Model.ResUserName</dd>
-
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.REQDATE)</dt>
-        <dd class="col-sm-4">@Model.REQDATE.ToString("yyyy-MM-dd")</dd>
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.EXPECTDATE)</dt>
-        <dd class="col-sm-4">@Model.EXPECTDATE.ToString("yyyy-MM-dd")</dd>
-        
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.ProcStatusName)</dt>
-        <dd class="col-sm-4">@Model.ProcStatusName</dd>
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.PROC_RATE)</dt>
-        <dd class="col-sm-4">@Model.PROC_RATE%</dd>
-    </dl>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table-layout Details">
+                <colgroup>
+                    <col width="10%"></col>
+                    <col width="15%"></col>
+                    <col width="10%"></col>
+                    <col width="15%"></col>
+                    <col width="10%"></col>
+                    <col width="15%"></col>
+                    <col width="10%"></col>
+                    <col width="15%"></col>
+                </colgroup>
+                <tr>
+                    <td><label>@Html.DisplayNameFor(model => model.REQID)</label></td>
+                    <td>@Model.REQID</td>
+                    <td><label>@Html.DisplayNameFor(model => model.SystemName)</label></td>
+                    <td>@Model.SystemName</td>
+                    <td><label>@Html.DisplayNameFor(model => model.ReqTypeName)</label></td>
+                    <td>@Model.ReqTypeName</td>
+                    <td><label>@Html.DisplayNameFor(model => model.PriorityName)</label></td>
+                    <td>@Model.PriorityName</td>
+                </tr>
+                <tr>
+                    <td><label>@Html.DisplayNameFor(model => model.ReqUserName)</label></td>
+                    <td>@Model.ReqUserName</td>
+                    <td><label>@Html.DisplayNameFor(model => model.ResUserName)</label></td>
+                    <td>@Model.ResUserName</td>
+                    <td><label>@Html.DisplayNameFor(model => model.REQDATE)</label></td>
+                    <td>@Model.REQDATE.ToString("yyyy-MM-dd")</td>
+                    <td><label>@Html.DisplayNameFor(model => model.EXPECTDATE)</label></td>
+                    <td>@( Model.EXPECTDATE.HasValue ? Model.EXPECTDATE.Value.ToString("yyyy-MM-dd") : "미정")</td>
+                </tr>
+                <tr>
+                    <td><label>@Html.DisplayNameFor(model => model.ProcStatusName)</label></td>
+                    <td>@(Model.ProcStatusName != null ? Model.ProcStatusName : "대기")</td>
+                    <td><label>@Html.DisplayNameFor(model => model.PROC_RATE)</label></td>
+                    <td colspan="5">@Model.PROC_RATE%</td>
+                </tr>
+            </table>
+        </div>
+    </div>
 
     <div class="card mt-4">
         <div class="card-header">@Html.DisplayNameFor(model => model.CONTENTS_HTML)</div>
@@ -76,9 +94,8 @@
         <thead class="table-light">
             <tr>
                 <th>@Html.DisplayNameFor(model => model.History.First().HISTORYID)</th>
-                <th>@SharedLocalizer["Label_ChangeDetails"]</th>
                 <th>@Html.DisplayNameFor(model => model.History.First().REG_USERID)</th>
-                <th>@Html.DisplayName-for(model => model.History.First().REG_DATE)</th>
+                <th>@Html.DisplayNameFor(model => model.History.First().REG_DATE)</th>
             </tr>
         </thead>
         <tbody>
@@ -86,7 +103,6 @@
             {
                 <tr>
                     <td>@hist.HISTORYID</td>
-                    <td>@hist.REQHISTORY</td>
                     <td>@hist.REG_USERID</td>
                     <td>@hist.REG_DATE.ToString("yyyy-MM-dd HH:mm")</td>
                 </tr>
@@ -95,15 +111,30 @@
     </table>
 </div>
 
-<div class="button-area text-end mt-5 m-3">
-    <a asp-action="Edit" asp-route-id="@Model.REQID" class="btn btn-primary">@SharedLocalizer["Button_Edit"]</a>
-    <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
+<div class="d-flex justify-content-between align-items-center mt-5">
+    <div>
+        <form asp-action="Delete" asp-route-id="@Model.REQID" method="post">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('@SharedLocalizer["Confirmation_Delete"]')">
+                @SharedLocalizer["Button_Delete"]
+            </button>
+        </form>
+    </div>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.REQID" class="btn btn-primary">@SharedLocalizer["Button_Edit"]</a>
+        <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
+    </div>
 </div>
 
 @section Scripts {
 <style>
     .content-display {
         min-height: 150px;
+    }
+    .table-layout.Details td {
+        padding: 8px 12px;
+    }
+    .table-layout.Details label {
+        font-weight: bold;
     }
 </style>
 }

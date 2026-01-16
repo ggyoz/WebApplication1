@@ -18,6 +18,7 @@ namespace CSR.Services
         Task<List<CommCode>> GetAllCommCodesAsync();
         Task<IEnumerable<SelectListItem>> GetNoticeTypeSelectListAsync();        
         Task<IEnumerable<SelectListItem>> GetSelectListByPCodeAsync(int pid);
+        Task<Dictionary<string, List<CommCode>>> GetResponsibilitiesAsync();
     }
 
     public class CommCodeService : ICommCodeService
@@ -129,6 +130,25 @@ namespace CSR.Services
                                     Text = c.CODENM
                                 });
             return items;
+        }
+        public async Task<Dictionary<string, List<CommCode>>> GetResponsibilitiesAsync()
+        {
+            var parentIds = new List<int> { 20, 21, 22 };
+            var allCodes = await GetAllCommCodesAsync();
+            var responsibilities = new Dictionary<string, List<CommCode>>();
+
+            var parents = allCodes.Where(c => parentIds.Contains(c.CODEID)).ToList();
+
+            foreach (var parent in parents)
+            {
+                var children = allCodes.Where(c => c.PARENTID == parent.CODEID).OrderBy(c => c.SORTORDER).ToList();
+                if (!string.IsNullOrEmpty(parent.CODENM))
+                {
+                    responsibilities[parent.CODENM] = children;
+                }
+            }
+
+            return responsibilities;
         }
     }
 }

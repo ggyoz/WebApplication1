@@ -130,7 +130,33 @@
                         <span asp-validation-for="AuthFlag" class="text-danger"></span>
                     </td> -->
                     <td></td><td></td><td></td><td></td>
-                </tr>                
+                </tr>
+                <tr>
+                    <td><strong>담당영역</strong></td>
+                    <td colspan="7">
+                        @{
+                            var allResponsibilities = ViewBag.AllResponsibilities as Dictionary<string, List<CSR.Models.CommCode>> ?? new Dictionary<string, List<CSR.Models.CommCode>>();
+                        }
+                        @foreach (var group in allResponsibilities)
+                        {
+                            <div class="mb-2">
+                                <strong>@group.Key</strong>
+                                <div class="d-flex flex-wrap mt-1">
+                                @foreach (var responsibility in group.Value)
+                                {
+                                    <div class="form-check me-3">
+                                        <input class="form-check-input" type="checkbox" name="AssignedResponsibilities" value="@responsibility.CODEID" id="resp_@responsibility.CODEID"
+                                            @(Model.AssignedResponsibilities.Contains(responsibility.CODEID.ToString()) ? "checked" : "") />
+                                        <label class="form-check-label" for="resp_@responsibility.CODEID">
+                                            @responsibility.CODENM
+                                        </label>
+                                    </div>
+                                }
+                                </div>
+                            </div>
+                        }
+                    </td>
+                </tr>                 
             </table>
 
             <div class="button-area text-end mt-5 m-3">

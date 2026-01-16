@@ -4,7 +4,7 @@
 @inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
 
 @{
-    ViewData["Title"] = "요청사항 목록";
+    ViewData["Title"] = SharedLocalizer["Title_ReqIndex"];
 }
 
 <partial name="_PageTitlePartial" />
@@ -13,7 +13,7 @@
     <form asp-action="Index" method="get">
         <div class="row">
             <div class="col-md-10">
-                <input type="text" name="searchValue" value="@ViewData["SearchValue"]" class="form-control" placeholder="제목으로 검색" />
+                <input type="text" name="searchValue" value="@ViewData["SearchValue"]" class="form-control" placeholder="@SharedLocalizer["Placeholder_SearchByTitle"]" />
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-light search-btn w-100">@SharedLocalizer["Button_Search"]</button>
@@ -32,9 +32,12 @@
             <tr>
                 <th>@Html.DisplayNameFor(model => model.Items.First().REQID)</th>
                 <th>@Html.DisplayNameFor(model => model.Items.First().TITLE)</th>
+                <th>@Html.DisplayNameFor(model => model.Items.First().ReqTypeName)</th>
                 <th>@Html.DisplayNameFor(model => model.Items.First().SystemName)</th>
-                <th>@Html.DisplayNameFor(model => model.Items.First().ReqUserName)</th>
+                <th>@Html.DisplayNameFor(model => model.Items.First().ReqMenuName)</th>
+                <th>@Html.DisplayNameFor(model => model.Items.First().ReqUserName)</th>                
                 <th>@Html.DisplayNameFor(model => model.Items.First().REQDATE)</th>
+                <th>@Html.DisplayNameFor(model => model.Items.First().DUEDATE)</th>
                 <th>@Html.DisplayNameFor(model => model.Items.First().EXPECTDATE)</th>
                 <th>@Html.DisplayNameFor(model => model.Items.First().ProcStatusName)</th>
                 <th>@Html.DisplayNameFor(model => model.Items.First().PROC_RATE)</th>
@@ -48,14 +51,15 @@
                 {
                     <tr>
                         <td>@item.REQID</td>
-                        <td>
-                            <a asp-action="Details" asp-route-id="@item.REQID">@item.TITLE</a>
-                        </td>
+                        <td><a asp-action="Details" asp-route-id="@item.REQID">@item.TITLE</a></td>
+                        <td>@item.ReqTypeName</td>
                         <td>@item.SystemName</td>
+                        <td>@item.ReqMenuName</td>
                         <td>@item.ReqUserName</td>
-                        <td>@item.REQDATE.ToShortDateString()</td>
-                        <td>@item.EXPECTDATE.ToShortDateString()</td>
-                        <td>@item.ProcStatusName</td>
+                        <td>@item.REQDATE.ToString("yyyy-MM-dd")</td>
+                        <td>@(item.DUEDATE.HasValue ? item.DUEDATE.Value.ToString("yyyy-MM-dd") : "")</td>
+                        <td>@(item.EXPECTDATE.HasValue ? item.EXPECTDATE.Value.ToString("yyyy-MM-dd") : "미정")</td>
+                        <td>@(item.ProcStatusName != null ? item.ProcStatusName : "대기" )</td>
                         <td>@item.PROC_RATE%</td>
                         <td>
                             <a asp-action="Edit" asp-route-id="@item.REQID" class="btn btn-sm btn-outline-secondary">@SharedLocalizer["Button_Edit"]</a>

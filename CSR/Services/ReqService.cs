@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using System;
+using Newtonsoft.Json;
 
 namespace CSR.Services
 {
@@ -43,14 +44,19 @@ namespace CSR.Services
 
         public async Task<int> CreateReqInfoAsync(ReqInfo reqInfo, IEnumerable<IFormFile> files)
         {
-            _dbConnection.Open();
+
+             // --- 쿼리디버킹코드 ---
+            Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(reqInfo, Formatting.Indented));
+            // --- 쿼리디버킹코드 ---
+
+            //_dbConnection.Open();
             using var transaction = _dbConnection.BeginTransaction();
             try
             {
                 // 1. Insert into TB_REQ_INFO
                 var reqSql = @"
                     INSERT INTO TB_REQ_INFO (REQID, PARENTID, TITLE, CONTENTS_HTML, CONTENTS_TEXT, REQDATE, DUEDATE, EXPECTDATE, STARTDATE, ENDDATE, REQTYPE, SYSTEMCD, REQMENU, REQMENU_ETC, BXTID, REQUSERID, RESUSERID, IMPTCD, DFCLTCD, PRIORITYCD, MAN_DAY, PROC_STATUS, PROC_RATE, ANSWER_HTML, ANSWER_TEXT, DELAYREASON_HTML, DELAYREASON_TEXT, CORCD, DEPTCD, OFFICECD, TEAMCD, NOTE_HTML, NOTE_TEXT, REG_USERID, USEYN)
-                    VALUES (SEQ_TB_REQ_INFO.NEXTVAL, :PARENTID, :TITLE, :CONTENTS_HTML, :CONTENTS_TEXT, :REQDATE, :DUEDATE, :EXPECTDATE, :STARTDATE, :ENDDATE, :REQTYPE, :SYSTEMCD, :REQMENU, :REQMENU_ETC, :BXTID, :REQUSERID, :RESUSERID, :IMPTCD, :DFCLTCD, :PRIORITYCD, :MAN_DAY, :PROC_STATUS, :PROC_RATE, :ANSWER_HTML, :ANSWER_TEXT, :DELAYREASON_HTML, :DELAYREASON_TEXT, :CORCD, :DEPTCD, :OFFICECD, :TEAMCD, :NOTE_HTML, :NOTE_TEXT, :REG_USERID, 'Y')
+                    VALUES (SEQ_REQ_INFO.NEXTVAL, :PARENTID, :TITLE, :CONTENTS_HTML, :CONTENTS_TEXT, :REQDATE, :DUEDATE, :EXPECTDATE, :STARTDATE, :ENDDATE, :REQTYPE, :SYSTEMCD, :REQMENU, :REQMENU_ETC, :BXTID, :REQUSERID, :RESUSERID, :IMPTCD, :DFCLTCD, :PRIORITYCD, :MAN_DAY, :PROC_STATUS, :PROC_RATE, :ANSWER_HTML, :ANSWER_TEXT, :DELAYREASON_HTML, :DELAYREASON_TEXT, :CORCD, :DEPTCD, :OFFICECD, :TEAMCD, :NOTE_HTML, :NOTE_TEXT, :REG_USERID, 'Y')
                     RETURNING REQID INTO :REQID";
                 
                 var reqParams = new DynamicParameters(reqInfo);
@@ -161,8 +167,11 @@ namespace CSR.Services
                 FROM TB_REQ_INFO R
                 LEFT JOIN TB_USER_INFO U_REQ ON R.REQUSERID = U_REQ.USERID
                 LEFT JOIN TB_USER_INFO U_RES ON R.RESUSERID = U_RES.USERID
-                LEFT JOIN TB_COMM_CODE S ON R.SYSTEMCD = S.CODE AND S.CODE = 'SYSTEMCD'
-                LEFT JOIN TB_COMM_CODE P ON R.PROC_STATUS = P.CODE AND P.CODE = 'PROC_STATUS'
+                LEFT JOIN TB_COMM_CODE S ON R.SYSTEMCD = S.CODEID AND S.PARENTID = 19 -- System Code ParentId
+                LEFT JOIN TB_COMM_CODE RT ON R.REQTYPE = RT.CODEID AND RT.PARENTID = 13 -- Req Type ParentId
+                LEFT JOIN TB_COMM_CODE P ON R.PRIORITYCD = P.CODEID AND P.PARENTID = 1 -- Priority Code ParentId
+                LEFT JOIN TB_COMM_CODE PS ON R.PROC_STATUS = PS.CODEID AND PS.PARENTID = 0 -- Proc Status ParentId (Need to confirm correct ParentId)
+                LEFT JOIN TB_COMM_CODE M ON R.REQMENU  = M.CODEID 
                 WHERE R.USEYN = 'Y'";
             
             var parameters = new DynamicParameters();
@@ -180,11 +189,14 @@ namespace CSR.Services
                 SELECT * FROM (
                     SELECT a.*, ROWNUM rnum FROM (
                         SELECT 
-                            R.REQID, R.TITLE, R.REQDATE, R.EXPECTDATE, R.PROC_RATE,
+                            R.*,
                             U_REQ.USERNAME as ReqUserName,
                             U_RES.USERNAME as ResUserName,
                             S.CODENM as SystemName,
-                            P.CODENM as ProcStatusName
+                            RT.CODENM as ReqTypeName,
+                            P.CODENM as PriorityName,
+                            PS.CODENM as ProcStatusName,
+                            M.CODENM as ReqMenuName
                         {baseQuery}
                         ORDER BY R.REQID DESC
                     ) a WHERE ROWNUM <= :EndRow
@@ -200,7 +212,26 @@ namespace CSR.Services
 
         public async Task<ReqInfo?> GetReqInfoByIdAsync(int id)
         {
-            var sql = "SELECT * FROM TB_REQ_INFO WHERE REQID = :ID AND USEYN = 'Y'";
+            var sql = @"
+                SELECT 
+                    R.*,
+                    U_REQ.USERNAME as ReqUserName,
+                    U_RES.USERNAME as ResUserName,
+                    S.CODENM as SystemName,
+                    RT.CODENM as ReqTypeName,
+                    P.CODENM as PriorityName,
+                    PS.CODENM as ProcStatusName,
+                    M.CODENM AS ReqMenuName
+                FROM TB_REQ_INFO R
+                LEFT JOIN TB_USER_INFO U_REQ ON R.REQUSERID = U_REQ.USERID
+                LEFT JOIN TB_USER_INFO U_RES ON R.RESUSERID = U_RES.USERID
+                LEFT JOIN TB_COMM_CODE S ON R.SYSTEMCD = S.CODEID AND S.PARENTID = 19 
+                LEFT JOIN TB_COMM_CODE RT ON R.REQTYPE = RT.CODEID AND RT.PARENTID = 13 
+                LEFT JOIN TB_COMM_CODE P ON R.PRIORITYCD = P.CODEID AND P.PARENTID = 1 
+                LEFT JOIN TB_COMM_CODE PS ON R.PROC_STATUS = PS.CODEID AND PS.PARENTID = 0
+                LEFT JOIN TB_COMM_CODE M ON R.REQMENU  = M.CODEID 
+                WHERE R.REQID = :ID AND R.USEYN = 'Y'";
+            
             var reqInfo = await _dbConnection.QueryFirstOrDefaultAsync<ReqInfo>(sql, new { ID = id });
 
             if (reqInfo != null)
@@ -226,15 +257,14 @@ namespace CSR.Services
         private async Task<int> CreateReqHistoryAsync(ReqInfo reqInfo, IDbTransaction transaction)
         {
             var histSql = @"
-                INSERT INTO TB_REQ_HIST (HISTORYID, REQID, PARENTID, TITLE, CONTENTS_HTML, CONTENTS_TEXT, REQDATE, DUEDATE, EXPECTDATE, STARTDATE, ENDDATE, REQTYPE, SYSTEMCD, REQMENU, REQMENU_ETC, BXTID, REQUSERID, RESUSERID, IMPTCD, DFCLTCD, PRIORITYCD, MAN_DAY, PROC_STATUS, PROC_RATE, ANSWER_HTML, ANSWER_TEXT, DELAYREASON_HTML, DELAYREASON_TEXT, CORCD, DEPTCD, OFFICECD, TEAMCD, NOTE_HTML, NOTE_TEXT, REGHISTORY, REG_USERID, USEYN)
-                VALUES (SEQ_REQ_HIST.NEXTVAL, :REQID, :PARENTID, :TITLE, :CONTENTS_HTML, :CONTENTS_TEXT, :REQDATE, :DUEDATE, :EXPECTDATE, :STARTDATE, :ENDDATE, :REQTYPE, :SYSTEMCD, :REQMENU, :REQMENU_ETC, :BXTID, :REQUSERID, :RESUSERID, :IMPTCD, :DFCLTCD, :PRIORITYCD, :MAN_DAY, :PROC_STATUS, :PROC_RATE, :ANSWER_HTML, :ANSWER_TEXT, :DELAYREASON_HTML, :DELAYREASON_TEXT, :CORCD, :DEPTCD, :OFFICECD, :TEAMCD, :NOTE_HTML, :NOTE_TEXT, :REQHISTORY, :REG_USERID, :USEYN)
+                INSERT INTO TB_REQ_HIST (HISTORYID, REQID, PARENTID, TITLE, CONTENTS_HTML, CONTENTS_TEXT, REQDATE, DUEDATE, EXPECTDATE, STARTDATE, ENDDATE, REQTYPE, SYSTEMCD, REQMENU, REQMENU_ETC, BXTID, REQUSERID, RESUSERID, IMPTCD, DFCLTCD, PRIORITYCD, MAN_DAY, PROC_STATUS, PROC_RATE, ANSWER_HTML, ANSWER_TEXT, DELAYREASON_HTML, DELAYREASON_TEXT, CORCD, DEPTCD, OFFICECD, TEAMCD, NOTE_HTML, NOTE_TEXT, REG_USERID, USEYN)
+                VALUES (SEQ_REQ_HIST.NEXTVAL, :REQID, :PARENTID, :TITLE, :CONTENTS_HTML, :CONTENTS_TEXT, :REQDATE, :DUEDATE, :EXPECTDATE, :STARTDATE, :ENDDATE, :REQTYPE, :SYSTEMCD, :REQMENU, :REQMENU_ETC, :BXTID, :REQUSERID, :RESUSERID, :IMPTCD, :DFCLTCD, :PRIORITYCD, :MAN_DAY, :PROC_STATUS, :PROC_RATE, :ANSWER_HTML, :ANSWER_TEXT, :DELAYREASON_HTML, :DELAYREASON_TEXT, :CORCD, :DEPTCD, :OFFICECD, :TEAMCD, :NOTE_HTML, :NOTE_TEXT, :REG_USERID, :USEYN)
                 RETURNING HISTORYID INTO :HISTORYID";
 
             var histParams = new DynamicParameters(reqInfo);
             // REG_USERID for history should be the user making the change
             histParams.Add("REG_USERID", reqInfo.UPDATE_USERID ?? reqInfo.REG_USERID); 
-            histParams.Add(":HISTORYID", dbType: DbType.Int32, direction: ParameterDirection.Output);
-            histParams.Add("REQHISTORY", "Created"); // Simplified history log text
+            histParams.Add(":HISTORYID", dbType: DbType.Int32, direction: ParameterDirection.Output);            
 
             await _dbConnection.ExecuteAsync(histSql, histParams, transaction);
             return histParams.Get<int>(":HISTORYID");

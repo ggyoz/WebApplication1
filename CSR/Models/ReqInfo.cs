@@ -30,9 +30,8 @@ namespace CSR.Models
         [Display(Name = "처리기한")]
         public DateTime? DUEDATE { get; set; }
 
-        [Required(ErrorMessage = "완료예정일을 입력해주세요.")]
         [Display(Name = "완료예정일")]
-        public DateTime EXPECTDATE { get; set; }
+        public DateTime? EXPECTDATE { get; set; }
 
         [Display(Name = "실제 시작일")]
         public DateTime? STARTDATE { get; set; }
@@ -56,6 +55,9 @@ namespace CSR.Models
 
         [Display(Name = "BXT문의번호")]
         public string? BXTID { get; set; }
+
+        [Display(Name = "요청사항 TCODE")]
+        public string? REQTCODE { get; set; } 
 
         [Required]
         [Display(Name = "요청자")]
@@ -134,8 +136,9 @@ namespace CSR.Models
         public string? DeptName { get; set; }
         public string? OfficeName { get; set; }
         public string? TeamName { get; set; }
-        public string? SystemName { get; set; }
         public string? ReqTypeName { get; set; }
+        public string? SystemName { get; set; }
+        public string? ReqMenuName { get; set; }
         public string? PriorityName { get; set; }
         public string? ProcStatusName { get; set; }
     }

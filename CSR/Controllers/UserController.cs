@@ -16,12 +16,16 @@ namespace CSR.Controllers
     public class UserController : Controller
     {
         private readonly UserService _userService;
+        private readonly ICommCodeService _commCodeService;
+        private readonly IAdminRelService _adminRelService;
         private readonly ILogger<UserController> _logger;
         private readonly IValidator<User> _validator;
 
-        public UserController(UserService userService, ILogger<UserController> logger, IValidator<User> validator)
+        public UserController(UserService userService, ICommCodeService commCodeService, IAdminRelService adminRelService, ILogger<UserController> logger, IValidator<User> validator)
         {
             _userService = userService;
+            _commCodeService = commCodeService;
+            _adminRelService = adminRelService;
             _logger = logger;
             _validator = validator;
         }
@@ -63,11 +67,39 @@ namespace CSR.Controllers
                 return NotFound();
             }
 
+            // 유저정보 조회
             var user = await _userService.GetUserByIdAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
+
+            // Prepare assigned responsibilities in a grouped format for display
+            var assignedResponsibilitiesGrouped = new Dictionary<string, List<string>>();
+            var allResponsibilitiesDict = await _commCodeService.GetResponsibilitiesAsync();
+            var assignedMenuIds = await _adminRelService.GetAssignedMenuIdsForUserAsync(id);
+
+
+            if (assignedMenuIds != null && assignedMenuIds.Any())
+            {
+                foreach (var category in allResponsibilitiesDict)
+                {
+
+                    Console.WriteLine("category : " + category.Key + " / " + category.Value );
+
+                    var assignedInCategory = category.Value
+                        .Where(r => r.CODEID != null && assignedMenuIds.Contains(r.CODEID.ToString()))
+                        .Select(r => r.CODENM)
+                        .ToList();
+
+                    if (assignedInCategory.Any())
+                    {
+                        assignedResponsibilitiesGrouped[category.Key] = assignedInCategory;
+                    }
+                }
+            }
+            ViewBag.AssignedResponsibilitiesGrouped = assignedResponsibilitiesGrouped;
+            user.AssignedResponsibilities = new List<string>(); // Clear the old flat list to avoid confusion
 
             return View(user);
         }
@@ -119,6 +151,12 @@ namespace CSR.Controllers
             {
                 return NotFound();
             }
+
+            // Fetch responsibilities
+            ViewBag.AllResponsibilities = await _commCodeService.GetResponsibilitiesAsync();
+            var assignedMenuIds = await _adminRelService.GetAssignedMenuIdsForUserAsync(id);
+            user.AssignedResponsibilities = assignedMenuIds;
+
             return View(user);
         }
 
@@ -127,7 +165,7 @@ namespace CSR.Controllers
         [ValidateAntiForgeryToken]
         [AsyncValidationFilter]
         public async Task<IActionResult> Edit(string id,
-            [Bind("UserId,UserName,EmpNo,CorCd,DeptCd,OfficeCd,TeamCd,SysCd,BizCd,TelNo,MobPhoneNo,EmailAddr,UserStat,RetireDate,AdminFlag,CustCd,VendCd,AuthFlag,UserDiv,PwMissCount,RegDate,RegUserId,UpdateUserId,UseYn")]
+            [Bind("UserId,UserName,EmpNo,CorCd,DeptCd,OfficeCd,TeamCd,SysCd,BizCd,TelNo,MobPhoneNo,EmailAddr,UserStat,RetireDate,AdminFlag,CustCd,VendCd,AuthFlag,UserDiv,PwMissCount,RegDate,RegUserId,UpdateUserId,UseYn,AssignedResponsibilities")]
             User user)
         {
             if (id != user.UserId)
@@ -142,6 +180,8 @@ namespace CSR.Controllers
                     if (string.IsNullOrEmpty(user.UpdateUserId)) user.UpdateUserId = "ADMIN";
 
                     await _userService.UpdateUserAsync(user);
+                    await _adminRelService.UpdateResponsibilitiesForUserAsync(user.UserId, user.AssignedResponsibilities, "ADMIN"); // TODO: Get actual admin user
+
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)

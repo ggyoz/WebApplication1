@@ -118,5 +118,6 @@ namespace CSR.Models
         public string? DeptName { get; set; }
         public string? OfficeName { get; set; }
         public string? TeamName { get; set; }
+        public List<string> AssignedResponsibilities { get; set; } = new List<string>();
     }
 }

@@ -96,6 +96,29 @@
                     <td><label class="control-label">@SharedLocalizer["Label_PasswordFailCount"]</label></td>
                     <td>@Html.DisplayFor(model => model.PwMissCount)</td>
                 </tr>
+                <tr>
+                    <td><label class="control-label">@SharedLocalizer["Label_AssignedResponsibilities"]</label></td>
+                    <td colspan="7">
+                        @{
+                            var assignedGroups = ViewBag.AssignedResponsibilitiesGrouped as Dictionary<string, List<string>>;
+                        }
+                        @if (assignedGroups != null && assignedGroups.Count > 0)
+                        {
+                            <ul class="list-unstyled mb-0">
+                                @foreach (var group in assignedGroups)
+                                {
+                                    <li>
+                                        <strong class="me-2">@group.Key:</strong> @string.Join(", ", group.Value)
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            @SharedLocalizer["NoAssignedResponsibilities"]
+                        }
+                    </td>
+                </tr>
             </table>
         </div>
     </div>
