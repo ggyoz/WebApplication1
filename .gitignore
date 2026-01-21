@@ -6,6 +6,7 @@ CSR/.vs/
 /WebApplication1/obj
 CSR/wwwroot/js/devextreme-license.js
 CSR/wwwroot/uploads/
+CSR/wwwroot/EditorImage/
 
 # Build results
 [Dd]ebug/
