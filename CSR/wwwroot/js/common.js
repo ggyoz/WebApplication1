@@ -14,6 +14,21 @@ function NumberOnly(text){
   return formatted;
 }
 
+ 
+function enforceMinMaxValue(inputElement) {
+
+    const minValue = Number(inputElement.min);
+    const maxValue = Number(inputElement.max);            
+    const currentValue = Number(inputElement.value);
+    
+    if (currentValue > maxValue) {
+        inputElement.value = maxValue;
+    }
+    if (currentValue < minValue) {
+        inputElement.value = minValue;
+    }
+}
+
 /**
  * DevExtreme HTML 에디터를 초기화하고, 숨겨진 입력 필드 및 미리보기와 연결합니다.
  * @param {string} editorSelector - HTML 에디터로 사용할 div의 CSS 선택자 (예: '.html-editor')
@@ -26,7 +41,7 @@ function initializeHtmlEditor(editorSelector, inputSelector, previewSelector) {
 
     // 2. dxHtmlEditor 인스턴스 생성
     const editorInstance = $(editorSelector).dxHtmlEditor({
-        height: 300,
+        height: 500,
         value: initialValue,
         toolbar: {
             items: [
@@ -42,6 +57,29 @@ function initializeHtmlEditor(editorSelector, inputSelector, previewSelector) {
                 'link', 'image', // 링크 및 이미지 추가 기능
             ],
         },
+
+        // *** 이미지 업로드 설정 ***
+        imageUpload: {
+            fileUploadMode: 'server',
+            uploadUrl: "/api/image/upload",
+            fileTypes: [".jpg", ".jpeg", ".png", ".gif", ".webp"],
+            uploadMethod: "POST",
+            fileUploaderOptions: {
+                onUploaded: function(e) {
+                    // Assuming your server returns a JSON object like { "url": "path/to/image.png" }
+                    const imageUrl = JSON.parse(e.request.response).url;
+                    if (imageUrl != "") {
+                        // 값 넣는 방법
+                        //editorInstance.option("value", "<h1>New HTML Content</h1><p>This replaces the old content.</p>");
+                        // 이미지 삽입 방법
+                        editorInstance.insertEmbed(editorInstance.getLength(), // Insert at the end
+                            "image", imageUrl                            
+                        );
+                    }
+                }
+            }            
+        },
+
         // 3. 값이 변경될 때마다 숨겨진 input과 미리보기 영역을 업데이트합니다.
         onValueChanged(e) {
             $(inputSelector).val(e.value);

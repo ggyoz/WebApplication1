@@ -13,83 +13,136 @@
 <div class="row">
     <div class="col-md-12">
         <form asp-action="Edit" asp-route-id="@Model.REQID" enctype="multipart/form-data">
+
             <input type="hidden" asp-for="REQID" />
+            <input type="hidden" asp-for="CORCD" />
+            <input type="hidden" asp-for="DEPTCD" />
+            <input type="hidden" asp-for="OFFICECD" />
+            <input type="hidden" asp-for="TEAMCD" />
+            <input type="hidden" asp-for="REG_USERID" />
+            <input type="hidden" asp-for="REQUSERID" />
+
             <div asp-validation-summary="All" class="text-danger"></div>
 
             <table class="table-layout" width="100%">
                 <colgroup>
+                    <col width="8%">
                     <col width="15%">
-                    <col width="35%">
+                    <col width="8%">
                     <col width="15%">
-                    <col width="35%">
+                    <col width="8%">
+                    <col width="15%">
+                    <col width="8%">
+                    <col width="15%">
                 </colgroup>
                 <tbody>
+
                     <tr>
-                        <td><label asp-for="TITLE" class="control-label"></label></td>
-                        <td colspan="3">
-                            <input asp-for="TITLE" class="form-control" />
-                            <span asp-validation-for="TITLE" class="text-danger"></span>
+                        <td>요청자</td>
+                        <td>
+                            <input asp-for="ReqUserName" class="form-control" readonly />
+                            <span asp-validation-for="ReqUserName" class="text-danger"></span>
+                        </td>
+                        <td>소속</td>
+                        <td>
+                            @{
+                                var orgParts = new[] { Model.CorpName, Model.DeptName, Model.OfficeName, Model.TeamName };
+                                var organization = string.Join(" / ", orgParts.Where(p => !string.IsNullOrEmpty(p)));
+                            }
+                            <input type="text" class="form-control" value="@organization" readonly />
+                        </td>
+
+                        <td>이메일</td>
+                        <td>
+                            <input asp-for="ReqUserEmail" class="form-control" readonly />
+                            <span asp-validation-for="ReqUserEmail" class="text-danger"></span>
+                        </td>
+                        <td>연락처</td>
+                        <td>
+                            <input asp-for="ReqUserTel" class="form-control" readonly />
+                            <span asp-validation-for="ReqUserTel" class="text-danger"></span>
                         </td>
                     </tr>
                     <tr>
-                        <td><label asp-for="REQDATE" class="control-label"></label></td>
+                        <td><label class="control-label">요청유형</label></td>
+                        <td>
+                            <select asp-for="REQTYPE" asp-items="ViewBag.ReqTypes" class="form-select">
+                                <option>요청유형 선택</option>
+                            </select>
+                            <span asp-validation-for="REQTYPE" class="text-danger"></span>
+                        </td>
+                        <td><label asp-for="SYSTEMCD" class="control-label"></label></td>
+                        <td>
+                            <select asp-for="SYSTEMCD" asp-items="ViewBag.SystemCodes" class="form-select">
+                                <option>대상시스템 선택</option>
+                            </select>
+                            <span asp-validation-for="SYSTEMCD" class="text-danger"></span>
+                        </td>
+                        <td><label class="control-label">요청메뉴</label></td>
+                        <td>
+                            <select asp-for="REQMENU" id="ReqMenu" class="form-select"></select>                            
+                        </td>
+                        <td><label class="control-label">조치자</label></td>
+                        <td>
+                            <select asp-for="RESUSERID" class="form-select"></select>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><label class="control-label">요청일</label></td>
                         <td>
                             <input asp-for="REQDATE" type="date" class="form-control" />
                             <span asp-validation-for="REQDATE" class="text-danger"></span>
                         </td>
-                        <td><label asp-for="EXPECTDATE" class="control-label"></label></td>
+                        <td><label class="control-label">처리기한</label></td>
                         <td>
-                            <input asp-for="EXPECTDATE" type="date" class="form-control" />
-                            <span asp-validation-for="EXPECTDATE" class="text-danger"></span>
+                            <input asp-for="DUEDATE" type="date" class="form-control" />
+                            <span asp-validation-for="DUEDATE" class="text-danger"></span>
                         </td>
+                        <td><label class="control-label">긴급도</label></td>
+                        <td>
+                            <select asp-for="PRIORITYCD" asp-items="ViewBag.PriorityCodes" class="form-select">
+                                <option>긴급도 선택</option>
+                            </select>
+                            <span asp-validation-for="PRIORITYCD" class="text-danger"></span>
+                        </td>  
+                        <td><label class="control-label">TCODE</label></td>
+                        <td>
+                            <input asp-for="REQTCODE" type="text" class="form-control" maxlength="10" />
+                            <span asp-validation-for="REQTCODE" class="text-danger"></span>
+                        </td> 
                     </tr>
-                     <tr>
-                        <td><label asp-for="STARTDATE" class="control-label"></label></td>
-                        <td>
-                            <input asp-for="STARTDATE" type="date" class="form-control" />
-                        </td>
-                        <td><label asp-for="ENDDATE" class="control-label"></label></td>
-                        <td>
-                            <input asp-for="ENDDATE" type="date" class="form-control" />
+
+                    <tr>
+                        <td><label class="control-label">제목</label></td>
+                        <td colspan="7">
+                            <input asp-for="TITLE" class="form-control" maxlength="150" />
+                            <span asp-validation-for="TITLE" class="text-danger"></span>
                         </td>
                     </tr>
                     <tr>
-                        <td><label asp-for="SYSTEMCD" class="control-label"></label></td>
+                        <td><label class="control-label">진행상태</label></td>
                         <td>
-                            <select asp-for="SYSTEMCD" asp-items="ViewBag.SystemCodes" class="form-select"></select>
-                        </td>
-                        <td><label asp-for="REQTYPE" class="control-label"></label></td>
-                        <td>
-                            <select asp-for="REQTYPE" asp-items="ViewBag.ReqTypes" class="form-select"></select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label asp-for="PRIORITYCD" class="control-label"></label></td>
-                        <td>
-                            <select asp-for="PRIORITYCD" asp-items="ViewBag.PriorityCodes" class="form-select"></select>
-                        </td>
-                        <td><label asp-for="PROC_STATUS" class="control-label"></label></td>
-                        <td>
-                             <select asp-for="PROC_STATUS" asp-items="ViewBag.ProcStatusCodes" class="form-select"></select>
+                            <select asp-for="PROC_STATUS" asp-items="ViewBag.ProcStatusCodes" class="form-select"></select>
                         </td>
                     </tr>
                     <tr>
                         <td style="vertical-align: top;"><label asp-for="CONTENTS_HTML" class="control-label"></label></td>
-                        <td colspan="3">
+                        <td colspan="7">
                             <div id="content-editor">@Html.Raw(Model.CONTENTS_HTML)</div>
                             <input type="hidden" asp-for="CONTENTS_HTML" />
                         </td>
                     </tr>
-                    <tr>
+                    <!-- <tr>
                         <td style="vertical-align: top;"><label asp-for="NOTE_HTML" class="control-label"></label></td>
                         <td colspan="3">
                             <div id="note-editor">@Html.Raw(Model.NOTE_HTML)</div>
                             <input type="hidden" asp-for="NOTE_HTML" />
                         </td>
-                    </tr>
+                    </tr> -->
                     <tr>
                         <td>@SharedLocalizer["Label_Attachments"]</td>
-                        <td colspan="3">
+                        <td colspan="7">
                             @if (Model.AttachFiles.Any())
                             {
                                 <ul class="list-group mb-3">
@@ -125,15 +178,138 @@
         #file-uploader .dx-fileuploader-input-wrapper { min-height: 150px; border: 2px dashed #ccc; padding: 20px; background-color: #f8f9fa; }
     </style>
     <script>
+
+        // 메뉴 dropdown function
+        const getReqMenuDropdown = function (reqMenuValue, systemCd, adminId){
+
+            var reqMenuDropdown = $('#ReqMenu');
+
+            reqMenuDropdown.empty();
+            reqMenuDropdown.append($('<option></option>').val('').text('메뉴 선택'));
+
+            $.ajax({
+                url: '@Url.Action("GetMenusBySystemCode", "CommCode")',
+                type: 'GET',
+                data: { systemCodeId: systemCd },
+                success: function(data) {
+                    $.each(data, function(i, item) {
+                        reqMenuDropdown.append($('<option></option>').val(item.value).text(item.text));
+                    });
+
+                    reqMenuDropdown.val(reqMenuValue);      
+
+                    getadminDropdown(adminId, reqMenuValue);
+                },
+                error: function(xhr, status, error) {
+                    console.error("An error occurred while fetching menus: " + error);
+                }
+            });
+
+        }
+        
+        // 조치자 dropdown function
+        const getadminDropdown = function( adminId, menuId ){
+            
+            var adminDropdown = $('#RESUSERID');
+
+            adminDropdown.empty();
+            adminDropdown.append($('<option></option>').val('').text('조치자 선택'));
+
+            if (menuId) {
+                $.ajax({
+                    url: '@Url.Action("GetAdminRel", "Req")',
+                    type: 'GET',
+                    data: { menuId: menuId },
+                    success: function(data) {
+                        $.each(data, function(i, item) {
+                            adminDropdown.append($('<option></option>').val(item.value).text(item.text));
+                        });
+
+                        adminDropdown.val(adminId);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("An error occurred while fetching menus: " + error);
+                    }
+                });
+            }
+
+        }
+
+
         $(function() {
             initializeHtmlEditor('#content-editor', 'input[name="@Html.NameFor(m => m.CONTENTS_HTML)"]');
-            initializeHtmlEditor('#note-editor', 'input[name="@Html.NameFor(m => m.NOTE_HTML)"]');
+            //initializeHtmlEditor('#note-editor', 'input[name="@Html.NameFor(m => m.NOTE_HTML)"]');
 
             $("#file-uploader").dxFileUploader({
                 name: 'newFiles',
                 multiple: true,
                 uploadMode: 'useForm'
             });
+
+            var systemcd = $('#SYSTEMCD').val();
+            
+            // 메뉴 
+            if (systemcd) {
+
+                var reqMenuValue = @Html.Raw(Json.Serialize(Model.REQMENU));
+                var adminId = @Html.Raw(Json.Serialize(Model.RESUSERID));
+
+                console.log(reqMenuValue, adminId);
+
+                getReqMenuDropdown(reqMenuValue, systemcd, adminId);
+            };
+
+
+            $('#SYSTEMCD').on('change', function() {
+
+                var systemCodeId = $(this).val();
+                var reqMenuDropdown = $('#ReqMenu');
+
+                reqMenuDropdown.empty();
+                reqMenuDropdown.append($('<option></option>').val('').text('메뉴 선택'));
+
+                if (systemCodeId) {
+                    $.ajax({
+                        url: '@Url.Action("GetMenusBySystemCode", "CommCode")',
+                        type: 'GET',
+                        data: { systemCodeId: systemCodeId },
+                        success: function(data) {
+                            $.each(data, function(i, item) {
+                                reqMenuDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+
+            $('#ReqMenu').on('change', function() {
+
+                var menuId = $(this).val();                
+                var adminDropdown = $('#RESUSERID');
+
+                adminDropdown.empty();
+                adminDropdown.append($('<option></option>').val('').text('조치자 선택'));
+
+                if (menuId) {
+                    $.ajax({
+                        url: '@Url.Action("GetAdminRel", "Req")',
+                        type: 'GET',
+                        data: { menuId: menuId },
+                        success: function(data) {
+                            $.each(data, function(i, item) {
+                                adminDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+
         });
     </script>
 }

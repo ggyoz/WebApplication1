@@ -119,5 +119,7 @@ namespace CSR.Models
         public string REG_USERID { get; set; }
         
         public string USEYN { get; set; } = "Y";
+
+        public string? HISTORY_REASON { get; set; }
     }
 }

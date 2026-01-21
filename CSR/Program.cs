@@ -9,6 +9,8 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using CSR.Data;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -109,8 +111,7 @@ builder.Services.AddScoped<IDbConnection>(sp =>
 });
 # endregion
 
-builder.Services.AddScoped<CSR.Services.INoticeService, CSR.Services.NoticeService>();
-builder.Services.AddScoped<CSR.Services.IReqService, CSR.Services.ReqService>();
+
 
 # region 서비스 자동등록 
 
@@ -166,6 +167,41 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+// Rate Limiter 서비스 등록 (imageUploadPolicy 정책)
+builder.Services.AddRateLimiter(options =>
+{
+
+    // options.AddPolicy("imageUploadPolicy", context =>
+    // {
+    //     var ip = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+    //     return RateLimitPartition.GetFixedWindowLimiter(ip, _ =>
+    //         new FixedWindowRateLimiterOptions
+    //         {                
+    //             PermitLimit = 2,
+    //             Window = TimeSpan.FromMinutes(1),
+    //             QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+    //             QueueLimit = 0
+    //         });
+    // });
+
+    
+    options.AddFixedWindowLimiter(policyName: "imageUploadPolicy", opt =>
+    {
+        opt.PermitLimit = 2; // 테스트를 위해 2개로 제한
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0; // 대기열 없이 즉시 거부
+    });
+
+    // 요청이 거부되었을 때의 응답을 설정
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = (context, token) =>
+    {
+        context.HttpContext.Response.WriteAsync("Too many requests. Please try again later.", cancellationToken: token);
+        return new ValueTask();
+    };
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -184,6 +220,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRequestLocalization(); // 요청 파이프라인에 미들웨어 추가
+
+app.UseRateLimiter(); // Rate Limiter 미들웨어 추가
 
 app.UseRouting();
 

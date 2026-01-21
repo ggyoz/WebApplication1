@@ -40,7 +40,7 @@
                             <input asp-for="ReqUserName" class="form-control" readonly />
                             <span asp-validation-for="ReqUserName" class="text-danger"></span>
                         </td>
-                        <td>조직</td>
+                        <td>소속</td>
                         <td>
                             @{
                                 var orgParts = new[] { Model.CorpName, Model.DeptName, Model.OfficeName, Model.TeamName };
@@ -103,17 +103,17 @@
                             </select>
                             <span asp-validation-for="PRIORITYCD" class="text-danger"></span>
                         </td>  
-                        <td><label asp-for="REQTCODE" class="control-label"></label></td>
+                        <td><label class="control-label">TCODE</label></td>
                         <td>
-                            <input asp-for="REQTCODE" type="text" class="form-control" />
+                            <input asp-for="REQTCODE" type="text" class="form-control" maxlength="10" />
                             <span asp-validation-for="REQTCODE" class="text-danger"></span>
                         </td> 
                     </tr>
 
                     <tr>
-                        <td><label asp-for="TITLE" class="control-label"></label></td>
+                        <td><label class="control-label">제목</label></td>
                         <td colspan="7">
-                            <input asp-for="TITLE" class="form-control" />
+                            <input asp-for="TITLE" class="form-control" maxlength="150" />
                             <span asp-validation-for="TITLE" class="text-danger"></span>
                         </td>
                     </tr>
@@ -170,6 +170,7 @@
                 maxFileSize: 4000000, // 4mb
             });
 
+            // 대상시스템 선택 시 메뉴 드롭다운 변경
             $('#SYSTEMCD').on('change', function() {
                 var systemCodeId = $(this).val();
 
@@ -197,6 +198,7 @@
                 }
             });
 
+            // 메뉴 선택 시 조치자 드롭다운 변경
             $('#ReqMenu').on('change', function() {
                 var menuId = $(this).val();
                 console.log(menuId);

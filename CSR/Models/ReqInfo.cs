@@ -59,6 +59,9 @@ namespace CSR.Models
         [Display(Name = "요청사항 TCODE")]
         public string? REQTCODE { get; set; } 
 
+        [Display(Name = "조지차 TCODE")]
+        public string? RESTCODE { get; set; } 
+
         [Required]
         [Display(Name = "요청자")]
         public string REQUSERID { get; set; }

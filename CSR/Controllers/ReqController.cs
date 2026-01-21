@@ -41,6 +41,10 @@ namespace CSR.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var reqInfo = await _reqService.GetReqInfoByIdAsync(id);
+
+            ViewBag.ImportantCodes = await _commCodeService.GetSelectListByPCodeAsync(78); // CODEID = 78  중요도
+            ViewBag.difficultCodes = await _commCodeService.GetSelectListByPCodeAsync(7); // CODEID = 7  난이도
+
             if (reqInfo == null)
             {
                 return NotFound();
@@ -144,15 +148,26 @@ namespace CSR.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var reqInfo = await _reqService.GetReqInfoByIdAsync(id);
+
             if (reqInfo == null)
             {
                 return NotFound();
             }
 
+            var user = await _userService.GetUserWithDetailsByIdAsync(reqInfo.REQUSERID);
+
+            reqInfo.ReqUserName = user?.UserName;
+            reqInfo.ReqUserEmail = user?.EmailAddr;
+            reqInfo.ReqUserTel = user?.MobPhoneNo;
+            reqInfo.CorpName = user?.CorpName;
+            reqInfo.DeptName = user?.DeptName;
+            reqInfo.OfficeName = user?.OfficeName;
+            reqInfo.TeamName = user?.TeamName;
+
             ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
             ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
             ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
-            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(0); // 상태 수정해야됨
+            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61); // 상태 수정해야됨
 
             return View(reqInfo);
         }
@@ -195,6 +210,34 @@ namespace CSR.Controllers
             return View(reqInfo);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> SaveDraft(int id, ReqInfo reqInfo, List<IFormFile> newFiles, [FromForm]List<int> deletedFiles)
+        {
+            if (id != reqInfo.REQID)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                reqInfo.UPDATE_USERID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";
+                
+                await _reqService.SaveDraftAsync(reqInfo, newFiles, deletedFiles);
+
+                TempData["ToastMessage"] = "임시저장 되었습니다.";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error saving draft for requirement.");
+                TempData["ToastMessage"] = "임시저장 중 오류가 발생했습니다.";
+            }
+            
+            return RedirectToAction(nameof(Details), new { id = reqInfo.REQID });
+        }
+
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -236,5 +279,39 @@ namespace CSR.Controllers
             return Json(admin);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SetProcStatus(int id, string status)
+        {
+
+            Console.WriteLine("id : " + id + "status : " + status);
+
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    TempData["ToastMessage"] = "오류: 사용자 ID를 찾을 수 없습니다.";
+                    return RedirectToAction(nameof(Details), new { id });
+                }
+
+                var result = await _reqService.UpdateProcStatusAsync(id, status, userId);
+                if (result)
+                {
+                    TempData["ToastMessage"] = "상태가 성공적으로 업데이트되었습니다.";
+                }
+                else
+                {
+                    TempData["ToastMessage"] = "상태 업데이트에 실패했습니다.";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating status for request {ReqId}", id);
+                TempData["ToastMessage"] = "상태 업데이트 중 오류가 발생했습니다.";
+            }
+
+            return RedirectToAction(nameof(Details), new { id });
+        }
     }
 }

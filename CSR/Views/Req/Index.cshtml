@@ -1,7 +1,9 @@
 @model PagedResult<ReqInfo>
 @using Microsoft.AspNetCore.Mvc.Localization
+@using System.Security.Claims
 @inject IViewLocalizer Localizer
 @inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
+@inject IHttpContextAccessor HttpContextAccessor
 
 @{
     ViewData["Title"] = SharedLocalizer["Title_ReqIndex"];
@@ -30,17 +32,17 @@
     <table class="table table-hover">
         <thead class="table-light">
             <tr>
-                <th>@Html.DisplayNameFor(model => model.Items.First().REQID)</th>
-                <th>@Html.DisplayNameFor(model => model.Items.First().TITLE)</th>
-                <th>@Html.DisplayNameFor(model => model.Items.First().ReqTypeName)</th>
-                <th>@Html.DisplayNameFor(model => model.Items.First().SystemName)</th>
-                <th>@Html.DisplayNameFor(model => model.Items.First().ReqMenuName)</th>
-                <th>@Html.DisplayNameFor(model => model.Items.First().ReqUserName)</th>                
-                <th>@Html.DisplayNameFor(model => model.Items.First().REQDATE)</th>
-                <th>@Html.DisplayNameFor(model => model.Items.First().DUEDATE)</th>
-                <th>@Html.DisplayNameFor(model => model.Items.First().EXPECTDATE)</th>
-                <th>@Html.DisplayNameFor(model => model.Items.First().ProcStatusName)</th>
-                <th>@Html.DisplayNameFor(model => model.Items.First().PROC_RATE)</th>
+                <th>요청번호</th>
+                <th>제목</th>
+                <th>요청분류</th>
+                <th>대상시스템</th>
+                <th>요청메뉴</th>
+                <th>요청자</th>                
+                <th>요청일</th>
+                <th>처리기한</th>
+                <th>완료예정일</th>
+                <th>진행상태</th>
+                <th>진행률</th>
                 <th></th>
             </tr>
         </thead>
@@ -51,7 +53,15 @@
                 {
                     <tr>
                         <td>@item.REQID</td>
-                        <td><a asp-action="Details" asp-route-id="@item.REQID">@item.TITLE</a></td>
+                        @{
+                            var userDiv = HttpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+                            //var actionName = (userDiv == "R1" || userDiv == "R2") ? "Details" :
+                            //                 ((userDiv == "R3" || userDiv == "R4") ? "Answer" : "Details"); 
+
+                            var actionName = "Details";
+
+                        }
+                        <td><a asp-action="@actionName" asp-route-id="@item.REQID">@item.TITLE</a></td>
                         <td>@item.ReqTypeName</td>
                         <td>@item.SystemName</td>
                         <td>@item.ReqMenuName</td>

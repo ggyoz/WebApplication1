@@ -19,8 +19,10 @@ namespace CSR.Services
         Task<ReqInfo?> GetReqInfoByIdAsync(int id);
         Task<int> CreateReqInfoAsync(ReqInfo reqInfo, IEnumerable<IFormFile> files);
         Task<bool> UpdateReqInfoAsync(ReqInfo reqInfo, IEnumerable<IFormFile> newFiles, List<int> deletedFiles);
+        Task<bool> SaveDraftAsync(ReqInfo reqInfo, IEnumerable<IFormFile> newFiles, List<int> deletedFiles);
         Task<bool> DeleteReqInfoAsync(int id, string userId);
         Task<ReqFile?> GetReqFileByIdAsync(int fileId);
+        Task<bool> UpdateProcStatusAsync(int reqid, string statusVal, string userId);
     }
 
     public class ReqService : IReqService
@@ -28,12 +30,14 @@ namespace CSR.Services
         private readonly IDbConnection _dbConnection;
         private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly ILogger<ReqService> _logger;
+        private readonly ICommCodeService _commCodeService;
 
-        public ReqService(IDbConnection dbConnection, IWebHostEnvironment hostingEnvironment, ILogger<ReqService> logger)
+        public ReqService(IDbConnection dbConnection, IWebHostEnvironment hostingEnvironment, ILogger<ReqService> logger, ICommCodeService commCodeService)
         {
             _dbConnection = dbConnection;
             _hostingEnvironment = hostingEnvironment;
             _logger = logger;
+            _commCodeService = commCodeService;
             // Ensure the upload folder exists
             var uploadFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads", "req");
             if (!Directory.Exists(uploadFolder))
@@ -44,19 +48,16 @@ namespace CSR.Services
 
         public async Task<int> CreateReqInfoAsync(ReqInfo reqInfo, IEnumerable<IFormFile> files)
         {
+            // 진행상태 - '대기'
+            reqInfo.PROC_STATUS = "69";
 
-             // --- 쿼리디버킹코드 ---
-            Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(reqInfo, Formatting.Indented));
-            // --- 쿼리디버킹코드 ---
-
-            //_dbConnection.Open();
             using var transaction = _dbConnection.BeginTransaction();
             try
             {
                 // 1. Insert into TB_REQ_INFO
                 var reqSql = @"
-                    INSERT INTO TB_REQ_INFO (REQID, PARENTID, TITLE, CONTENTS_HTML, CONTENTS_TEXT, REQDATE, DUEDATE, EXPECTDATE, STARTDATE, ENDDATE, REQTYPE, SYSTEMCD, REQMENU, REQMENU_ETC, BXTID, REQUSERID, RESUSERID, IMPTCD, DFCLTCD, PRIORITYCD, MAN_DAY, PROC_STATUS, PROC_RATE, ANSWER_HTML, ANSWER_TEXT, DELAYREASON_HTML, DELAYREASON_TEXT, CORCD, DEPTCD, OFFICECD, TEAMCD, NOTE_HTML, NOTE_TEXT, REG_USERID, USEYN)
-                    VALUES (SEQ_REQ_INFO.NEXTVAL, :PARENTID, :TITLE, :CONTENTS_HTML, :CONTENTS_TEXT, :REQDATE, :DUEDATE, :EXPECTDATE, :STARTDATE, :ENDDATE, :REQTYPE, :SYSTEMCD, :REQMENU, :REQMENU_ETC, :BXTID, :REQUSERID, :RESUSERID, :IMPTCD, :DFCLTCD, :PRIORITYCD, :MAN_DAY, :PROC_STATUS, :PROC_RATE, :ANSWER_HTML, :ANSWER_TEXT, :DELAYREASON_HTML, :DELAYREASON_TEXT, :CORCD, :DEPTCD, :OFFICECD, :TEAMCD, :NOTE_HTML, :NOTE_TEXT, :REG_USERID, 'Y')
+                    INSERT INTO TB_REQ_INFO (REQID, PARENTID, TITLE, CONTENTS_HTML, CONTENTS_TEXT, REQDATE, DUEDATE, EXPECTDATE, STARTDATE, ENDDATE, REQTYPE, SYSTEMCD, REQMENU, REQMENU_ETC, REQTCODE, BXTID, REQUSERID, RESUSERID, IMPTCD, DFCLTCD, PRIORITYCD, MAN_DAY, PROC_STATUS, PROC_RATE, ANSWER_HTML, ANSWER_TEXT, DELAYREASON_HTML, DELAYREASON_TEXT, CORCD, DEPTCD, OFFICECD, TEAMCD, NOTE_HTML, NOTE_TEXT, REG_USERID, USEYN)
+                    VALUES (SEQ_REQ_INFO.NEXTVAL, :PARENTID, :TITLE, :CONTENTS_HTML, :CONTENTS_TEXT, :REQDATE, :DUEDATE, :EXPECTDATE, :STARTDATE, :ENDDATE, :REQTYPE, :SYSTEMCD, :REQMENU, :REQMENU_ETC, :REQTCODE, :BXTID, :REQUSERID, :RESUSERID, :IMPTCD, :DFCLTCD, :PRIORITYCD, :MAN_DAY, :PROC_STATUS, :PROC_RATE, :ANSWER_HTML, :ANSWER_TEXT, :DELAYREASON_HTML, :DELAYREASON_TEXT, :CORCD, :DEPTCD, :OFFICECD, :TEAMCD, :NOTE_HTML, :NOTE_TEXT, :REG_USERID, 'Y')
                     RETURNING REQID INTO :REQID";
                 
                 var reqParams = new DynamicParameters(reqInfo);
@@ -66,7 +67,7 @@ namespace CSR.Services
                 reqInfo.REQID = newReqId;
 
                 // 2. Insert into TB_REQ_HIST
-                var newHistoryId = await CreateReqHistoryAsync(reqInfo, transaction);
+                var newHistoryId = await CreateReqHistoryAsync(reqInfo, "71", transaction); // CODEID = "71" 최초등록
 
                 // 3. Add files
                 if (files != null && files.Any())
@@ -87,7 +88,6 @@ namespace CSR.Services
         
         public async Task<bool> UpdateReqInfoAsync(ReqInfo reqInfo, IEnumerable<IFormFile> newFiles, List<int> deletedFiles)
         {
-            _dbConnection.Open();
             using var transaction = _dbConnection.BeginTransaction();
             try
             {
@@ -97,7 +97,7 @@ namespace CSR.Services
                     UPDATE TB_REQ_INFO SET
                         PARENTID = :PARENTID, TITLE = :TITLE, CONTENTS_HTML = :CONTENTS_HTML, CONTENTS_TEXT = :CONTENTS_TEXT, REQDATE = :REQDATE,
                         DUEDATE = :DUEDATE, EXPECTDATE = :EXPECTDATE, STARTDATE = :STARTDATE, ENDDATE = :ENDDATE, REQTYPE = :REQTYPE,
-                        SYSTEMCD = :SYSTEMCD, REQMENU = :REQMENU, REQMENU_ETC = :REQMENU_ETC, BXTID = :BXTID, REQUSERID = :REQUSERID,
+                        SYSTEMCD = :SYSTEMCD, REQMENU = :REQMENU, REQMENU_ETC = :REQMENU_ETC, BXTID = :BXTID, REQTCODE = :REQTCODE, REQUSERID = :REQUSERID,
                         RESUSERID = :RESUSERID, IMPTCD = :IMPTCD, DFCLTCD = :DFCLTCD, PRIORITYCD = :PRIORITYCD, MAN_DAY = :MAN_DAY,
                         PROC_STATUS = :PROC_STATUS, PROC_RATE = :PROC_RATE, ANSWER_HTML = :ANSWER_HTML, ANSWER_TEXT = :ANSWER_TEXT,
                         DELAYREASON_HTML = :DELAYREASON_HTML, DELAYREASON_TEXT = :DELAYREASON_TEXT, CORCD = :CORCD, DEPTCD = :DEPTCD,
@@ -107,7 +107,7 @@ namespace CSR.Services
                 await _dbConnection.ExecuteAsync(reqSql, reqInfo, transaction);
 
                 // 2. Create new history record
-                var newHistoryId = await CreateReqHistoryAsync(reqInfo, transaction);
+                var newHistoryId = await CreateReqHistoryAsync(reqInfo, "요구사항 내용 변경", transaction);
 
                 // 3. Handle files
                 if (newFiles != null && newFiles.Any())
@@ -129,6 +129,72 @@ namespace CSR.Services
                 throw;
             }
         }
+
+        public async Task<bool> SaveDraftAsync(ReqInfo reqInfo, IEnumerable<IFormFile> newFiles, List<int> deletedFiles)
+        {
+            // 접수상태이면 진행중으로 변경
+            if(reqInfo.PROC_STATUS == "62") {
+                reqInfo.PROC_STATUS = "64";
+            }
+
+            using var transaction = _dbConnection.BeginTransaction();
+            try
+            {
+                // 1. Update TB_REQ_INFO
+                var reqSql = @"
+                    UPDATE TB_REQ_INFO SET
+                        EXPECTDATE = :EXPECTDATE, 
+                        STARTDATE = :STARTDATE, 
+                        ENDDATE = :ENDDATE, 
+                        RESTCODE = :RESTCODE,
+                        BXTID = :BXTID, 
+                        IMPTCD = :IMPTCD, 
+                        DFCLTCD = :DFCLTCD, 
+                        MAN_DAY = :MAN_DAY, 
+                        PROC_STATUS = :PROC_STATUS, 
+                        PROC_RATE = :PROC_RATE, 
+                        ANSWER_HTML = :ANSWER_HTML, 
+                        ANSWER_TEXT = :ANSWER_TEXT,
+                        DELAYREASON_HTML = :DELAYREASON_HTML, 
+                        DELAYREASON_TEXT = :DELAYREASON_TEXT, 
+                        NOTE_HTML = :NOTE_HTML, 
+                        NOTE_TEXT = :NOTE_TEXT, 
+                        UPDATE_DATE = SYSDATE, 
+                        UPDATE_USERID = :UPDATE_USERID
+                    WHERE REQID = :REQID";
+                await _dbConnection.ExecuteAsync(reqSql, reqInfo, transaction);
+
+                // 2. Handle files without creating new history record
+                var latestHistoryId = await _dbConnection.ExecuteScalarAsync<int?>(
+                    "SELECT MAX(HISTORYID) FROM TB_REQ_HIST WHERE REQID = :REQID",
+                    new { reqInfo.REQID },
+                    transaction);
+
+                if (!latestHistoryId.HasValue)
+                {
+                    throw new InvalidOperationException($"Cannot save draft for request {reqInfo.REQID} because no history record exists.");
+                }
+
+                if (newFiles != null && newFiles.Any())
+                {
+                    await AddReqFilesAsync(reqInfo.REQID, latestHistoryId.Value, newFiles, reqInfo.UPDATE_USERID, transaction);
+                }
+                if (deletedFiles != null && deletedFiles.Any())
+                {
+                    await DeleteReqFilesAsync(deletedFiles, transaction);
+                }
+
+                transaction.Commit();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                _logger.LogError(ex, "Error saving draft for requirement with ID {ReqId}", reqInfo.REQID);
+                throw;
+            }
+        }
+        
         
         public async Task<bool> DeleteReqInfoAsync(int id, string userId)
         {
@@ -148,7 +214,7 @@ namespace CSR.Services
                 await _dbConnection.ExecuteAsync(sql, new { REQID = id, UPDATE_DATE = reqInfo.UPDATE_DATE, UPDATE_USERID = userId }, transaction);
 
                 // Create final history record
-                await CreateReqHistoryAsync(reqInfo, transaction);
+                await CreateReqHistoryAsync(reqInfo, "요구사항 삭제", transaction);
                 
                 transaction.Commit();
                 return true;
@@ -167,10 +233,10 @@ namespace CSR.Services
                 FROM TB_REQ_INFO R
                 LEFT JOIN TB_USER_INFO U_REQ ON R.REQUSERID = U_REQ.USERID
                 LEFT JOIN TB_USER_INFO U_RES ON R.RESUSERID = U_RES.USERID
-                LEFT JOIN TB_COMM_CODE S ON R.SYSTEMCD = S.CODEID AND S.PARENTID = 19 -- System Code ParentId
-                LEFT JOIN TB_COMM_CODE RT ON R.REQTYPE = RT.CODEID AND RT.PARENTID = 13 -- Req Type ParentId
-                LEFT JOIN TB_COMM_CODE P ON R.PRIORITYCD = P.CODEID AND P.PARENTID = 1 -- Priority Code ParentId
-                LEFT JOIN TB_COMM_CODE PS ON R.PROC_STATUS = PS.CODEID AND PS.PARENTID = 0 -- Proc Status ParentId (Need to confirm correct ParentId)
+                LEFT JOIN TB_COMM_CODE S ON R.SYSTEMCD = S.CODEID AND S.PARENTID = 19
+                LEFT JOIN TB_COMM_CODE RT ON R.REQTYPE = RT.CODEID AND RT.PARENTID = 13
+                LEFT JOIN TB_COMM_CODE P ON R.PRIORITYCD = P.CODEID AND P.PARENTID = 1
+                LEFT JOIN TB_COMM_CODE PS ON R.PROC_STATUS = PS.CODEID AND PS.PARENTID = 61
                 LEFT JOIN TB_COMM_CODE M ON R.REQMENU  = M.CODEID 
                 WHERE R.USEYN = 'Y'";
             
@@ -228,7 +294,7 @@ namespace CSR.Services
                 LEFT JOIN TB_COMM_CODE S ON R.SYSTEMCD = S.CODEID AND S.PARENTID = 19 
                 LEFT JOIN TB_COMM_CODE RT ON R.REQTYPE = RT.CODEID AND RT.PARENTID = 13 
                 LEFT JOIN TB_COMM_CODE P ON R.PRIORITYCD = P.CODEID AND P.PARENTID = 1 
-                LEFT JOIN TB_COMM_CODE PS ON R.PROC_STATUS = PS.CODEID AND PS.PARENTID = 0
+                LEFT JOIN TB_COMM_CODE PS ON R.PROC_STATUS = PS.CODEID AND PS.PARENTID = 61
                 LEFT JOIN TB_COMM_CODE M ON R.REQMENU  = M.CODEID 
                 WHERE R.REQID = :ID AND R.USEYN = 'Y'";
             
@@ -254,16 +320,16 @@ namespace CSR.Services
 
 
         // Private helper methods
-        private async Task<int> CreateReqHistoryAsync(ReqInfo reqInfo, IDbTransaction transaction)
+        private async Task<int> CreateReqHistoryAsync(ReqInfo reqInfo, string historyReason, IDbTransaction transaction)
         {
             var histSql = @"
-                INSERT INTO TB_REQ_HIST (HISTORYID, REQID, PARENTID, TITLE, CONTENTS_HTML, CONTENTS_TEXT, REQDATE, DUEDATE, EXPECTDATE, STARTDATE, ENDDATE, REQTYPE, SYSTEMCD, REQMENU, REQMENU_ETC, BXTID, REQUSERID, RESUSERID, IMPTCD, DFCLTCD, PRIORITYCD, MAN_DAY, PROC_STATUS, PROC_RATE, ANSWER_HTML, ANSWER_TEXT, DELAYREASON_HTML, DELAYREASON_TEXT, CORCD, DEPTCD, OFFICECD, TEAMCD, NOTE_HTML, NOTE_TEXT, REG_USERID, USEYN)
-                VALUES (SEQ_REQ_HIST.NEXTVAL, :REQID, :PARENTID, :TITLE, :CONTENTS_HTML, :CONTENTS_TEXT, :REQDATE, :DUEDATE, :EXPECTDATE, :STARTDATE, :ENDDATE, :REQTYPE, :SYSTEMCD, :REQMENU, :REQMENU_ETC, :BXTID, :REQUSERID, :RESUSERID, :IMPTCD, :DFCLTCD, :PRIORITYCD, :MAN_DAY, :PROC_STATUS, :PROC_RATE, :ANSWER_HTML, :ANSWER_TEXT, :DELAYREASON_HTML, :DELAYREASON_TEXT, :CORCD, :DEPTCD, :OFFICECD, :TEAMCD, :NOTE_HTML, :NOTE_TEXT, :REG_USERID, :USEYN)
+                INSERT INTO TB_REQ_HIST (HISTORYID, REQID, PARENTID, TITLE, CONTENTS_HTML, CONTENTS_TEXT, REQDATE, DUEDATE, EXPECTDATE, STARTDATE, ENDDATE, REQTYPE, SYSTEMCD, REQMENU, REQMENU_ETC, BXTID, REQUSERID, RESUSERID, IMPTCD, DFCLTCD, PRIORITYCD, MAN_DAY, PROC_STATUS, PROC_RATE, ANSWER_HTML, ANSWER_TEXT, DELAYREASON_HTML, DELAYREASON_TEXT, CORCD, DEPTCD, OFFICECD, TEAMCD, NOTE_HTML, NOTE_TEXT, REG_USERID, USEYN, HISTORY_REASON)
+                VALUES (SEQ_REQ_HIST.NEXTVAL, :REQID, :PARENTID, :TITLE, :CONTENTS_HTML, :CONTENTS_TEXT, :REQDATE, :DUEDATE, :EXPECTDATE, :STARTDATE, :ENDDATE, :REQTYPE, :SYSTEMCD, :REQMENU, :REQMENU_ETC, :BXTID, :REQUSERID, :RESUSERID, :IMPTCD, :DFCLTCD, :PRIORITYCD, :MAN_DAY, :PROC_STATUS, :PROC_RATE, :ANSWER_HTML, :ANSWER_TEXT, :DELAYREASON_HTML, :DELAYREASON_TEXT, :CORCD, :DEPTCD, :OFFICECD, :TEAMCD, :NOTE_HTML, :NOTE_TEXT, :REG_USERID, :USEYN, :HISTORY_REASON)
                 RETURNING HISTORYID INTO :HISTORYID";
 
             var histParams = new DynamicParameters(reqInfo);
-            // REG_USERID for history should be the user making the change
-            histParams.Add("REG_USERID", reqInfo.UPDATE_USERID ?? reqInfo.REG_USERID); 
+            histParams.Add("REG_USERID", reqInfo.UPDATE_USERID ?? reqInfo.REG_USERID);
+            histParams.Add("HISTORY_REASON", historyReason);
             histParams.Add(":HISTORYID", dbType: DbType.Int32, direction: ParameterDirection.Output);            
 
             await _dbConnection.ExecuteAsync(histSql, histParams, transaction);
@@ -313,6 +379,66 @@ namespace CSR.Services
             foreach (var fileId in fileIds)
             {
                 await _dbConnection.ExecuteAsync(sql, new { FILEID = fileId }, transaction);
+            }
+        }
+
+        
+        public async Task<bool> UpdateProcStatusAsync(int reqid, string statusVal, string userId)
+        {
+            // Get the current request info to create a history entry
+            var reqInfo = await GetReqInfoByIdAsync(reqid);
+            if (reqInfo == null)
+            {
+                _logger.LogWarning("UpdateProcStatusAsync: ReqInfo with ID {ReqId} not found.", reqid);
+                return false;
+            }
+
+            var historyReason = "72"; // 접수 완료 CODEID
+
+            using var transaction = _dbConnection.BeginTransaction();
+            try
+            {
+                // Update the fields for the history log
+                reqInfo.PROC_STATUS = statusVal;
+                reqInfo.UPDATE_USERID = userId;
+                reqInfo.UPDATE_DATE = DateTime.Now;
+
+                // Define the SQL to update the process status
+                var sql = @"
+                    UPDATE TB_REQ_INFO SET 
+                        PROC_STATUS = :PROC_STATUS,
+                        UPDATE_USERID = :UPDATE_USERID,
+                        UPDATE_DATE = :UPDATE_DATE
+                    WHERE REQID = :REQID";
+                
+                // Execute the update
+                var affectedRows = await _dbConnection.ExecuteAsync(sql, new 
+                { 
+                    PROC_STATUS = statusVal, 
+                    UPDATE_USERID = userId,
+                    UPDATE_DATE = reqInfo.UPDATE_DATE,
+                    REQID = reqid 
+                }, transaction);
+
+                // If the update was successful, create a history record
+                if (affectedRows > 0)
+                {
+                    await CreateReqHistoryAsync(reqInfo, historyReason, transaction);
+                    transaction.Commit();
+                    return true;
+                }
+                else
+                {
+                    // If no rows were affected, it means the REQID was not found
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                _logger.LogError(ex, "Error updating process status for ReqId {ReqId}", reqid);
+                throw; // Re-throw the exception to be handled by the controller
             }
         }
     }

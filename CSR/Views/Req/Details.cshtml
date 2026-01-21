@@ -1,7 +1,9 @@
 @model ReqInfo
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 @inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
+@inject IAuthorizationService AuthorizationService
 
 @{
     ViewData["Title"] = "요구사항 상세";
@@ -10,11 +12,11 @@
 <partial name="_PageTitlePartial" />
 
 <div>
-    <h4>@Model.TITLE</h4>
+    <span><label>No. @Model.REQID</label> / <label>@Model.TITLE</label></span>
     <hr />
     <div class="row">
         <div class="col-md-12">
-            <table class="table-layout Details">
+            <table class="table-layout Details" style="width:100%">
                 <colgroup>
                     <col width="10%"></col>
                     <col width="15%"></col>
@@ -25,44 +27,157 @@
                     <col width="10%"></col>
                     <col width="15%"></col>
                 </colgroup>
+
                 <tr>
-                    <td><label>@Html.DisplayNameFor(model => model.REQID)</label></td>
-                    <td>@Model.REQID</td>
-                    <td><label>@Html.DisplayNameFor(model => model.SystemName)</label></td>
-                    <td>@Model.SystemName</td>
-                    <td><label>@Html.DisplayNameFor(model => model.ReqTypeName)</label></td>
-                    <td>@Model.ReqTypeName</td>
-                    <td><label>@Html.DisplayNameFor(model => model.PriorityName)</label></td>
-                    <td>@Model.PriorityName</td>
-                </tr>
-                <tr>
-                    <td><label>@Html.DisplayNameFor(model => model.ReqUserName)</label></td>
+                    <td><label>요청자</label></td>
                     <td>@Model.ReqUserName</td>
-                    <td><label>@Html.DisplayNameFor(model => model.ResUserName)</label></td>
+                    <td><label>Email</label></td>
+                    <td>@Model.ReqUserEmail</td>
+                    <td><label>소속</label></td>
+                    <td>@{
+                            var orgParts = new[] { Model.CorpName, Model.DeptName, Model.OfficeName, Model.TeamName };
+                            var organization = string.Join(" / ", orgParts.Where(p => !string.IsNullOrEmpty(p)));
+                        }</td>
+                    <td><label>연락처</label></td>
+                    <td>@Model.ReqUserTel</td>                    
+                </tr>
+
+                <tr>
+                    <td><label>요청유형</label></td>
+                    <td>@Model.ReqTypeName</td>
+                    <td><label>대상시스템</label></td>
+                    <td>@Model.SystemName</td>                    
+                    <td><label>요청메뉴</label></td>
+                    <td>@Model.ReqMenuName</td>
+                    <td><label>조치자</label></td>
                     <td>@Model.ResUserName</td>
-                    <td><label>@Html.DisplayNameFor(model => model.REQDATE)</label></td>
+                </tr>
+                
+                <tr>
+                    <td><label>요청일</label></td>
                     <td>@Model.REQDATE.ToString("yyyy-MM-dd")</td>
-                    <td><label>@Html.DisplayNameFor(model => model.EXPECTDATE)</label></td>
+                    <td><label>처리기한</label></td>
+                    <td>@( Model.DUEDATE.HasValue ? Model.DUEDATE.Value.ToString("yyyy-MM-dd") : "미정" )</td>
+                    <td><label>완료예정일</label></td>
                     <td>@( Model.EXPECTDATE.HasValue ? Model.EXPECTDATE.Value.ToString("yyyy-MM-dd") : "미정")</td>
+                    <td><label>진행상태</label></td>
+                    <td>@(Model.ProcStatusName != null ? Model.ProcStatusName : "대기")</td>
                 </tr>
                 <tr>
-                    <td><label>@Html.DisplayNameFor(model => model.ProcStatusName)</label></td>
-                    <td>@(Model.ProcStatusName != null ? Model.ProcStatusName : "대기")</td>
-                    <td><label>@Html.DisplayNameFor(model => model.PROC_RATE)</label></td>
-                    <td colspan="5">@Model.PROC_RATE%</td>
+                    <td><label>긴급도</label></td>
+                    <td>@Model.PriorityName</td>
+                    <td><label>TCODE</label></td>
+                    <td>@Model.REQTCODE</td>
                 </tr>
             </table>
         </div>
     </div>
 
     <div class="card mt-4">
-        <div class="card-header">@Html.DisplayNameFor(model => model.CONTENTS_HTML)</div>
+        <div class="card-header">문의내용</div>
         <div class="card-body content-display">
             @Html.Raw(Model.CONTENTS_HTML)
         </div>
     </div>
+
+    <hr/>
     
-    @if (!string.IsNullOrEmpty(Model.NOTE_HTML))
+    
+    @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded && Model.PROC_STATUS != "69"){
+    
+    // 
+    <form id="req-form" asp-action="Edit" asp-route-id="@Model.REQID" enctype="multipart/form-data">
+        <input type="hidden" asp-for="REQID" />
+        <input type="hidden" asp-for="PROC_STATUS" />
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <table class="table-layout" width="100%">
+            <colgroup>
+                <col width="8%"></col>
+                <col width="10%"></col>
+                <col width="8%"></col>
+                <col width="10%"></col>
+                <col width="8%"></col>
+                <col width="10%"></col>
+                <col width="8%"></col>
+                <col width="10%"></col>
+                <col width="8%"></col>
+                <col width="10%"></col>                
+            </colgroup>
+            <tbody>
+            <tr>
+                <td><label>난이도</label></td>
+                <td>
+                    <select asp-for="DFCLTCD" asp-items="ViewBag.difficultCodes" class="form-select">
+                        <option>난이도 선택</option>
+                    </select>
+                    <span asp-validation-for="DFCLTCD" class="text-danger"></span>
+                </td>
+                <td><label>중요도</label></td>
+                <td>
+                    <select asp-for="IMPTCD" asp-items="ViewBag.ImportantCodes" class="form-select">
+                        <option>중요도 선택</option>
+                    </select>
+                    <span asp-validation-for="IMPTCD" class="text-danger"></span>
+                </td>
+                <td><label>투입공수</label></td>
+                <td><input asp-for="MAN_DAY" type="number" step="0.5" class="form-control" min="0" max="100" oninput="enforceMinMaxValue(this)" />
+                            <span asp-validation-for="MAN_DAY" class="text-danger"></span></td>
+                <td><label>BXT문의번호</label></td>
+                <td><input asp-for="BXTID" type="text" class="form-control" maxlength="10" />
+                            <span asp-validation-for="BXTID" class="text-danger"></span></td>
+                <td><label>TCODE</label></td>
+                <td><input asp-for="RESTCODE" type="text" class="form-control" maxlength="10" />
+                            <span asp-validation-for="RESTCODE" class="text-danger"></span></td>                
+            </tr>
+            <tr>
+                <td style="vertical-align: top;"><label asp-for="ANSWER_HTML" class="control-label"></label></td>
+                <td colspan="9">
+                    <div id="answer-editor">@Html.Raw(Model.ANSWER_HTML)</div>
+                    <input type="hidden" asp-for="ANSWER_HTML" />
+                </td>
+            </tr>    
+            <tr>
+                <td style="vertical-align: top;"><label asp-for="NOTE_HTML" class="control-label"></label></td>
+                <td colspan="9">
+                    <div id="note-editor">@Html.Raw(Model.NOTE_HTML)</div>
+                    <input type="hidden" asp-for="NOTE_HTML" />
+                </td>
+            </tr>
+            <tr>
+                <td>@SharedLocalizer["Label_Attachments"]</td>
+                <td colspan="3">
+                    @if (Model.AttachFiles.Any())
+                    {
+                        <ul class="list-group mb-3">
+                            @foreach (var file in Model.AttachFiles)
+                            {
+                                <li class="list-group-item">
+                                    <input type="checkbox" name="deletedFiles" value="@file.FILEID" id="del-@file.FILEID" class="form-check-input" />
+                                    <label for="del-@file.FILEID" class="form-check-label ms-2">@SharedLocalizer["Button_Delete"]</label>
+                                    <a asp-action="DownloadFile" asp-route-id="@file.FILEID" class="ms-3">@file.REAL_FILENAME</a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    <div>
+                        <div id="file-uploader"></div>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="button-area text-end mt-5 m-3">
+            <input type="submit" value="답변등록" class="btn btn-primary" />                
+            <input type="button" value="임시저장" class="btn btn-secondary" onclick="saveDraft()" />     
+        </div>
+    </form>
+
+    }
+
+    
+    <!-- @if (!string.IsNullOrEmpty(Model.NOTE_HTML))
     {
         <div class="card mt-4">
             <div class="card-header">@Html.DisplayNameFor(model => model.NOTE_HTML)</div>
@@ -70,7 +185,7 @@
                 @Html.Raw(Model.NOTE_HTML)
             </div>
         </div>
-    }
+    } -->
 
     @if (Model.AttachFiles.Any())
     {
@@ -113,19 +228,41 @@
 
 <div class="d-flex justify-content-between align-items-center mt-5">
     <div>
-        <form asp-action="Delete" asp-route-id="@Model.REQID" method="post">
-            <button type="submit" class="btn btn-danger" onclick="return confirm('@SharedLocalizer["Confirmation_Delete"]')">
+        <form asp-action="Delete" asp-route-id="@Model.REQID" method="post" onsubmit="return confirm('@SharedLocalizer["Confirmation_Delete"]');">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">
                 @SharedLocalizer["Button_Delete"]
             </button>
         </form>
     </div>
+
+    <div class="d-flex justify-content-center flex-grow-1">
+        @if ((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded && Model.PROC_STATUS == "69")
+        {
+            <form asp-controller="Req" asp-action="SetProcStatus" asp-route-id="@Model.REQID" method="post" class="me-2">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="status" value="62" />
+                <button type="submit" class="btn btn-primary">접수</button>
+            </form>
+            <form asp-controller="Req" asp-action="SetProcStatus" asp-route-id="@Model.REQID" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="status" value="63" />
+                <button type="submit" class="btn btn-warning">반려</button>
+            </form>
+        }
+    </div>
+
     <div>
-        <a asp-action="Edit" asp-route-id="@Model.REQID" class="btn btn-primary">@SharedLocalizer["Button_Edit"]</a>
+        @if(Model.PROC_STATUS == "69")
+        {
+            <a asp-action="Edit" asp-route-id="@Model.REQID" class="btn btn-primary">@SharedLocalizer["Button_Edit"]</a>
+        }
         <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
     </div>
 </div>
 
 @section Scripts {
+
 <style>
     .content-display {
         min-height: 150px;
@@ -137,4 +274,17 @@
         font-weight: bold;
     }
 </style>
+
+<script>
+    initializeHtmlEditor('#answer-editor', 'input[name="@Html.NameFor(m => m.ANSWER_HTML)"]');
+    initializeHtmlEditor('#note-editor', 'input[name="@Html.NameFor(m => m.NOTE_HTML)"]');
+
+    function saveDraft() {
+        var form = document.getElementById('req-form');
+        form.action = '@Url.Action("SaveDraft", "Req", new { id = Model.REQID })';
+        form.submit();
+    }
+    
+</script>
+        
 }
