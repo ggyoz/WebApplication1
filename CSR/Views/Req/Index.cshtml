@@ -11,39 +11,151 @@
 
 <partial name="_PageTitlePartial" />
 
-<div class="search-area card p-3">
+<div class="card search-area">
     <form asp-action="Index" method="get">
-        <div class="row">
-            <div class="col-md-10">
-                <input type="text" name="searchValue" value="@ViewData["SearchValue"]" class="form-control" placeholder="@SharedLocalizer["Placeholder_SearchByTitle"]" />
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-light search-btn w-100">@SharedLocalizer["Button_Search"]</button>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <tbody>
+                    <colgroup>
+                        <col width="5%"></col>
+                        <col width="10%"></col>
+                        <col width="5%"></col>
+                        <col width="10%"></col>
+                        <col width="5%"></col>
+                        <col width="10%"></col>
+                        
+                        <col width="5%"></col>
+                        <col width="10%"></col>
+                        <col width="5%"></col>
+                        <col width="10%"></col>
+                        <col width="5%"></col>
+                        <col width="10%"></col>
+                    </colgroup>
+                    <tr>
+                        <th>@SharedLocalizer["Label_Corporation"]</th>
+                        <td>
+                            <select id="CorCd" asp-items="ViewBag.CorCdList" class="form-select" name="CorCd">
+                                <option value="">@SharedLocalizer["Placeholder_SelectCorporation"]</option>
+                            </select>
+                        </td>
+                        <th>@SharedLocalizer["Label_Department"]</th>
+                        <td>
+                            <select id="DeptCd" asp-items="ViewBag.DeptCdList"  class="form-select" name="DeptCd">
+                                <option value="">@SharedLocalizer["Placeholder_SelectDepartment"]</option>
+                            </select>
+                        </td>
+                        <th>@SharedLocalizer["Label_Office"]</th>
+                        <td>
+                            <select id="OfficeCd" asp-items="ViewBag.OfficeCdList" class="form-select" name="OfficeCd">
+                                <option value="">@SharedLocalizer["Placeholder_SelectOffice"]</option>
+                            </select>
+                        </td>
+                        <th>@SharedLocalizer["Label_Team"]</th>
+                        <td>
+                            <select id="TeamCd" asp-items="ViewBag.TeamCdList" class="form-select" name="TeamCd">
+                                <option value="">@SharedLocalizer["Placeholder_SelectTeam"]</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>@SharedLocalizer["Label_RequestType"]</th>
+                        <td>
+                            <select asp-items="ViewBag.ReqTypes" class="form-select" name="ReqTypeCd">
+                                <option value="">@SharedLocalizer["Placeholder_SelectRequestType"]</option>
+                            </select>
+                        </td>
+                        <th>@SharedLocalizer["Label_RequestDate"]</th>
+                        <td><div id="ReqDateSearch"></div><input type="hidden" name="ReqDate" id="hiddenReqDate" /></td>
+                        <th>@SharedLocalizer["Label_DueDate"]</th>
+                        <td><div id="DueDateSearch"></div><input type="hidden" name="DueDate" id="hiddenDueDate" /></td>
+                        <th>@SharedLocalizer["Label_ExpectedCompletionDate"]</th>
+                        <td><div id="ExpectDateSearch"></div><input type="hidden" name="ExpectDate" id="hiddenExpectDate" /></td>
+                        <th>@SharedLocalizer["Label_ProgressStatus"]</th>
+                        <td><select asp-items="ViewBag.ProcStatusCodes" class="form-select" name="ProcStatusCd">
+                                <option value="">@SharedLocalizer["Placeholder_SelectProgressStatus"]</option>
+                            </select></td>
+                        <th>@SharedLocalizer["Label_Urgency"]</th>
+                        <td>
+                            <select asp-items="ViewBag.PriorityCodes" class="form-select" name="PriorityCd">
+                                <option value="">@SharedLocalizer["Placeholder_SelectUrgency"]</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody  class="collapse show" id="searchCollapse">
+                        <tr>
+                        <th>@SharedLocalizer["Label_RequestNo"]</th>
+                        <td><input name="RegId" class="form-control" value="@ViewData["RegId"]" /></td>
+                        <th>@SharedLocalizer["Label_Requester"]</th>
+                        <td><input name="ReqUserName" class="form-control" value="@ViewData["ReqUserName"]" /></td>
+                        <th>@SharedLocalizer["Label_ActionTaker"]</th>
+                        <td><input name="ResUserName" class="form-control" value="@ViewData["ResUserName"]" /></td> 
+                        <th>@SharedLocalizer["Label_Title"]</th>
+                        <td colspan="3">
+                            <input type="text" name="searchValue" value="@ViewData["SearchValue"]" class="form-control" placeholder="@SharedLocalizer["Placeholder_SearchByTitle"]" />
+                        </td>                
+                    </tr>
+                    <tr>
+                        <th>@SharedLocalizer["Label_ResponsibleArea"]</th>
+                        <td colspan='9'>
+                        @{
+                            var allResponsibilities = ViewBag.AllResponsibilities as Dictionary<string, List<CSR.Models.CommCode>> ?? new Dictionary<string, List<CSR.Models.CommCode>>();
+                            var selectedResponsibilities = ViewData["AssignedResponsibilities"] as List<string> ?? new List<string>();
+                        }
+                            @foreach (var group in allResponsibilities)
+                            {
+                                <div class="mb-2">
+                                    <strong>@group.Key</strong>
+                                    <div class="d-flex flex-wrap mt-1">
+                                    @foreach (var responsibility in group.Value)
+                                    {
+                                        <div class="form-check me-3">
+                                            <input class="form-check-input" type="checkbox" name="AssignedResponsibilities" value="@responsibility.CODEID" id="resp_@responsibility.CODEID"
+                                                @(selectedResponsibilities.Contains(responsibility.CODEID.ToString()) ? "checked" : "") />
+                                            <label class="form-check-label" for="resp_@responsibility.CODEID">
+                                                @SharedLocalizer[responsibility.CODENM]
+                                            </label>
+                                        </div>
+                                    }
+                                    </div>
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-center mt-3">
+                <div class="flex-grow-1 text-center">
+                    <button type="button" class="btn btn-light" id="toggleSearchArea">
+                        <i class="bi bi-chevron-bar-up" id="collapseIcon"></i>
+                    </button>
+                </div>
+                <button type="submit" class="btn btn-primary search-btn">@SharedLocalizer["Label_Search"]</button>
             </div>
         </div>
     </form>
 </div>
 
-<div class="text-end mb-3">
-    <a asp-action="Create" class="btn btn-add">@SharedLocalizer["Button_Create"]</a>
+<div class="text-end">
+    <a asp-action="Create" class="btn btn-add">@SharedLocalizer["Button_RegisterRequest"]</a>
 </div>
 
 <div class="table-responsive">
-    <table class="table table-hover">
+    <table class="table board-tabl">
         <thead class="table-light">
             <tr>
-                <th>요청번호</th>
-                <th>제목</th>
-                <th>요청분류</th>
-                <th>대상시스템</th>
-                <th>요청메뉴</th>
-                <th>요청자</th>                
-                <th>요청일</th>
-                <th>처리기한</th>
-                <th>완료예정일</th>
-                <th>진행상태</th>
-                <th>진행률</th>
-                <th></th>
+                <th>@SharedLocalizer["TableHeader_RequestNo"]</th>
+                <th>@SharedLocalizer["TableHeader_Title"]</th>
+                <th>@SharedLocalizer["TableHeader_Affiliation"]</th>
+                <th>@SharedLocalizer["TableHeader_RequestClassification"]</th>
+                <th>@SharedLocalizer["TableHeader_TargetSystem"]</th>
+                <th>@SharedLocalizer["TableHeader_RequestMenu"]</th>
+                <th>@SharedLocalizer["TableHeader_Requester"]</th>              
+                <th>@SharedLocalizer["TableHeader_RequestDate"]</th>
+                <th>@SharedLocalizer["TableHeader_ActionTaker"]</th>
+                <th>@SharedLocalizer["TableHeader_DueDate"]</th>
+                <th>@SharedLocalizer["TableHeader_ExpectedCompletionDate"]</th>
+                <th>@SharedLocalizer["TableHeader_ProgressStatus"]</th>
             </tr>
         </thead>
         <tbody>
@@ -61,26 +173,28 @@
                             var actionName = "Details";
 
                         }
-                        <td><a asp-action="@actionName" asp-route-id="@item.REQID">@item.TITLE</a></td>
-                        <td>@item.ReqTypeName</td>
-                        <td>@item.SystemName</td>
-                        <td>@item.ReqMenuName</td>
+                        <td><a asp-action="@actionName" asp-route-id="@item.REQID">@(item.TITLE.Length > 30 ? item.TITLE.Substring(0, 30) + "..." : item.TITLE)</a></td>
+                        <td>@{
+                            var orgParts = new[] { item.CorpName, item.DeptName, item.OfficeName, item.TeamName };                            
+                            var organization = string.Join(" / ", orgParts.Where(p => !string.IsNullOrEmpty(p)));
+                        }
+                        @organization</td>
+                        <td>@SharedLocalizer["CC"+item.REQTYPE]</td>
+                        <td>@SharedLocalizer["CC"+item.SYSTEMCD]</td>                        
+                        <td>@(item.REQMENU != null ? @SharedLocalizer["CC"+item.REQMENU] : "")</td>
                         <td>@item.ReqUserName</td>
-                        <td>@item.REQDATE.ToString("yyyy-MM-dd")</td>
+                        <td>@item.REQDATE.ToString("yyyy-MM-dd")</td>                        
+                        <th>@item.ResUserName</th>
                         <td>@(item.DUEDATE.HasValue ? item.DUEDATE.Value.ToString("yyyy-MM-dd") : "")</td>
-                        <td>@(item.EXPECTDATE.HasValue ? item.EXPECTDATE.Value.ToString("yyyy-MM-dd") : "미정")</td>
-                        <td>@(item.ProcStatusName != null ? item.ProcStatusName : "대기" )</td>
-                        <td>@item.PROC_RATE%</td>
-                        <td>
-                            <a asp-action="Edit" asp-route-id="@item.REQID" class="btn btn-sm btn-outline-secondary">@SharedLocalizer["Button_Edit"]</a>
-                        </td>
+                        <td>@(item.EXPECTDATE.HasValue ? item.EXPECTDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"])</td>
+                        <td>@SharedLocalizer["CC"+item.PROC_STATUS]</td>                
                     </tr>
                 }
             }
             else
             {
                 <tr>
-                    <td colspan="9" class="text-center">@SharedLocalizer["Message_NoData"]</td>
+                    <td colspan="12" class="text-center">@SharedLocalizer["Message_NoData"]</td>
                 </tr>
             }
         </tbody>
@@ -88,3 +202,168 @@
 </div>
 
 <partial name="_PagingPartial" model="Model" />
+
+
+@section Scripts {
+
+    <style>
+        .table-bordered th {
+            display :flex;
+            justify-content: center; /* Horizontally centers content */
+            align-items: center;     /* Vertically centers content */
+        }        
+    </style>
+
+    <script>
+        $(function () {            
+            // Retrieve search values from ViewData
+            const searchValues = {
+                reqTypeCd: '@ViewData["ReqTypeCd"]',
+                procStatusCd: '@ViewData["ProcStatusCd"]',
+                priorityCd: '@ViewData["PriorityCd"]',
+                reqDate: '@ViewData["ReqDate"]',
+                dueDate: '@ViewData["DueDate"]',
+                expectDate: '@ViewData["ExpectDate"]',
+                CorCd: '@ViewData["CorCd"]',
+                DeptCd: '@ViewData["DeptCd"]',
+                OfficeCd: '@ViewData["OfficeCd"]',
+                TeamCd: '@ViewData["TeamCd"]'
+            };
+            
+            if (searchValues.reqTypeCd) {
+                $('select[name="ReqTypeCd"]').val(searchValues.reqTypeCd);
+            }
+            if (searchValues.procStatusCd) {
+                $('select[name="ProcStatusCd"]').val(searchValues.procStatusCd);
+            }
+            if (searchValues.priorityCd) {
+                $('select[name="PriorityCd"]').val(searchValues.priorityCd);
+            }            
+            if (searchValues.CorCd) {
+                $('select[name="CorCd"]').val(searchValues.CorCd);
+            }
+            if (searchValues.DeptCd) {
+                $('select[name="DeptCd"]').val(searchValues.DeptCd);
+            }
+            if (searchValues.OfficeCd) {
+                $('select[name="OfficeCd"]').val(searchValues.OfficeCd);
+            }
+            if (searchValues.TeamCd) {
+                $('select[name="TeamCd"]').val(searchValues.TeamCd);
+            }
+
+            initDateBox('#ReqDateSearch', '#hiddenReqDate', searchValues.reqDate);
+            initDateBox('#DueDateSearch', '#hiddenDueDate', searchValues.dueDate);
+            initDateBox('#ExpectDateSearch', '#hiddenExpectDate', searchValues.expectDate);
+            
+            // Custom toggle logic using jQuery slideToggle
+            $('#toggleSearchArea').on('click', function(e) {
+                e.preventDefault();
+                
+                $('#searchCollapse').slideToggle(100, function() {
+                    var icon = $('#collapseIcon');
+                    if ($(this).is(':visible')) {
+                        icon.removeClass('bi-chevron-bar-down').addClass('bi-chevron-bar-up');
+                    } else {
+                        icon.removeClass('bi-chevron-bar-up').addClass('bi-chevron-bar-down');
+                    }
+                });
+            });
+
+            // Set initial icon state based on whether the searchCollapse is visible (it starts with class "show")
+            // This is important because the "show" class might make it visible, but slideToggle expects it to be hidden initially
+            // if we want to slideDown on first click.
+            // Let's manually hide it if it has the "show" class and adjust icon.
+            if ($('#searchCollapse').hasClass('show')) {
+                // If it has 'show', remove it and hide it initially, and set the icon to down arrow.
+                // This will make the first click slideDown.
+                $('#searchCollapse').removeClass('show').hide();
+                $('#collapseIcon').removeClass('bi-chevron-bar-up').addClass('bi-chevron-bar-down');
+            } else {
+                // If it doesn't have 'show', ensure it's hidden and icon is down.
+                $('#searchCollapse').hide();
+                $('#collapseIcon').removeClass('bi-chevron-bar-up').addClass('bi-chevron-bar-down');
+            }
+            
+            // 법인 선택 시 메뉴 드롭다운 변경
+            $('#CorCd').on('change', function() {
+                var corCd = $(this).val();
+                var deptDropdown = $('#DeptCd');
+
+                deptDropdown.empty();
+                deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectDepartment"])'));
+
+                if (corCd) {
+                    $.ajax({
+                        url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
+                        type: 'GET',
+                        data: { corCd: corCd, deptCd : "" },
+                        success: function(data) {
+                            $.each(data, function(i, item) {
+                                deptDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+
+            // 법인 선택 시 메뉴 드롭다운 변경
+            $('#DeptCd').on('change', function() {
+                var deptCd = $(this).val();
+                var corCd = $('#CorCd').val();
+
+                var deptDropdown = $('#OfficeCd');
+
+                deptDropdown.empty();
+                deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectOffice"])'));
+
+                if (corCd) {
+                    $.ajax({
+                        url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
+                        type: 'GET',
+                        data: { corCd : corCd, deptCd: deptCd },
+                        success: function(data) {
+                            $.each(data, function(i, item) {
+                                deptDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+            
+            // 법인 선택 시 메뉴 드롭다운 변경
+            $('#OfficeCd').on('change', function() {
+                var deptCd = $(this).val();
+                var corCd = $('#CorCd').val();
+
+                var deptDropdown = $('#TeamCd');
+
+                deptDropdown.empty();
+                deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectTeam"])'));
+
+                if (corCd) {
+                    $.ajax({
+                        url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
+                        type: 'GET',
+                        data: { corCd : corCd, deptCd: deptCd },
+                        success: function(data) {
+                            $.each(data, function(i, item) {
+                                deptDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+
+        }); // End of $(function)
+    </script>
+}

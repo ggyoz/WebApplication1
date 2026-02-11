@@ -10,6 +10,8 @@ using FluentValidation.AspNetCore;
 using FluentValidation.Results;
 using CSR.Filters;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 
 namespace CSR.Controllers
 {
@@ -20,12 +22,16 @@ namespace CSR.Controllers
         private readonly IAdminRelService _adminRelService;
         private readonly ILogger<UserController> _logger;
         private readonly IValidator<User> _validator;
+        private readonly CorpService _corpService;
+        private readonly DeptService _deptService;
 
-        public UserController(UserService userService, ICommCodeService commCodeService, IAdminRelService adminRelService, ILogger<UserController> logger, IValidator<User> validator)
+        public UserController(UserService userService, ICommCodeService commCodeService, IAdminRelService adminRelService, CorpService corpService, DeptService deptService, ILogger<UserController> logger, IValidator<User> validator)
         {
             _userService = userService;
             _commCodeService = commCodeService;
             _adminRelService = adminRelService;
+            _corpService = corpService;
+            _deptService = deptService;
             _logger = logger;
             _validator = validator;
         }
@@ -36,6 +42,32 @@ namespace CSR.Controllers
             try
             {
                 var pagedUsers = await _userService.GetUsersAsync(search, pageNumber, pageSize);
+
+                ViewData["CorCd"] = search.CorCd;
+                ViewData["DeptCd"] = search.DeptCd;
+                ViewData["OfficeCd"] = search.OfficeCd;
+                ViewData["TeamCd"] = search.TeamCd;
+
+                // 법인
+                ViewBag.CorCdList = await _corpService.GetSelectListByCorpAsync();
+                ViewBag.DeptCdList = new List<SelectListItem>();
+                ViewBag.OfficeCdList = new List<SelectListItem>();
+                ViewBag.TeamCdList = new List<SelectListItem>();
+
+                if (!string.IsNullOrEmpty(search.CorCd))
+                {
+                    ViewBag.DeptCdList = await _deptService.GetSelectListByDeptAsync(search.CorCd, "");
+                }
+
+                if (!string.IsNullOrEmpty(search.DeptCd))
+                {
+                    ViewBag.OfficeCdList = await _deptService.GetSelectListByDeptAsync(search.CorCd, search.DeptCd);
+                }
+                
+                if (!string.IsNullOrEmpty(search.OfficeCd))
+                {
+                    ViewBag.TeamCdList = await _deptService.GetSelectListByDeptAsync(search.CorCd, search.OfficeCd);
+                }
                 
                 var viewModel = new UserIndexViewModel
                 {
@@ -68,7 +100,7 @@ namespace CSR.Controllers
             }
 
             // 유저정보 조회
-            var user = await _userService.GetUserByIdAsync(id);
+            var user = await _userService.GetUserWithDetailsByIdAsync(id);
             if (user == null)
             {
                 return NotFound();
@@ -84,9 +116,6 @@ namespace CSR.Controllers
             {
                 foreach (var category in allResponsibilitiesDict)
                 {
-
-                    Console.WriteLine("category : " + category.Key + " / " + category.Value );
-
                     var assignedInCategory = category.Value
                         .Where(r => r.CODEID != null && assignedMenuIds.Contains(r.CODEID.ToString()))
                         .Select(r => r.CODENM)
@@ -105,8 +134,11 @@ namespace CSR.Controllers
         }
 
         // GET: User/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+
+            ViewBag.CorCdList = await _corpService.GetSelectListByCorpAsync();
+
             return View();
         }
 
@@ -114,7 +146,7 @@ namespace CSR.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AsyncValidationFilter]
-        public async Task<IActionResult> Create([Bind("UserId,UserPwd,UserName,EmpNo,CorCd,DeptCd,OfficeCd,TeamCd,SysCd,MobPhoneNo,EmailAddr")] User user)
+        public async Task<IActionResult> Create([Bind("UserId,UserPwd,UserName,EmpNo,CorCd,DeptCd,OfficeCd,TeamCd,SysCd,MobPhoneNo,EmailAddr,UserDiv")] User user)
         {
             if (ModelState.IsValid)
             {
@@ -124,7 +156,7 @@ namespace CSR.Controllers
                     if (string.IsNullOrEmpty(user.UseYn)) user.UseYn = "Y";
                     if (string.IsNullOrEmpty(user.CustCd)) user.CustCd = "";
                     if (string.IsNullOrEmpty(user.VendCd)) user.VendCd = "";                    
-                    if (string.IsNullOrEmpty(user.UserDiv)) user.UserDiv = "";                    
+                    if (string.IsNullOrEmpty(user.UserDiv)) user.UserDiv = "R1";
 
                     await _userService.CreateUserAsync(user);
                     return RedirectToAction(nameof(Index));
@@ -152,10 +184,32 @@ namespace CSR.Controllers
                 return NotFound();
             }
 
-            // Fetch responsibilities
+            // Fetch responsibilities            
             ViewBag.AllResponsibilities = await _commCodeService.GetResponsibilitiesAsync();
             var assignedMenuIds = await _adminRelService.GetAssignedMenuIdsForUserAsync(id);
             user.AssignedResponsibilities = assignedMenuIds;
+            ViewBag.CorCdList = await _corpService.GetSelectListByCorpAsync();
+
+            // Initial empty lists
+            ViewBag.DeptCdList = new List<SelectListItem>();
+            ViewBag.OfficeCdList = new List<SelectListItem>();
+            ViewBag.TeamCdList = new List<SelectListItem>();
+
+            if (!string.IsNullOrEmpty(user.CorCd))
+            {
+                ViewBag.DeptCdList = await _deptService.GetSelectListByDeptAsync(user.CorCd, "");
+            }
+
+            if (!string.IsNullOrEmpty(user.DeptCd))
+            {
+                ViewBag.OfficeCdList = await _deptService.GetSelectListByDeptAsync(user.CorCd, user.DeptCd);
+            }
+            
+            if (!string.IsNullOrEmpty(user.OfficeCd))
+            {
+                 ViewBag.TeamCdList = await _deptService.GetSelectListByDeptAsync(user.CorCd, user.OfficeCd);
+            }
+            
 
             return View(user);
         }
@@ -257,6 +311,14 @@ namespace CSR.Controllers
             return RedirectToAction(nameof(Details), new { id = id });
         }
 
+        public async Task<IActionResult> SearchUsersJson(string searchText)
+        {
+
+            Console.WriteLine("SearchUsersJson : true");
+            var users = await _userService.GetUsersForSearchAsync(searchText);
+            return Json(users);
+        }
+        
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

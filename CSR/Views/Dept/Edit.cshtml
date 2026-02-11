@@ -22,12 +22,23 @@
                 <span asp-validation-for="DeptName" class="text-danger"></span>
             </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="ParentId" class="control-label">@SharedLocalizer["Label_ParentDept"]</label>
-                <select asp-for="ParentId" class="form-select" asp-items="@(new SelectList(availableParents, "DeptId", "DeptName"))">
-                    <option value="">@SharedLocalizer["Option_NoParent"]</option>
-                </select>
-                <span asp-validation-for="ParentId" class="text-danger"></span>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="ParentId" class="control-label">@SharedLocalizer["Label_ParentDept"]</label>
+                        <select asp-for="ParentId" class="form-select" asp-items="@(new SelectList(allDepts, "DeptId", "DeptName"))">
+                            <option value="">@SharedLocalizer["Option_NoParent"]</option>
+                        </select>
+                        <span asp-validation-for="ParentId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="ParentCd" class="control-label">상위 부서 코드</label>
+                        <input asp-for="ParentCd" class="form-control" />
+                        <span asp-validation-for="ParentCd" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
 
             <div class="row">
@@ -79,7 +90,7 @@
 
             <div class="form-group mt-4">
                 <input type="submit" value="@SharedLocalizer["Button_Save"]" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">@SharedLocalizer["Button_BackToList"]</a>
+                <a asp-action="Index" class="btn btn-secondary">@SharedLocalizer["Button_List"]</a>
             </div>
         </form>
     </div>
@@ -87,4 +98,31 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+
+        // 상위부서 변경 시 상위부서코드 조회
+        $('#ParentId').on('change', function() {
+            var deptId = $(this).val();            
+            var deptCd = $('#ParentCd');
+
+            deptCd.val("");            
+
+            if (deptId) {
+                $.ajax({
+                    url: '@Url.Action("GetDeptCdById", "Dept")',
+                    type: 'GET',
+                    data: { deptId: deptId },
+                    success: function(data) {
+                        deptCd.val(data.deptCd);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("An error occurred while fetching menus: " + error);
+                    }
+                });
+            }
+        });
+
+    </script>
+
 }

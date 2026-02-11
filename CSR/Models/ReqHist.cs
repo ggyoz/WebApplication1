@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CSR.Models
 {
@@ -20,6 +21,8 @@ namespace CSR.Models
         public string TITLE { get; set; }
 
         [Display(Name = "내용(HTML)")]
+        [Column(TypeName = "CLOB")]
+        [MaxLength]
         public string? CONTENTS_HTML { get; set; }
 
         [Display(Name = "내용(TEXT)")]
@@ -29,7 +32,7 @@ namespace CSR.Models
         [Display(Name = "요청일")]
         public DateTime REQDATE { get; set; }
 
-        [Display(Name = "처리기한")]
+        [Display(Name = "완료요청일")]
         public DateTime? DUEDATE { get; set; }
 
         [Required]
@@ -49,7 +52,7 @@ namespace CSR.Models
         public string REQTYPE { get; set; }
 
         [Required]
-        [Display(Name = "대상시스템")]
+        [Display(Name = "시스템")]
         public string SYSTEMCD { get; set; }
 
         [Display(Name = "요청메뉴")]
@@ -88,12 +91,16 @@ namespace CSR.Models
         public int? PROC_RATE { get; set; }
 
         [Display(Name = "답변내용(HTML)")]
+        [Column(TypeName = "CLOB")]
+        [MaxLength]
         public string? ANSWER_HTML { get; set; }
 
         [Display(Name = "답변내용(TEXT)")]
         public string? ANSWER_TEXT { get; set; }
 
         [Display(Name = "지연사유(HTML)")]
+        [Column(TypeName = "CLOB")]
+        [MaxLength]
         public string? DELAYREASON_HTML { get; set; }
 
         [Display(Name = "지연사유(TEXT)")]
@@ -109,6 +116,8 @@ namespace CSR.Models
         public string TEAMCD { get; set; }
 
         [Display(Name = "조치내역(HTML)")]
+        [Column(TypeName = "CLOB")]
+        [MaxLength]
         public string? NOTE_HTML { get; set; }
 
         [Display(Name = "조치내역(TEXT)")]
@@ -121,5 +130,9 @@ namespace CSR.Models
         public string USEYN { get; set; } = "Y";
 
         public string? HISTORY_REASON { get; set; }
+
+        public string? HISTORY_REASON_STR {get;set;}
+
+        public string? ResUserName { get; set; }
     }
 }

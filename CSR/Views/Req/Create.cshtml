@@ -1,10 +1,12 @@
 @model ReqInfo
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Authorization
 @inject IViewLocalizer Localizer
 @inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
+@inject IAuthorizationService AuthorizationService
 
 @{
-    ViewData["Title"] = "요구사항 등록";
+    ViewData["Title"] = SharedLocalizer["Title_CreateReq"];
 }
 
 <partial name="_PageTitlePartial" />
@@ -35,75 +37,82 @@
                 </colgroup>
                 <tbody>
                     <tr>
-                        <td>요청자</td>
+                        <td>@SharedLocalizer["Label_Requester"]</td>
                         <td>
-                            <input asp-for="ReqUserName" class="form-control" readonly />
+                            <div class="d-flex">
+                                <input asp-for="ReqUserName" class="form-control" readonly />
+                                @if( (await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded ){
+                                    <div id="btnSearchUser" class="ms-2"></div>
+                                }
+                            </div>
                             <span asp-validation-for="ReqUserName" class="text-danger"></span>
                         </td>
-                        <td>소속</td>
+                        <td>@SharedLocalizer["Label_Affiliation"]</td>
                         <td>
                             @{
                                 var orgParts = new[] { Model.CorpName, Model.DeptName, Model.OfficeName, Model.TeamName };
                                 var organization = string.Join(" / ", orgParts.Where(p => !string.IsNullOrEmpty(p)));
                             }
-                            <input type="text" class="form-control" value="@organization" readonly />
+                            <input type="text" class="form-control" name="organization" value="@organization" id="organization" readonly />
                         </td>
 
-                        <td>이메일</td>
+                        <td>@SharedLocalizer["Label_Email"]</td>
                         <td>
                             <input asp-for="ReqUserEmail" class="form-control" readonly />
                             <span asp-validation-for="ReqUserEmail" class="text-danger"></span>
                         </td>
-                        <td>연락처</td>
+                        <td>@SharedLocalizer["Label_Contact"]</td>
                         <td>
                             <input asp-for="ReqUserTel" class="form-control" readonly />
                             <span asp-validation-for="ReqUserTel" class="text-danger"></span>
                         </td>
                     </tr>
                     <tr>
-                        <td><label asp-for="REQTYPE" class="control-label"></label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_RequestType"]</label></td>
                         <td>
                             <select asp-for="REQTYPE" asp-items="ViewBag.ReqTypes" class="form-select">
-                            <option>요청유형 선택</option>
+                            <option value="">@SharedLocalizer["Placeholder_SelectRequestType"]</option>
                             </select>
                             <span asp-validation-for="REQTYPE" class="text-danger"></span>
                         </td>
-                        <td><label asp-for="SYSTEMCD" class="control-label"></label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_SystemCode"]</label></label></td>
                         <td>
                             <select asp-for="SYSTEMCD" asp-items="ViewBag.SystemCodes" class="form-select">
-                            <option>대상시스템 선택</option>
+                            <option value="">@SharedLocalizer["Placeholder_SelectSystem"]</option>
                             </select>
                             <span asp-validation-for="SYSTEMCD" class="text-danger"></span>
                         </td>
-                        <td>요청메뉴</td>
+                        <td><label class="control-label">@SharedLocalizer["Label_RequestMenu"]</label></td>
                         <td>
                             <select asp-for="REQMENU" id="ReqMenu" class="form-select"></select>
+                            <span asp-validation-for="REQMENU" class="text-danger"></span>
                         </td>
-                        <td>조치자</td>
+                        <td><label class="control-label">@SharedLocalizer["Label_ActionTaker"]<label></td>
                         <td>
                             <select asp-for="RESUSERID" class="form-select"></select>
+                            <span asp-validation-for="RESUSERID" class="text-danger"></span>
                         </td>
                     </tr>
                     
                     <tr>
-                        <td><label asp-for="REQDATE" class="control-label"></label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_RequestDate"]</label></td>
                         <td>
                             <input asp-for="REQDATE" type="date" class="form-control" />
                             <span asp-validation-for="REQDATE" class="text-danger"></span>
                         </td>
-                        <td><label asp-for="DUEDATE" class="control-label"></label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_DueDate"]</label></td>
                         <td>
                             <input asp-for="DUEDATE" type="date" class="form-control" />
                             <span asp-validation-for="DUEDATE" class="text-danger"></span>
                         </td>
-                        <td><label asp-for="PRIORITYCD" class="control-label"></label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_Urgency"]</label></td>
                         <td>
                             <select asp-for="PRIORITYCD" asp-items="ViewBag.PriorityCodes" class="form-select">
-                            <option>긴급도 선택</option>
+                            <option value="">@SharedLocalizer["Placeholder_SelectUrgency"]</option>
                             </select>
                             <span asp-validation-for="PRIORITYCD" class="text-danger"></span>
                         </td>  
-                        <td><label class="control-label">TCODE</label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_Tcode"]</label></td>
                         <td>
                             <input asp-for="REQTCODE" type="text" class="form-control" maxlength="10" />
                             <span asp-validation-for="REQTCODE" class="text-danger"></span>
@@ -111,7 +120,7 @@
                     </tr>
 
                     <tr>
-                        <td><label class="control-label">제목</label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_Title"]</label></td>
                         <td colspan="7">
                             <input asp-for="TITLE" class="form-control" maxlength="150" />
                             <span asp-validation-for="TITLE" class="text-danger"></span>
@@ -119,11 +128,14 @@
                     </tr>
 
                     <tr>
-                        <td style="vertical-align: top;"><label asp-for="CONTENTS_HTML" class="control-label"></label></td>
+                        <td style="vertical-align: top;">
+                            <label class="control-label">@SharedLocalizer["Label_Content"]</label>
+                        </td>
                         <td colspan="7">
+                            <span asp-validation-for="CONTENTS_HTML" class="text-danger"></span>
                             <div class="html-editor"></div>
                             <input type="hidden" asp-for="CONTENTS_HTML" />
-                            <span asp-validation-for="CONTENTS_HTML" class="text-danger"></span>
+                            
                         </td>
                     </tr>                    
                     <tr>
@@ -141,6 +153,11 @@
                 <input type="submit" value="@SharedLocalizer["Button_Save"]" class="btn btn-primary" />
                 <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
             </div>
+
+            <div id="userSearchPopup">
+                <div id="userSearchDataGrid"></div>
+            </div>
+
         </form>
     </div>
 </div>
@@ -153,9 +170,16 @@
             padding: 20px;
             background-color: #f8f9fa;
         }
+        .html-editor .dx-htmleditor-content {
+            white-space: normal; /* 텍스트가 자동으로 줄 바꿈되도록 설정 */
+            word-break: break-word; /* 긴 단어도 줄 바꿈되도록 설정 */
+            background-color:#ffffff;
+        }
+
     </style>
     <script>
         $(function() {
+
             initializeHtmlEditor(
                 '.html-editor',
                 'input[name="@Html.NameFor(m => m.CONTENTS_HTML)"]',
@@ -168,18 +192,29 @@
                 uploadMode: 'useForm',
                 allowCanceling: true,
                 maxFileSize: 4000000, // 4mb
+                onValueChanged: function (e) {
+                    console.log("file name test");
+                    const maxLength = 100; // 최대 허용 길이
+                    const files = e.value;                
+                    files.forEach(file => {
+                        if (file.name.length > maxLength) {
+                            // 경고 메시지 표시
+                            DevExpress.ui.notify(`@SharedLocalizer["Validation_FileNameTooLong", 100]`, "error", 2000);
+                            // 필요 시 컴포넌트 값 초기화
+                            e.component.reset();
+                        }
+                    });
+                }
+                
             });
 
-            // 대상시스템 선택 시 메뉴 드롭다운 변경
+            // 시스템 선택 시 메뉴 드롭다운 변경
             $('#SYSTEMCD').on('change', function() {
                 var systemCodeId = $(this).val();
-
-                console.log(systemCodeId);
-
                 var reqMenuDropdown = $('#ReqMenu');
 
                 reqMenuDropdown.empty();
-                reqMenuDropdown.append($('<option></option>').val('').text('메뉴 선택'));
+                reqMenuDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectMenu"])'));
 
                 if (systemCodeId) {
                     $.ajax({
@@ -201,11 +236,10 @@
             // 메뉴 선택 시 조치자 드롭다운 변경
             $('#ReqMenu').on('change', function() {
                 var menuId = $(this).val();
-                console.log(menuId);
                 var adminDropdown = $('#RESUSERID');
 
                 adminDropdown.empty();
-                adminDropdown.append($('<option></option>').val('').text('조치자 선택'));
+                adminDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectActionTaker"])'));
 
                 if (menuId) {
                     $.ajax({
@@ -223,8 +257,118 @@
                     });
                 }
             });
-
-
         });
+
+        // 사용자 검색 기능 초기화
+        function initializeUserSearch() {
+
+            $("#userSearchDataGrid").dxDataGrid({
+                dataSource: [], // Initialize with an empty array
+                remoteOperations: false, // Set to false for client-side operations
+                columns: [
+                    { dataField: "userId", caption: '@Html.Raw(SharedLocalizer["Label_UserId"])' },
+                    { dataField: "userName", caption: '@Html.Raw(SharedLocalizer["Label_UserName"])' },
+                    { dataField: "corpName", caption: '@Html.Raw(SharedLocalizer["Label_Affiliation_CorpName"])' },
+                    { dataField: "deptName", caption: '@Html.Raw(SharedLocalizer["Label_Affiliation_DeptName"])' },
+                    { dataField: "officeName", caption: '@Html.Raw(SharedLocalizer["Label_Affiliation_OfficeName"])' },
+                    { dataField: "teamName", caption: '@Html.Raw(SharedLocalizer["Label_Affiliation_TeamName"])' },
+                    { dataField: "emailAddr", caption: '@Html.Raw(SharedLocalizer["Label_Email"])' },
+                    { dataField: "mobPhoneNo", caption: '@Html.Raw(SharedLocalizer["Label_Contact"])' }
+                ],
+                selection: {
+                    mode: "single"
+                },
+                hoverStateEnabled: true,
+                showBorders: true,
+                showRowLines: true,
+                filterRow: {
+                    visible: true,
+                    applyFilter: "auto"
+                },
+                searchPanel: {
+                    visible: true,
+                    width: 240,
+                    placeholder: '@Html.Raw(SharedLocalizer["DataGrid_SearchUser"])'
+                },
+                paging: {
+                    pageSize: 10
+                },
+                pager: {
+                    showPageSizeSelector: true,
+                    allowedPageSizes: [5, 10, 20],
+                    showInfo: true
+                },
+                onSelectionChanged: function(selectedItems) {
+                    var data = selectedItems.selectedRowsData[0];
+                    if (data) {
+                        // Hidden fields
+                        $('input[name="CORCD"]').val(data.corCd);
+                        $('input[name="DEPTCD"]').val(data.deptCd);
+                        $('input[name="OFFICECD"]').val(data.officeCd);
+                        $('input[name="TEAMCD"]').val(data.teamCd);
+                        $('input[name="REG_USERID"]').val(data.userId); // Assuming Req and Reg user are the same if selected
+                        $('input[name="REQUSERID"]').val(data.userId);
+
+                        // Display fields
+                        $('input[name="ReqUserName"]').val(data.userName);
+                        $('input[name="ReqUserEmail"]').val(data.emailAddr);
+                        $('input[name="ReqUserTel"]').val(data.mobPhoneNo);
+
+                        // Update organization display
+                        var orgParts = [data.corpName, data.deptName, data.officeName, data.teamName].filter(p => p);
+                        $('input[name="organization"]').val(orgParts.join(" / ")); // Update the organization field.
+
+                        userSearchPopup.hide();
+                    }
+                }
+            });
+
+            var userSearchPopup = $("#userSearchPopup").dxPopup({
+                width: 900,
+                height: 600,
+                title: '@Html.Raw(SharedLocalizer["Popup_SelectUser"])',
+                showTitle: true,
+                dragEnabled: false,
+                closeOnOutsideClick: true,
+                visible: false,
+                toolbarItems: [{
+                    widget: 'dxButton',
+                    toolbar: 'bottom',
+                    location: 'after',
+                    options: {
+                        text: '@Html.Raw(SharedLocalizer["Button_Close"])',
+                        onClick: function() {
+                            userSearchPopup.hide();
+                        }
+                    }
+                }]
+            }).dxPopup("instance");
+
+            $("#btnSearchUser").dxButton({
+                text: '@Html.Raw(SharedLocalizer["Button_SearchUser"])',
+                type: 'default',
+                onClick: function() {
+                    userSearchPopup.show();
+                    // Fetch all users and set as data source
+                    $.ajax({
+                        url: '@Url.Action("SearchUsersJson", "User")',
+                        type: 'GET',
+                        data: { searchText: '' }, // Initially load all users. SearchPanel will filter client-side.
+                        success: function(data) {
+                            $("#userSearchDataGrid").dxDataGrid("instance").option("dataSource", data);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("사용자 목록을 불러오는 중 오류 발생: " + error);
+                            DevExpress.ui.notify(`사용자 목록을 불러오는 데 실패했습니다: ${error}`, "error", 2000);
+                        }
+                    });
+                }
+            });
+        }
+        
+        $(document).ready(function() {
+            initializeUserSearch();
+        });
+
     </script>
 }

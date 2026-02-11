@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CSR.Models
 {
@@ -17,17 +18,19 @@ namespace CSR.Models
         [Display(Name = "제목")]
         public string TITLE { get; set; }
 
-        [Display(Name = "내용(HTML)")]
+        [Required(ErrorMessage = "내용을 입력해주세요.")]
+        [Display(Name = "내용(HTML)")]        
         public string? CONTENTS_HTML { get; set; }
 
-        [Display(Name = "내용(TEXT)")]
+        [Display(Name = "내용(TEXT)")]        
         public string? CONTENTS_TEXT { get; set; }
         
         [Required(ErrorMessage = "요청일을 입력해주세요.")]
         [Display(Name = "요청일")]
         public DateTime REQDATE { get; set; }
 
-        [Display(Name = "처리기한")]
+        [Required(ErrorMessage = "완료요청일을 입력해주세요.")]
+        [Display(Name = "완료요청일")]
         public DateTime? DUEDATE { get; set; }
 
         [Display(Name = "완료예정일")]
@@ -43,10 +46,11 @@ namespace CSR.Models
         [Display(Name = "요청유형")]
         public string REQTYPE { get; set; }
 
-        [Required(ErrorMessage = "대상시스템을 선택해주세요.")]
-        [Display(Name = "대상시스템")]
+        [Required(ErrorMessage = "시스템을 선택해주세요.")]
+        [Display(Name = "시스템")]
         public string SYSTEMCD { get; set; }
 
+        [Required(ErrorMessage = "요청메뉴를 선택해주세요.")]
         [Display(Name = "요청메뉴")]
         public string? REQMENU { get; set; }
 
@@ -66,6 +70,7 @@ namespace CSR.Models
         [Display(Name = "요청자")]
         public string REQUSERID { get; set; }
 
+        [Required(ErrorMessage = "조치자를 선택해주세요.")]
         [Display(Name = "조치자")]
         public string? RESUSERID { get; set; }
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CSR.Services
 {
@@ -24,14 +25,14 @@ namespace CSR.Services
 
         public async Task<List<Corp>> GetAllCorpsAsync()
         {
-            var sql = $"SELECT {SelectColumns} FROM TB_COR_INFO ORDER BY CORCD";
+            var sql = $"SELECT {SelectColumns} FROM TB_COR_INFO WHERE USE_YN = 'Y' ORDER BY CORCD";
             var result = await _dbConnection.QueryAsync<Corp>(sql);
             return result.ToList();
         }
 
         public async Task<Corp?> GetCorpByIdAsync(string id)
         {
-            var sql = $"SELECT {SelectColumns} FROM TB_COR_INFO WHERE CORCD = :Id";
+            var sql = $"SELECT {SelectColumns} FROM TB_COR_INFO WHERE CORCD = :Id AND USE_YN = 'Y' ";
             return await _dbConnection.QueryFirstOrDefaultAsync<Corp>(sql, new { Id = id });
         }
 
@@ -62,14 +63,25 @@ namespace CSR.Services
             await _dbConnection.ExecuteAsync(sql, new { Id = id });
         }
         
+
+        public async Task<IEnumerable<SelectListItem>> GetSelectListByCorpAsync()
+        {
+            var allCodes = await GetAllCorpsAsync();
+            var items = allCodes.OrderBy(c => c.CorCd)
+                                .Select(c => new SelectListItem
+                                {
+                                    Value = c.CorCd.ToString(),
+                                    Text = c.CorNm
+                                });
+            return items;
+        }
+
         
         public async Task<List<Corp>> GetAutoCompleteCorpAsync(string searchString)
         {
 
             var whereClauses = new List<string>();
             var parameters = new DynamicParameters();
-
-            Console.WriteLine("searchString : " + searchString);
 
             if (!string.IsNullOrWhiteSpace(searchString))
             {

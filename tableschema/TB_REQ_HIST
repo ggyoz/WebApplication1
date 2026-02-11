@@ -7,12 +7,12 @@ TITLE	varchar2(50)		Y		제목
 CONTENTS_HTML	clob				내용(HTML)	
 CONTENTS_TEXT	clob				내용(TEXT)	
 REQDATE	date		Y		요청일	
-DUEDATE	date				처리기한	
+DUEDATE	date				완료요청일	
 EXPECTDATE	date		Y		완료예정일	
 STARTDATE	date		Y		실제 시작일	
 ENDDATE	date		Y		실제 종료일	
 REQTYPE	varchar2(10)		Y		요청유형	
-SYSTEMCD	varchar2(10)		Y		대상시스템	
+SYSTEMCD	varchar2(10)		Y		시스템	
 REQMENU	varchar2(10)				요청메뉴(영역)	
 REQMENU_ETC	varchar2(100)				기타메뉴	
 BXTID	varchar2(10)				BXT 문의번호	

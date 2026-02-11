@@ -18,7 +18,18 @@
             <input type="hidden" asp-for="RegDate" />
             <input type="hidden" asp-for="RegUserId" />
 
-            <table class="table-layout">
+            <table class="table-layout" width="100%">
+
+                <colgroup>
+                    <col width="5%"></col>
+                    <col width="10%"></col>
+                    <col width="5%"></col>
+                    <col width="10%"></col>
+                    <col width="5%"></col>
+                    <col width="10%"></col>                        
+                    <col width="5%"></col>
+                    <col width="10%"></col>
+                </colgroup>
                 <tr>
                     <td><label asp-for="UserId" class="control-label">@SharedLocalizer["Label_UserId"] *</label></td>
                     <td>
@@ -47,7 +58,32 @@
                         <span asp-validation-for="EmpNo" class="text-danger"></span>
                     </td>
                 </tr>                
-                <partial name="_OrganizationFieldsPartial" />
+                <tr>
+                    <td>@SharedLocalizer["Label_Corporation"]</td>
+                    <td>
+                        <select asp-for="CorCd" id="CorCd" asp-items="ViewBag.CorCdList" class="form-select" name="CorCd">
+                            <option value="">@SharedLocalizer["Placeholder_SelectCorporation"]</option>
+                        </select>
+                    </td>
+                    <td>@SharedLocalizer["Label_Department"]</td>
+                    <td>
+                        <select asp-for="DeptCd" id="DeptCd" asp-items="ViewBag.DeptCdList"  class="form-select" name="DeptCd">
+                            <option value="">@SharedLocalizer["Placeholder_SelectDepartment"]</option>
+                        </select>
+                    </td>
+                    <td>@SharedLocalizer["Label_Office"]</td>
+                    <td>
+                        <select asp-for="OfficeCd" id="OfficeCd" asp-items="ViewBag.OfficeCdList" class="form-select" name="OfficeCd">
+                            <option value="">@SharedLocalizer["Placeholder_SelectOffice"]</option>
+                        </select>
+                    </td>
+                    <td>@SharedLocalizer["Label_Team"]</td>
+                    <td>
+                        <select asp-for="TeamCd" id="TeamCd" asp-items="ViewBag.TeamCdList" class="form-select" name="TeamCd">
+                            <option value="">@SharedLocalizer["Placeholder_SelectTeam"]</option>
+                        </select>
+                    </td>
+                </tr>
                 <tr>
                     <td><label asp-for="SysCd" class="control-label">@SharedLocalizer["Label_SystemCode"]</label></td>
                     <td>
@@ -161,29 +197,121 @@
 
             <div class="button-area text-end mt-5 m-3">
                 <input type="submit" value="@SharedLocalizer["Button_Save"]" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn btn-list">@SharedLocalizer["Button_BackToList"]</a>
+                <a asp-action="Index" class="btn btn btn-list">@SharedLocalizer["Button_List"]</a>
             </div>
         </form>
     </div>
 </div>
 
 
-<script>
-
-    const labelMode = 'static';
-
-    const today = Date.now();
-
-    const birthDate = $('#RetireDate').dxDateBox({
-        placeholder: 'Select...',
-        inputAttr: { 'aria-label': 'Retire Date' },
-        labelMode,
-    }).dxDateBox('instance');
-
-</script>
-
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <partial name="_OrganizationFieldsPartial.Scripts" />
+    <!-- <partial name="_OrganizationFieldsPartial.Scripts" /> -->
+    <script>
+
+    // const labelMode = 'static';
+
+    // const today = Date.now();
+
+    // const birthDate = $('#RetireDate').dxDateBox({
+    //     placeholder: '퇴사일 입력',
+    //     inputAttr: { 'aria-label': 'Retire Date' },
+    //     labelMode,
+    // }).dxDateBox('instance');
+        
+    $(function () {     
+
+            var DeptCdVal = @Html.Raw(Json.Serialize(Model.DeptCd));
+            var OfficeCdVal = @Html.Raw(Json.Serialize(Model.OfficeCd));
+            var TeamCdVal = @Html.Raw(Json.Serialize(Model.TeamCd));
+
+            console.log(DeptCdVal +  " / " + OfficeCdVal + " / " + TeamCdVal);
+
+        // 법인 선택 시 메뉴 드롭다운 변경
+            $('#CorCd').on('change', function() {
+                var corCd = $(this).val();
+                var deptDropdown = $('#DeptCd');
+
+                deptDropdown.empty();
+                deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectDepartment"])'));
+
+                if (corCd) {
+                    $.ajax({
+                        url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
+                        type: 'GET',
+                        data: { corCd: corCd, deptCd : "" },
+                        success: function(data) {
+                            $.each(data, function(i, item) {
+                                deptDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+
+            // 법인 선택 시 메뉴 드롭다운 변경
+            $('#DeptCd').on('change', function() {
+                var deptCd = $(this).val();
+                var corCd = $('#CorCd').val();
+
+                var deptDropdown = $('#OfficeCd');
+
+                deptDropdown.empty();
+                deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectOffice"])'));
+
+                if (corCd) {
+                    $.ajax({
+                        url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
+                        type: 'GET',
+                        data: { corCd : corCd, deptCd: deptCd },
+                        success: function(data) {
+                            $.each(data, function(i, item) {
+                                deptDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+            
+            // 법인 선택 시 메뉴 드롭다운 변경
+            $('#OfficeCd').on('change', function() {
+                var deptCd = $(this).val();
+                var corCd = $('#CorCd').val();
+
+                var deptDropdown = $('#TeamCd');
+
+                deptDropdown.empty();
+                deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectTeam"])'));
+
+                if (corCd) {
+                    $.ajax({
+                        url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
+                        type: 'GET',
+                        data: { corCd : corCd, deptCd: deptCd },
+                        success: function(data) {
+                            console.log(data);
+                            $.each(data, function(i, item) {
+                                
+                                deptDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+
+    });
+
+
+    </script>
+
 }

@@ -11,6 +11,9 @@ using CSR.Data;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
+using CSR.Authorization;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +30,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/Account/Login";
         options.LogoutPath = "/Account/Logout";
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
         options.SlidingExpiration = true;
     });
 
@@ -46,6 +49,8 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole("R4"));
 });
 
+// 사용자 정의 권한 부여 핸들러를 서비스로 등록합니다.
+builder.Services.AddSingleton<IAuthorizationHandler, SameTeamReqAuthorizationHandler>();
 # endregion
 
 builder.Services.AddControllersWithViews(options =>
@@ -218,6 +223,20 @@ if(app.Environment.IsDevelopment()){
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// Serve files from ContentRootPath based upload directory
+var imageUploadPath = builder.Configuration["ImageUploadPath"];
+
+if (!string.IsNullOrEmpty(imageUploadPath))
+{
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(
+            Path.Combine(imageUploadPath == "ITSM" ? "D:\\" : builder.Environment.ContentRootPath, imageUploadPath)),
+        RequestPath = "/" + imageUploadPath
+    });
+}                           
+
 
 app.UseRequestLocalization(); // 요청 파이프라인에 미들웨어 추가
 

@@ -4,6 +4,8 @@ using CSR.Models;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using System;
+using Newtonsoft.Json;
+
 
 namespace CSR.Controllers
 {
@@ -43,6 +45,7 @@ namespace CSR.Controllers
                 if (parent != null)
                 {
                     dept.ParentId = parent.DeptId;
+                    dept.ParentCd = parent.DeptCd;
                     dept.DeptLevel = parent.DeptLevel + 1;
                 }
             }
@@ -56,8 +59,11 @@ namespace CSR.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DeptCd,ParentId,DeptName,CorCd,SortOrder,Note,UseYn")] Dept dept)
+        public async Task<IActionResult> Create([Bind("DeptCd,ParentId,ParentCd,DeptName,CorCd,SortOrder,Note,UseYn")] Dept dept)
         {
+
+            Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(dept, Formatting.Indented));   
+
             if (ModelState.IsValid)
             {
                 try
@@ -89,7 +95,7 @@ namespace CSR.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("DeptId,DeptCd,ParentId,DeptName,CorCd,SortOrder,Note,UseYn")] Dept dept)
+        public async Task<IActionResult> Edit(long id, [Bind("DeptId,DeptCd,ParentId,ParentCd,DeptName,CorCd,SortOrder,Note,UseYn")] Dept dept)
         {
             if (id != dept.DeptId)
             {
@@ -174,5 +180,21 @@ namespace CSR.Controllers
 
             return Json(result);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCorpbyDeptCode(string corCd , string deptCd)
+        {
+            var menus = await _deptService.GetSelectListByDeptAsync(corCd, deptCd);
+            return Json(menus);
+        }
+
+         [HttpGet]
+        public async Task<IActionResult> GetDeptCdById(int deptId)
+        {
+            var dept = await _deptService.GetDeptByIdAsync(deptId);
+            return Json(dept);
+        }
+
     }
+
 }

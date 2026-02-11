@@ -31,7 +31,31 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f5f5f5;
+            background-color: #f5f5f5; /* 대체 색상 */
+        }
+
+        .fullscreen-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: -100;
+        }
+
+        .fullscreen-bg::before {
+            /* content: ""; */
+            /* position: absolute; */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 10px 10px, rgba(0,0,0,0.1) 20px, transparent 0); /* 미세한 노이즈 패턴 */
+            background-size: 5px 5px; /* 노이즈 밀도 조절 */
+            opacity: 0.9; /* 노이즈 강도 조절 */
+            pointer-events: none; /* 클릭 이벤트 방지 */
+            z-index: -99; /* 배경 이미지 위, 로그인 폼 아래 */
         }
 
         .login-form {
@@ -39,9 +63,12 @@
             max-width: 400px;
             padding: 15px;
             margin: auto;
-            background-color: #fff;
-            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.7); /* 배경 이미지가 살짝 비치도록 */
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative; /* z-index를 위해 필요 */
+            z-index: 10; /* 이미지의 -100보다 높은 값 */
         }
         .lang-selector {
             max-width: 150px;
@@ -49,9 +76,33 @@
             margin-right: auto;
             margin-bottom: 1rem;
         }
+
+        .glass-card {
+        /* Semi-transparent background */
+        background: rgba(255, 255, 255, 0.2); 
+        /* Add the frosted glass effect */
+        backdrop-filter: blur(10px); 
+        /* Fallback for browsers that don't support backdrop-filter (optional) */
+        -webkit-backdrop-filter: blur(10px); 
+        
+        /* Styling to make it look like a floating card */
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        color: #fff; /* Ensure content is readable */
+        }
+
+        /* Optional: style the button to fit the aesthetic */
+        .glass-card .btn-primary {
+            background-color: rgba(0, 123, 255, 0.5);
+            border: none;
+        }
     </style>
 </head>
 <body>
+
+    <img src="/image/login-back.png" class="fullscreen-bg" alt="로그인 배경" />
     <div class="login-form">
         <form id="setLanguageForm" asp-controller="Home" asp-action="SetLanguage" asp-route-returnUrl="@Context.Request.Path" method="post" class="lang-selector">
             <select name="culture" asp-for="@requestCulture.RequestCulture.UICulture.Name" asp-items="cultureItems"
@@ -60,12 +111,12 @@
         </form>
 
         <!-- <h1 class="text-center mb-4">@SharedLocalizer["Button_Login"]</h1> -->
-        <img src="~/image/mobasesystem3.jpg" alt="Home" class="d-block mx-auto" style="width:250px; height:auto;"/>
+        <img src="~/image/mobasesystem3.png" alt="Home" class="d-block mx-auto" style="width:250px; height:auto;"/>
         <form asp-action="Login">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-floating mb-3">
-                <input asp-for="UserId" class="form-control" placeholder="@SharedLocalizer["Label_UserId"]" />
+                <input asp-for="UserId" class="form-control" placeholder="@SharedLocalizer["Label_UserId"]" maxlength="9" />
                 <label asp-for="UserId">@SharedLocalizer["Label_UserId"]</label>
                 <span asp-validation-for="UserId" class="text-danger"></span>
             </div>
@@ -87,5 +138,7 @@
     </div>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+
 </body>
 </html>

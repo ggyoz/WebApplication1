@@ -63,13 +63,13 @@
                 </tr>                
                 <tr>
                     <td><label class="control-label">@SharedLocalizer["Label_CorporationCode"]</label></td>
-                    <td>@Html.DisplayFor(model => model.CorCd)</td>
+                    <td>@Html.DisplayFor(model => model.CorpName)</td>
                     <td><label class="control-label">@SharedLocalizer["Label_BusinessUnitCode"]</label></td>
-                    <td>@Html.DisplayFor(model => model.DeptCd)</td>
+                    <td>@Html.DisplayFor(model => model.DeptName)</td>
                     <td><label class="control-label">@SharedLocalizer["Label_OfficeCode"]</label></td>
-                    <td>@Html.DisplayFor(model => model.OfficeCd)</td>
+                    <td>@Html.DisplayFor(model => model.OfficeName)</td>
                     <td><label class="control-label">@SharedLocalizer["Label_TeamCode"]</label></td>
-                    <td>@Html.DisplayFor(model => model.TeamCd)</td>
+                    <td>@Html.DisplayFor(model => model.TeamName)</td>
                 </tr>
                 
                 <tr>
@@ -134,7 +134,7 @@
             <button type="submit" class="btn btn-outline-dark">@SharedLocalizer["Button_ResetPassword"]</button>
         </form>
         <a asp-action="Edit" asp-route-id="@Model?.UserId" class="btn btn-primary">@SharedLocalizer["Button_Edit"]</a>
-        <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_BackToList"]</a>
+        <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
     </div>
 </div>
 <!-- 버튼영역 -->

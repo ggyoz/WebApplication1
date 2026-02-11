@@ -10,6 +10,7 @@ namespace CSR.Models
         public long DeptId { get; set; }
         public string? DeptCd { get; set; }
         public long? ParentId { get; set; }
+        public string? ParentCd {get; set;}
         
         [Required]
         public string DeptName { get; set; } = string.Empty;

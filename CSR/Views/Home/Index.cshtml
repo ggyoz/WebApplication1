@@ -1,43 +1,632 @@
-﻿@{
-    ViewData["Title"] = "대시보드";
+﻿@using System.Security.Claims
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
+
+@{
+    ViewData["Title"] = "Dashboard";
+    var currentUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
 }
 
 <div class="container mt-4">
-    <h3 class="display-4 mb-4">대시보드</h3>
+    <h3 class="display-6 mb-4">Dashboard</h3>
 
     <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Larger Widget A</h5>
-                    <p class="card-text">More detailed information for a larger widget.</p>
+        <!-- KPI Cards Section -->
+        @if (User.IsInRole("R4")) // Admin
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card blueCard shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-column"> 
+                                <h5 class="card-title mb-0">총 요청 수</h5>
+                                <p class="card-text mb-0">전체 시스템의 요청 현황</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r4TotalRequestsCount">0</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Larger Widget B</h5>
-                    <p class="card-text">Another section with more content.</p>
+            <div class="col-md-3 mb-4">
+                <div class="card yellowCard shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-column"> 
+                                <h5 class="card-title mb-0">내 접수요청</h5>
+                                <p class="card-text mb-0">내가 처리해야 할 접수된 요청</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r4PendingRequestsCount">0</p>
+                        </div>
+                        
+                    </div>
                 </div>
             </div>
-        </div>
+            <div class="col-md-3 mb-4">
+                <div class="card greenCard shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center"> 
+                            <div class="d-flex flex-column"> 
+                                <h5 class="card-title mb-0">진행중인 요청</h5>
+                                <p class="card-text mb-0">내가 처리중인 요청</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r4InProgressRequestsCount">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card redCard shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-column">
+                                <h5 class="card-title mb-0">기한 초과</h5>
+                                <p class="card-text mb-0">기한을 넘긴 요청</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r4OverdueRequestsCount">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (User.IsInRole("R3")) // Manager
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card blueCard shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-column">
+                                <h5 class="card-title mb-0">총 요청 수</h5>
+                                <p class="card-text mb-0">전체 시스템의 요청 현황</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r3TotalRequestsCount">0</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card yellowCard shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-column">
+                                <h5 class="card-title mb-0">내 접수요청</h5>
+                                <p class="card-text mb-0">내가 처리해야 할 접수된 요청</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r3PendingRequestsCount">0</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card greenCard shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-column">
+                                <h5 class="card-title mb-0">진행중인 요청</h5>
+                                <p class="card-text mb-0">내가 처리중인 요청</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r3InProgressRequestsCount">0</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card redCard shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-column">
+                                <h5 class="card-title mb-0">기한 초과</h5>
+                                <p class="card-text mb-0">기한을 넘긴 요청</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r3OverdueRequestsCount">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (User.IsInRole("R2")) // Team Leader
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card blueCard shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center"> 
+                            <div class="d-flex flex-column"> 
+                                <h5 class="card-title mb-0">팀 총 요청</h5>
+                                <p class="card-text mb-0">우리 팀의 전체 요청 건수</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r2TeamTotalRequestsCount">0</p>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card bg-info text-white shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center"> 
+                            <div class="d-flex flex-column"> 
+                                <h5 class="card-title mb-0">할당된 업무</h5>
+                                <p class="card-text mb-0">팀원들에게 할당된 업무</p>
+                            </div>
+                            <p class="card-text display-5 mb-0">15</p>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card greenCard shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center"> 
+                            <div class="d-flex flex-column"> 
+                                <h5 class="card-title mb-0">팀 처리율</h5>
+                                <p class="card-text mb-0">이번 달 팀 요청 처리율</p>
+                            </div>
+                            <p class="card-text display-5 mb-0">85<small>%</small></p>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        }
+        else if (User.IsInRole("R1")) // Team Member
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card blueCard shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center"> 
+                            <div class="d-flex flex-column"> 
+                                <h5 class="card-title mb-0">내 요청</h5>
+                                <p class="card-text mb-0">내가 등록한 총 요청 건수</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r1TotalRequestsCount"></p>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card yellowCard shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center"> 
+                            <div class="d-flex flex-column"> 
+                                <h5 class="card-title mb-0">진행 중</h5>
+                                <p class="card-text mb-0">현재 진행 중인 요청</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r1InProgressRequestsCount"></p>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card greenCard shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center"> 
+                            <div class="d-flex flex-column"> 
+                                <h5 class="card-title mb-0">답변 완료</h5>
+                                <p class="card-text mb-0">답변 완료된 나의 요청</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r1CompletedRequestsCount"></p>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 
+    <!-- Main Content Widgets Section -->
+    <div class="row">
+        @if (User.IsInRole("R4") || User.IsInRole("R3")) // Admin or Manager
+        {
+            <div class="col-lg-8 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <h5 class="card-title">전체 요청 현황 분석 (차트 Placeholder)</h5>
+                        <div id="chart" style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <h5 class="card-title">최근 시스템 활동 (관리자/매니저)</h5>
+                        <ul class="list-group list-group-flush" id="r3r4RecentActivitiesList">
+                            <li class="list-group-item">표시할 활동이 없습니다.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (User.IsInRole("R2")) // Team Leader
+        {
+            <div class="col-lg-8 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <h5 class="card-title mb-3">팀원별 업무 분배 현황 (차트 Placeholder)</h5>                        
+                         <div style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;">
+                            차트 라이브러리 (예: Chart.js) 연동 필요
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <h5 class="card-title mb-3">팀 최근 활동 및 알림</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Team Member B가 요청 #2005 처리 시작</li>
+                            <li class="list-group-item">내 요청 #2003 승인 요청</li>
+                            <li class="list-group-item">새로운 팀원 합류</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (User.IsInRole("R1")) // Team Member
+        {
+            <div class="col-lg-8 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <h5 class="card-title mb-3">나의 요청 진행률 (차트 Placeholder)</h5>                        
+                         <div style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;">
+                            차트 라이브러리 (예: Chart.js) 연동 필요
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <h5 class="card-title mb-3">내 요청 최근 활동</h5>
+                        <ul class="list-group list-group-flush" id="myRecentActivitiesList"></ul>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    
     <div class="row">
         <div class="col-12 mb-4">
             <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Full Width Widget</h5>
-                    <p class="card-text">This widget spans the entire width of the container.</p>
-                    <p class="card-text">This widget spans the entire width of the container.</p>
-                    <p class="card-text">This widget spans the entire width of the container.</p>
-                    <p class="card-text">This widget spans the entire width of the container.</p>
-                    <p class="card-text">This widget spans the entire width of the container.</p>
-                    <p class="card-text">This widget spans the entire width of the container.</p>
-                    <p class="card-text">This widget spans the entire width of the container.</p>
+                <div class="card-body m-3">
+                    <h5 class="card-title mb-3">공지사항</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-group list-group-flush" id="recentNoticesList"></ul>
+                        </div>
+                        <!-- <div class="col-md-4">
+                            <h6>빠른 링크</h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="#" class="btn btn-outline-secondary btn-sm">요청 등록</a>
+                                <a href="#" class="btn btn-outline-secondary btn-sm">내 요청 보기</a>
+                                <a href="#" class="btn btn-outline-secondary btn-sm">보고서</a>
+                                <a href="#" class="btn btn-outline-secondary btn-sm">사용자 관리</a>
+                            </div>
+                        </div> -->
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+
+    /* 차트 placeholder 스타일 */
+    .chart-placeholder {
+        height: 250px;
+        background-color: #f8f9fa;
+        border: 1px dashed #ced4da;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #6c757d;
+    }
+</style>
+
+@section Scripts {
+    <script>
+
+        // 차트 테스트데이터
+        const dataSource = [{
+        day: 'Monday',
+        oranges: 3,
+        }, {
+        day: 'Tuesday',
+        oranges: 2,
+        }, {
+        day: 'Wednesday',
+        oranges: 3,
+        }, {
+        day: 'Thursday',
+        oranges: 4,
+        }, {
+        day: 'Friday',
+        oranges: 6,
+        }, {
+        day: 'Saturday',
+        oranges: 11,
+        }, {
+        day: 'Sunday',
+        oranges: 4,
+        }];
+
+        $(document).ready(function() {
+            
+            $('#chart').dxChart({
+                dataSource,
+                series: {
+                argumentField: 'day',
+                valueField: 'oranges',
+                name: 'My oranges',
+                type: 'bar',
+                color: '#ffaa66',
+                },
+            });
+
+            const currentUserRole = '@currentUserRole';
+            
+            // JavaScript에서 사용하기 위한 지역화된 히스토리 사유 맵
+            var localizedHistoryReasons = {
+                "71": '@SharedLocalizer["CC71"]', // 최초등록
+                "72": '@SharedLocalizer["CC72"]', // 접수 완료
+                "73": '@SharedLocalizer["CC73"]', // 답변 등록
+                "74": '@SharedLocalizer["CC74"]', // 일정 변경
+                "75": '@SharedLocalizer["CC75"]', // 담당자 변경
+                "76": '@SharedLocalizer["CC76"]', // 종결
+                "77": '@SharedLocalizer["CC77"]'  // 재문의
+            };
+            
+            if (currentUserRole === 'R1') {
+                // 내 요청 전체 조회
+                $.ajax({
+                    url: '/Req/GetMyRequestCount', // API endpoint for R1
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            $('#r1TotalRequestsCount').text(response.count);
+                        } else {
+                            console.error('내 요청 건수 가져오기 실패:', response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('내 요청 건수 AJAX 오류:', error);
+                    }
+                });
+
+                // 내 진행중인 요청 수 조회
+                $.ajax({
+                    url: '/Req/GetMyInProgressRequestsCount',
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            console.log(response.count);
+                            $('#r1InProgressRequestsCount').text(response.count);
+                        } else {
+                            console.error('내 진행중 요청 건수 가져오기 실패:', response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('내 진행중 요청 건수 AJAX 오류:', error);
+                    }
+                });
+
+                // 내 완료된 요청 수 조회
+                $.ajax({
+                    url: '/Req/GetMyCompletedRequestsCount',
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            $('#r1CompletedRequestsCount').text(response.count);
+                        } else {
+                            console.error('내 완료된 요청 건수 가져오기 실패:', response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('내 완료된 요청 건수 AJAX 오류:', error);
+                    }
+                });
+
+                // 내 요청 최근 활동 조회
+                $.ajax({
+                    url: '/Req/GetMyRecentReqActivities', 
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success && response.activities && response.activities.length > 0) {
+                            var activitiesList = $('#myRecentActivitiesList');
+                            activitiesList.empty(); 
+                            $.each(response.activities, function(index, activity) {
+                                console.log(activity);
+                                var date = new Date(activity.reG_DATE);
+                                var formattedDate = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                                activitiesList.append('<li class="list-group-item d-flex justify-content-between align-items-center"><a href="/Req/Details/' + activity.reqid + '">' + '[요청 #' + activity.reqid + '] ' + activity.title + ' (' + localizedHistoryReasons[activity.historY_REASON] + ')</a><span class="text-end">'+ formattedDate +'</span></li>');
+                            });
+                        } else {
+                            var activitiesList = $('#myRecentActivitiesList');
+                            activitiesList.empty();
+                            activitiesList.append('<li class="list-group-item">표시할 요청 활동이 없습니다.</li>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('내 요청 최근 활동 AJAX 오류:', error);
+                        var activitiesList = $('#myRecentActivitiesList');
+                        activitiesList.empty();
+                        activitiesList.append('<li class="list-group-item">요청 활동을 불러오는 중 오류가 발생했습니다.</li>');
+                    }
+                });
+
+            } else if (currentUserRole === 'R2') {
+                $.ajax({
+                    url: '/Req/GetTeamRequestCount', 
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            $('#r2TeamTotalRequestsCount').text(response.count);
+                        } else {
+                            console.error('팀 요청 건수 가져오기 실패:', response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('팀 요청 건수 AJAX 오류:', error);
+                    }
+                });
+            } else if (currentUserRole === 'R3' || currentUserRole === 'R4') {
+                // 전체 요청 건수 조회 (R4 전용)
+                    $.ajax({
+                        url: '/Req/GetAllRequestsCount',
+                        type: 'GET',
+                        success: function(response) {
+                            if (response.success) {
+                                if (currentUserRole === 'R4') {
+                                    $('#r4TotalRequestsCount').text(response.count);
+                                }else{
+                                    $('#r3TotalRequestsCount').text(response.count);
+                                }
+                            } else {
+                                console.error('전체 요청 건수 가져오기 실패:', response.message);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('전체 요청 건수 AJAX 오류:', error);
+                        }
+                    });               
+                
+                $.ajax({
+                    url: '/Req/GetMyPendingRequestsCount',
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            if(currentUserRole === 'R3') {
+                                $('#r3PendingRequestsCount').text(response.count);
+                            } else {
+                                $('#r4PendingRequestsCount').text(response.count);
+                            }
+                        } else {
+                            console.error('내 접수요청 건수 가져오기 실패:', response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('내 접수요청 건수 AJAX 오류:', error);
+                    }
+                });
+
+                // 부서 총 요청 건수 조회 (R3 전용)
+                // if (currentUserRole === 'R3') {
+                //     $.ajax({
+                //         url: '/Req/GetDeptTotalRequestsCount',
+                //         type: 'GET',
+                //         success: function(response) {
+                //             if (response.success) {
+                //                 $('#r3DeptTotalRequestsCount').text(response.count);
+                //             } else {
+                //                 console.error('부서 총 요청 건수 가져오기 실패:', response.message);
+                //             }
+                //         },
+                //         error: function(xhr, status, error) {
+                //             console.error('부서 총 요청 건수 AJAX 오류:', error);
+                //         }
+                //     });
+                // }
+
+                $.ajax({
+                    url: '/Req/GetMyInProgressCount',
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            if(currentUserRole === 'R3') {
+                                $('#r3InProgressRequestsCount').text(response.count);
+                            } else {
+                                $('#r4InProgressRequestsCount').text(response.count);
+                            }
+                        } else {
+                            console.error('내 진행중 요청 건수 가져오기 실패:', response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('내 진행중 요청 건수 AJAX 오류:', error);
+                    }
+                });
+
+                $.ajax({
+                    url: '/Req/GetMyOverdueRequestsCount',
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            if(currentUserRole === 'R3') {
+                                $('#r3OverdueRequestsCount').text(response.count);
+                            } else {
+                                $('#r4OverdueRequestsCount').text(response.count);
+                            }
+                        } else {
+                            console.error('내 기한초과 요청 건수 가져오기 실패:', response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('내 기한초과 요청 건수 AJAX 오류:', error);
+                    }
+                });
+
+                // R3/R4 최근 활동 조회 (RESUSERID 기준)
+                $.ajax({
+                    url: '/Req/GetMyAssignedRecentReqActivities', // New API endpoint
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success && response.activities && response.activities.length > 0) {
+                            var activitiesList = $('#r3r4RecentActivitiesList');
+                            activitiesList.empty(); // Clear existing placeholders
+                            $.each(response.activities, function(index, activity) {
+                                console.log(activity);
+                                var date = new Date(activity.reG_DATE);
+                                var formattedDate = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                                activitiesList.append('<li class="list-group-item d-flex justify-content-between align-items-center"><a href="/Req/Details/' + activity.reqid + '">' + '[요청 #' + activity.reqid + '] ' + activity.title + ' (' + localizedHistoryReasons[activity.historY_REASON] + ')</a><span class="text-end">'+ formattedDate +'</span></li>');
+                            });
+                        } else {
+                            var activitiesList = $('#r3r4RecentActivitiesList');
+                            activitiesList.empty();
+                            activitiesList.append('<li class="list-group-item">표시할 활동이 없습니다.</li>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('R3/R4 최근 활동 AJAX 오류:', error);
+                        var activitiesList = $('#r3r4RecentActivitiesList');
+                        activitiesList.empty();
+                        activitiesList.append('<li class="list-group-item">활동을 불러오는 중 오류가 발생했습니다.</li>');
+                    }
+                });
+
+            }
+
+            // 공지사항 조회 (최근 5개)
+            $.ajax({
+                url: '/Notice/GetRecentNotices', // API endpoint
+                type: 'GET',
+                success: function(response) {
+                    if (response.success && response.notices && response.notices.length > 0) {
+                        var noticesList = $('#recentNoticesList');
+                        noticesList.empty(); // Clear existing placeholders
+                        $.each(response.notices, function(index, notice) {
+                            var date = new Date(notice.reG_DATE);
+                            var formattedDate = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                            noticesList.append('<li class="list-group-item d-flex justify-content-between align-items-center"><a href="/Notice/Details/' + notice.id + '">' + '[' + notice.codeName + '] ' + notice.title + '</a><span class="text-end">'+ formattedDate +'</span></li>');
+                        });
+                    } else {
+                        var noticesList = $('#recentNoticesList');
+                        noticesList.empty();
+                        noticesList.append('<li class="list-group-item">표시할 공지사항이 없습니다.</li>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('최신 공지사항 AJAX 오류:', error);
+                    var noticesList = $('#recentNoticesList');
+                    noticesList.empty();
+                    noticesList.append('<li class="list-group-item">공지사항을 불러오는 중 오류가 발생했습니다.</li>');
+                }
+            });
+        });
+    </script>
+}
+

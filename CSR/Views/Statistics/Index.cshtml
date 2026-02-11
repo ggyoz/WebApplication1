@@ -1,0 +1,405 @@
+@{
+    ViewData["Title"] = "통계 대시보드"; // 브라우저 탭 제목
+}
+
+<div class="container mt-4">
+    <h3 class="display-6 mb-4">처리현황</h3>
+    <p class="text-muted text-end mb-3">기준일: <span id="referenceDate"></span></p>
+
+    <!-- <p>여기에 통계 데이터와 차트가 표시될 예정입니다.</p> -->
+
+    <!-- 필터 및 검색 영역 (예시) -->
+    <!-- <div class="card mb-4">
+        <div class="card-header">필터</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="periodSelect">기간:</label>
+                        <select id="periodSelect" class="form-control">
+                            <option value="monthly">월별</option>
+                            <option value="quarterly">분기별</option>
+                            <option value="yearly">연도별</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="typeSelect">유형:</label>
+                        <select id="typeSelect" class="form-control">
+                            <option value="all">전체</option>
+                            <option value="req">요청</option>
+                            <option value="issue">이슈</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button class="btn btn-primary w-100">조회</button>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- KPI 카드 영역 (예시) -->
+
+    
+
+    <div class="row mb-4">
+
+        <div class="col-md-4 mb-4">
+            <div class="card blueCard shadow-sm h-100">
+                <div class="card-body m-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex flex-column"> 
+                            <h5 class="card-title mb-0">요구사항 전체 건수</h5>
+                            <p class="card-text mb-0"></p>
+                        </div>
+                        <p class="card-text display-5 mb-0" id="totalRequestsCount"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card greenCard shadow-sm h-100">
+                <div class="card-body m-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex flex-column"> 
+                            <h5 class="card-title mb-0">이번주 추가된 요청</h5>
+                            <p class="card-text mb-0"></p>
+                        </div>
+                        <p class="card-text display-5 mb-0" id="thisWeekRequestsCount"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card yellowCard shadow-sm h-100">
+                <div class="card-body m-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex flex-column"> 
+                            <h5 class="card-title mb-0">이번주 완료예정</h5>
+                            <p class="card-text mb-0"></p>
+                        </div>
+                        <p class="card-text display-5 mb-0" id="requestsDueThisWeekCount"></p>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </div>
+
+    <!-- 차트 영역 (placeholder) -->
+    <!-- <div class="card mb-4">
+        <div class="card-header">월별 요청 추이</div>
+        <div class="card-body">
+            <div id="monthlyChart" style="height: 300px; border: 1px dashed #ccc; display: flex; justify-content: center; align-items: center;">
+                차트가 표시될 영역
+            </div>
+        </div>
+    </div> -->
+
+    <!-- 테이블 영역 (placeholder) -->
+    <div class="card">
+        <div class="card-header">사업부서별 요청사항 수</div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th rowspan="2">사업부서</th>
+                        <th colspan="6">요청사항 수 ( 긴급도 별 )</th>
+                        <th colspan="3"> 진행상태 </th>
+                    </tr>
+                    <tr>
+                        <th>긴급</th>
+                        <th>높음</th>
+                        <th>보통</th>
+                        <th>낮음</th>
+                        <th>매우낮음</th>
+                        <th>합계</th>
+                        <th>진행중</th>
+                        <th>종결</th>
+                        <th>완료율</th>
+                    </tr>                    
+                </thead>
+                <tbody id="divisionStatsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 테이블 영역 (사무실별 요청사항 수) -->
+    <div class="card mt-4">
+        <div class="card-header">사무실별 요청사항 수</div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr class="border">
+                        <th class="border align-middle text-center" rowspan="2">사업부서</th>
+                        <th class="border align-middle" colspan="6">요청사항 수 ( 긴급도 별 )</th>
+                        <th class="border align-middle" colspan="3">진행상태 </th>
+                    </tr>
+                    <tr>
+                        <th>긴급</th>
+                        <th>높음</th>
+                        <th>보통</th>
+                        <th>낮음</th>
+                        <th>매우낮음</th>
+                        <th>합계</th>
+                        <th>진행중</th>
+                        <th>종결</th>
+                        <th>완료율</th>
+                    </tr>
+                </thead>
+                <tbody id="officeStatsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 테이블 영역 (담당자별 요청사항 수) -->
+    <div class="card mt-4">
+        <div class="card-header">담당자별 요청사항 수</div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr class="border">
+                        <th class="border align-middle text-center" rowspan="2">담당자</th>
+                        <th class="border align-middle" colspan="6">요청사항 수 ( 긴급도 별 )</th>
+                        <th class="border align-middle" colspan="3">진행상태 </th>
+                    </tr>
+                    <tr>
+                        <th>긴급</th>
+                        <th>높음</th>
+                        <th>보통</th>
+                        <th>낮음</th>
+                        <th>매우낮음</th>
+                        <th>합계</th>
+                        <th>진행중</th>
+                        <th>종결</th>
+                        <th>완료율</th>
+                    </tr>
+                </thead>
+                <tbody id="adminStatsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <style>
+        .table-bordered th{
+            border : 1px solid #dee2e6 !important;
+            vertical-align : middle;
+            text-align: center;
+        }
+
+        .table-bordered tbody{
+            border : 1px solid #dee2e6 !important;            
+        }
+
+        .table-bordered tr{
+            vertical-align : middle;
+            text-align: center;
+        }
+
+    </style>
+
+
+    <script>
+        $(document).ready(function() {
+            // 기준일 (가장 최근의 금요일)을 계산하여 표시
+            function setReferenceDate() {
+                const today = new Date();
+                let dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 5 = Friday, 6 = Saturday
+
+                // 금요일(5)을 찾기 위해 날짜 조정
+                // 만약 오늘이 일요일(0)부터 금요일(5)까지라면, 그 주의 금요일로
+                // 만약 오늘이 토요일(6)이라면, 현재 날짜에서 1일 전 (오늘) 금요일로
+                let daysToSubtract = 0;
+                if (dayOfWeek < 5) { // 일(0), 월(1), 화(2), 수(3), 목(4)
+                    daysToSubtract = dayOfWeek + 2; // 예를 들어 월요일(1)이면 1+2=3일 빼서 지난 금요일로
+                } else if (dayOfWeek === 6) { // 토요일(6)
+                    daysToSubtract = 1; // 1일 빼서 금요일로
+                } else { // 금요일(5)
+                    daysToSubtract = 0;
+                }
+                
+                const referenceDate = new Date(today);
+                referenceDate.setDate(today.getDate() - daysToSubtract);
+
+                const year = referenceDate.getFullYear();
+                const month = (referenceDate.getMonth() + 1).toString().padStart(2, '0');
+                const day = referenceDate.getDate().toString().padStart(2, '0');
+
+                $('#referenceDate').text(`${year}년 ${month}월 ${day}일`);
+            }
+
+            setReferenceDate();
+
+            // 요구사항 전체 건수 조회
+            $.ajax({
+                url: '/Req/GetAllRequestsCount',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    $('#totalRequestsCount').text(data.count); // 숫자를 로케일에 맞게 포맷
+                },
+                error: function(xhr, status, error) {
+                    console.error("요구사항 전체 건수 조회 실패:", status, error);
+                    $('#totalRequestsCount').text('오류');
+                }
+            });
+
+            // 이번주 추가된 요청 건수 조회
+            $.ajax({
+                url: '/Req/GetRequestsCountThisWeek',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    $('#thisWeekRequestsCount').text(data.count.toLocaleString());
+                },
+                error: function(xhr, status, error) {
+                    console.error("이번주 추가된 요청 건수 조회 실패:", status, error);
+                    $('#thisWeekRequestsCount').text('오류');
+                }
+            });
+
+            // 사업부서별 긴급도별 요청사항 수 조회 및 테이블 채우기
+            $.ajax({
+                url: '/Req/GetRequestsCountByDivisionAndPriority',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success && response.stats) {
+                        let tableBody = $('#divisionStatsTableBody');
+                        tableBody.empty(); // 기존 플레이스홀더 데이터 제거
+
+                        if (response.stats.length === 0) {
+                            tableBody.append('<tr><td colspan="4">데이터가 없습니다.</td></tr>');
+                        } else {
+                            response.stats.forEach(function(item) {
+                                console.log(item);
+                                tableBody.append(
+                                    `<tr>
+                                        <th>${item.divisionName}</td>
+                                        <td>${item.veryHighCount}</td>
+                                        <td>${item.highCount}</td>
+                                        <td>${item.mediumCount}</td>
+                                        <td>${item.lowCount}</td>
+                                        <td>${item.veryLowCount}</td>
+                                        <td>${item.totalCount}</td>
+                                        <td>${item.ingStatus}</td>
+                                        <td>${item.endStatus}</td>
+                                        <td>${item.endPercent}%</td>
+                                    </tr>`
+                                );
+                            });
+                        }
+                    } else {
+                        console.error("사업부서별 요청사항 수 조회 실패:", response.message);
+                        $('#divisionStatsTableBody').empty().append('<tr><td colspan="4">데이터 로드 오류</td></tr>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("사업부서별 요청사항 수 조회 실패:", status, error);
+                    $('#divisionStatsTableBody').empty().append('<tr><td colspan="4">데이터 로드 오류</td></tr>');
+                }
+            });
+
+            // 사무실별 긴급도별 요청사항 수 조회 및 테이블 채우기
+            $.ajax({
+                url: '/Req/GetRequestsCountByOfficeAndPriority',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success && response.stats) {
+                        let tableBody = $('#officeStatsTableBody');
+                        tableBody.empty(); // 기존 플레이스홀더 데이터 제거
+
+                        if (response.stats.length === 0) {
+                            tableBody.append('<tr><td colspan="4">데이터가 없습니다.</td></tr>');
+                        } else {
+                            response.stats.forEach(function(item) {
+                                tableBody.append(
+                                    `<tr>
+                                        <th>${item.divisionName}</td>
+                                        <td>${item.veryHighCount}</td>
+                                        <td>${item.highCount}</td>
+                                        <td>${item.mediumCount}</td>
+                                        <td>${item.lowCount}</td>
+                                        <td>${item.veryLowCount}</td>
+                                        <td>${item.totalCount}</td>
+                                        <td>${item.ingStatus}</td>
+                                        <td>${item.endStatus}</td>
+                                        <td>${item.endPercent}%</td>
+                                    </tr>`
+                                );
+                            });
+                        }
+                    } else {
+                        console.error("사무실별 요청사항 수 조회 실패:", response.message);
+                        $('#officeStatsTableBody').empty().append('<tr><td colspan="4">데이터 로드 오류</td></tr>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("사무실별 요청사항 수 조회 실패:", status, error);
+                    $('#officeStatsTableBody').empty().append('<tr><td colspan="4">데이터 로드 오류</td></tr>');
+                }
+            });
+
+            // 사무실별 긴급도별 요청사항 수 조회 및 테이블 채우기
+            $.ajax({
+                url: '/Req/GetRequestsCountByAdminAndPriority',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success && response.stats) {
+                        let tableBody = $('#adminStatsTableBody');
+                        tableBody.empty(); // 기존 플레이스홀더 데이터 제거
+
+                        if (response.stats.length === 0) {
+                            tableBody.append('<tr><td colspan="4">데이터가 없습니다.</td></tr>');
+                        } else {
+                            response.stats.forEach(function(item) {
+                                tableBody.append(
+                                    `<tr>
+                                        <th>${item.userName}</td>
+                                        <td>${item.veryHighCount}</td>
+                                        <td>${item.highCount}</td>
+                                        <td>${item.mediumCount}</td>
+                                        <td>${item.lowCount}</td>
+                                        <td>${item.veryLowCount}</td>
+                                        <td>${item.totalCount}</td>
+                                        <td>${item.ingStatus}</td>
+                                        <td>${item.endStatus}</td>
+                                        <td>${item.endPercent}%</td>
+                                    </tr>`
+                                );
+                            });
+                        }
+                    } else {
+                        console.error("사무실별 요청사항 수 조회 실패:", response.message);
+                        $('#officeStatsTableBody').empty().append('<tr><td colspan="4">데이터 로드 오류</td></tr>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("사무실별 요청사항 수 조회 실패:", status, error);
+                    $('#officeStatsTableBody').empty().append('<tr><td colspan="4">데이터 로드 오류</td></tr>');
+                }
+            });
+
+            // 이번주 완료예정인 요청 건수 조회
+            $.ajax({
+                url: '/Req/GetRequestsDueThisWeekCount',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    $('#requestsDueThisWeekCount').text(data.count.toLocaleString());
+                },
+                error: function(xhr, status, error) {
+                    console.error("이번주 완료예정인 요청 건수 조회 실패:", status, error);
+                    $('#requestsDueThisWeekCount').text('오류');
+                }
+            });
+        });
+    </script>
+}

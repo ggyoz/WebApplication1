@@ -4,6 +4,8 @@ using System.Data;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 
 namespace CSR.Services
 {
@@ -20,6 +22,7 @@ namespace CSR.Services
             DEPTID AS DeptId,
             DEPTCD AS DeptCd,
             PARENTID AS ParentId,
+            PARENTCD AS ParentCd,
             DEPTNAME AS DeptName,
             CORCD AS CorCd,
             SORTORDER AS SortOrder,
@@ -98,18 +101,18 @@ namespace CSR.Services
         }
 
         public async Task<long> CreateDeptAsync(Dept dept)
-        {
-            // Note: Assumes a sequence named SEQ_DEPT_INFO exists for Oracle.
+        {            
             var sql = @"
                 INSERT INTO TB_DEPT_INFO (
-                    DEPTID, DEPTCD, PARENTID, DEPTNAME, CORCD, SORTORDER, NOTE, USEYN
+                    DEPTID, DEPTCD, PARENTID, PARENTCD, DEPTNAME, CORCD, SORTORDER, NOTE, USEYN
                 ) VALUES (
-                    SEQ_DEPT_INFO.NEXTVAL, :DeptCd, :ParentId, :DeptName, :CorCd, :SortOrder, :Note, :UseYn
+                    SEQ_DEPT_INFO.NEXTVAL, :DeptCd, :ParentId, :parentCd, :DeptName, :CorCd, :SortOrder, :Note, :UseYn
                 ) RETURNING DEPTID INTO :NewDeptId";
 
             var parameters = new DynamicParameters();
             parameters.Add("DeptCd", dept.DeptCd);
             parameters.Add("ParentId", dept.ParentId);
+            parameters.Add("ParentCd", dept.ParentCd);
             parameters.Add("DeptName", dept.DeptName);
             parameters.Add("CorCd", dept.CorCd);
             parameters.Add("SortOrder", dept.SortOrder);
@@ -127,6 +130,7 @@ namespace CSR.Services
                 UPDATE TB_DEPT_INFO SET
                     DEPTCD = :DeptCd,
                     PARENTID = :ParentId,
+                    PARENTCD = :ParentCd,
                     DEPTNAME = :DeptName,
                     CORCD = :CorCd,
                     SORTORDER = :SortOrder,
@@ -217,6 +221,34 @@ namespace CSR.Services
 
             return result.ToList();
             
+        }
+
+
+        public async Task<IEnumerable<SelectListItem>> GetSelectListByDeptAsync(string CorCd, string ParentCd)
+        {
+            var allCodes = await GetAllDeptsAsync();
+            var items = allCodes.Where(c => c.CorCd == CorCd && c.UseYn == "Y" && (string.IsNullOrEmpty(ParentCd) ? string.IsNullOrEmpty(c.ParentCd) : c.ParentCd == ParentCd))
+                                .OrderBy(c => c.SortOrder)
+                                .Select(c => new SelectListItem
+                                {
+                                    Value = c.DeptCd.ToString(),
+                                    Text = c.DeptName
+                                });
+            return items;
+        }
+
+
+        public async Task<IEnumerable<SelectListItem>> GetSelectListByOfficeTeamAsync(string parentcd)
+        {
+            var allCodes = await GetAllDeptsAsync();
+            var items = allCodes.Where(c => c.ParentCd == parentcd && c.UseYn == "Y")
+                                .OrderBy(c => c.SortOrder)
+                                .Select(c => new SelectListItem
+                                {
+                                    Value = c.DeptCd.ToString(),
+                                    Text = c.DeptName
+                                });
+            return items;
         }
 
     }

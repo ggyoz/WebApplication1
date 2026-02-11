@@ -4,7 +4,7 @@
 @inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
 
 @{
-    ViewData["Title"] = "요구사항 수정";
+    ViewData["Title"] = SharedLocalizer["Title_EditReq"];
 }
 
 <partial name="_PageTitlePartial" />
@@ -24,7 +24,7 @@
 
             <div asp-validation-summary="All" class="text-danger"></div>
 
-            <table class="table-layout" width="100%">
+            <table class="table-layout">
                 <colgroup>
                     <col width="8%">
                     <col width="15%">
@@ -38,12 +38,12 @@
                 <tbody>
 
                     <tr>
-                        <td>요청자</td>
+                        <td>@SharedLocalizer["Label_Requester"]</td>
                         <td>
                             <input asp-for="ReqUserName" class="form-control" readonly />
                             <span asp-validation-for="ReqUserName" class="text-danger"></span>
                         </td>
-                        <td>소속</td>
+                        <td>@SharedLocalizer["Label_Affiliation"]</td>
                         <td>
                             @{
                                 var orgParts = new[] { Model.CorpName, Model.DeptName, Model.OfficeName, Model.TeamName };
@@ -52,61 +52,61 @@
                             <input type="text" class="form-control" value="@organization" readonly />
                         </td>
 
-                        <td>이메일</td>
+                        <td>@SharedLocalizer["Label_Email"]</td>
                         <td>
                             <input asp-for="ReqUserEmail" class="form-control" readonly />
                             <span asp-validation-for="ReqUserEmail" class="text-danger"></span>
                         </td>
-                        <td>연락처</td>
+                        <td>@SharedLocalizer["Label_Contact"]</td>
                         <td>
                             <input asp-for="ReqUserTel" class="form-control" readonly />
                             <span asp-validation-for="ReqUserTel" class="text-danger"></span>
                         </td>
                     </tr>
                     <tr>
-                        <td><label class="control-label">요청유형</label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_RequestType"]</label></td>
                         <td>
                             <select asp-for="REQTYPE" asp-items="ViewBag.ReqTypes" class="form-select">
-                                <option>요청유형 선택</option>
+                                <option>@SharedLocalizer["Placeholder_SelectRequestType"]</option>
                             </select>
                             <span asp-validation-for="REQTYPE" class="text-danger"></span>
                         </td>
-                        <td><label asp-for="SYSTEMCD" class="control-label"></label></td>
+                        <td><label class="control-label"></label></td>
                         <td>
                             <select asp-for="SYSTEMCD" asp-items="ViewBag.SystemCodes" class="form-select">
-                                <option>대상시스템 선택</option>
+                                <option>@SharedLocalizer["Placeholder_SelectSystem"]</option>
                             </select>
                             <span asp-validation-for="SYSTEMCD" class="text-danger"></span>
                         </td>
-                        <td><label class="control-label">요청메뉴</label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_RequestMenu"]</label></td>
                         <td>
                             <select asp-for="REQMENU" id="ReqMenu" class="form-select"></select>                            
                         </td>
-                        <td><label class="control-label">조치자</label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_ActionTaker"]</label></td>
                         <td>
                             <select asp-for="RESUSERID" class="form-select"></select>
                         </td>
                     </tr>
                     
                     <tr>
-                        <td><label class="control-label">요청일</label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_RequestDate"]</label></td>
                         <td>
                             <input asp-for="REQDATE" type="date" class="form-control" />
                             <span asp-validation-for="REQDATE" class="text-danger"></span>
                         </td>
-                        <td><label class="control-label">처리기한</label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_DueDate"]</label></td>
                         <td>
                             <input asp-for="DUEDATE" type="date" class="form-control" />
                             <span asp-validation-for="DUEDATE" class="text-danger"></span>
                         </td>
-                        <td><label class="control-label">긴급도</label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_Urgency"]</label></td>
                         <td>
                             <select asp-for="PRIORITYCD" asp-items="ViewBag.PriorityCodes" class="form-select">
-                                <option>긴급도 선택</option>
+                                <option>@SharedLocalizer["Placeholder_SelectUrgency"]</option>
                             </select>
                             <span asp-validation-for="PRIORITYCD" class="text-danger"></span>
                         </td>  
-                        <td><label class="control-label">TCODE</label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_Tcode"]</label></td>
                         <td>
                             <input asp-for="REQTCODE" type="text" class="form-control" maxlength="10" />
                             <span asp-validation-for="REQTCODE" class="text-danger"></span>
@@ -114,22 +114,24 @@
                     </tr>
 
                     <tr>
-                        <td><label class="control-label">제목</label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_Title"]</label></td>
                         <td colspan="7">
                             <input asp-for="TITLE" class="form-control" maxlength="150" />
                             <span asp-validation-for="TITLE" class="text-danger"></span>
                         </td>
                     </tr>
                     <tr>
-                        <td><label class="control-label">진행상태</label></td>
+                        <td><label class="control-label">@SharedLocalizer["Label_ProgressStatus"]</label></td>
                         <td>
                             <select asp-for="PROC_STATUS" asp-items="ViewBag.ProcStatusCodes" class="form-select"></select>
                         </td>
                     </tr>
                     <tr>
-                        <td style="vertical-align: top;"><label asp-for="CONTENTS_HTML" class="control-label"></label></td>
+                        <td style="vertical-align: top;">
+                            <label class="control-label">@SharedLocalizer["Label_Content"]</label>
+                        </td>
                         <td colspan="7">
-                            <div id="content-editor">@Html.Raw(Model.CONTENTS_HTML)</div>
+                            <div class="html-editor" id="content-editor">@Html.Raw(Model.CONTENTS_HTML)</div>
                             <input type="hidden" asp-for="CONTENTS_HTML" />
                         </td>
                     </tr>
@@ -176,6 +178,11 @@
 @section Scripts {
     <style>
         #file-uploader .dx-fileuploader-input-wrapper { min-height: 150px; border: 2px dashed #ccc; padding: 20px; background-color: #f8f9fa; }
+        .html-editor .dx-htmleditor-content {
+            white-space: normal; /* 텍스트가 자동으로 줄 바꿈되도록 설정 */
+            word-break: break-word; /* 긴 단어도 줄 바꿈되도록 설정 */
+            background-color:#ffffff;
+        }
     </style>
     <script>
 
@@ -185,7 +192,7 @@
             var reqMenuDropdown = $('#ReqMenu');
 
             reqMenuDropdown.empty();
-            reqMenuDropdown.append($('<option></option>').val('').text('메뉴 선택'));
+            reqMenuDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectMenu"])'));
 
             $.ajax({
                 url: '@Url.Action("GetMenusBySystemCode", "CommCode")',
@@ -213,7 +220,7 @@
             var adminDropdown = $('#RESUSERID');
 
             adminDropdown.empty();
-            adminDropdown.append($('<option></option>').val('').text('조치자 선택'));
+            adminDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectActionTaker"])'));
 
             if (menuId) {
                 $.ajax({
@@ -250,12 +257,8 @@
             
             // 메뉴 
             if (systemcd) {
-
                 var reqMenuValue = @Html.Raw(Json.Serialize(Model.REQMENU));
                 var adminId = @Html.Raw(Json.Serialize(Model.RESUSERID));
-
-                console.log(reqMenuValue, adminId);
-
                 getReqMenuDropdown(reqMenuValue, systemcd, adminId);
             };
 
@@ -266,7 +269,7 @@
                 var reqMenuDropdown = $('#ReqMenu');
 
                 reqMenuDropdown.empty();
-                reqMenuDropdown.append($('<option></option>').val('').text('메뉴 선택'));
+                reqMenuDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectMenu"])'));
 
                 if (systemCodeId) {
                     $.ajax({
@@ -291,7 +294,7 @@
                 var adminDropdown = $('#RESUSERID');
 
                 adminDropdown.empty();
-                adminDropdown.append($('<option></option>').val('').text('조치자 선택'));
+                adminDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectActionTaker"])'));
 
                 if (menuId) {
                     $.ajax({

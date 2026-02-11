@@ -32,9 +32,32 @@
                         <col width="15%"></col>
                     </colgroup>                    
 
-                    <!-- 조직도 tr -->
-                    <partial name="_OrganizationSearchFieldsPartial" model="Model.Search" />
-                    <!-- 조직도 tr -->
+                    <tr>
+                        <th>@SharedLocalizer["Label_Corporation"]</th>
+                        <td>
+                            <select id="CorCd" asp-items="ViewBag.CorCdList" class="form-select" name="CorCd">
+                                <option value="">@SharedLocalizer["Placeholder_SelectCorporation"]</option>
+                            </select>
+                        </td>
+                        <th>@SharedLocalizer["Label_Department"]</th>
+                        <td>
+                            <select id="DeptCd" asp-items="ViewBag.DeptCdList"  class="form-select" name="DeptCd">
+                                <option value="">@SharedLocalizer["Placeholder_SelectDepartment"]</option>
+                            </select>
+                        </td>
+                        <th>@SharedLocalizer["Label_Office"]</th>
+                        <td>
+                            <select id="OfficeCd" asp-items="ViewBag.OfficeCdList" class="form-select" name="OfficeCd">
+                                <option value="">@SharedLocalizer["Placeholder_SelectOffice"]</option>
+                            </select>
+                        </td>
+                        <th>@SharedLocalizer["Label_Team"]</th>
+                        <td>
+                            <select id="TeamCd" asp-items="ViewBag.TeamCdList" class="form-select" name="TeamCd">
+                                <option value="">@SharedLocalizer["Placeholder_SelectTeam"]</option>
+                            </select>
+                        </td>
+                    </tr>
                     <tr>
                         <th class="align-middle text-center">@SharedLocalizer["Label_UserId"]</th>
                         <!-- <td><input asp-for="Search.UserId" class="form-control" /></td> -->
@@ -116,5 +139,120 @@ else
 }
 
 @section Scripts {    
-    <partial name="_OrganizationFieldsPartial.Scripts" />
+    <!-- <partial name="_OrganizationFieldsPartial.Scripts" /> -->
+
+    <style>
+        .table-bordered th {
+            display :flex;
+            justify-content: center; /* Horizontally centers content */
+            align-items: center;     /* Vertically centers content */
+        }        
+    </style>
+
+    <script>
+
+        $(function () {     
+
+            const searchValues = {
+                CorCd: '@ViewData["CorCd"]',
+                DeptCd: '@ViewData["DeptCd"]',
+                OfficeCd: '@ViewData["OfficeCd"]',
+                TeamCd: '@ViewData["TeamCd"]'
+            };            
+            
+            if (searchValues.CorCd) {
+                $('select[name="CorCd"]').val(searchValues.CorCd);
+            }
+            if (searchValues.DeptCd) {
+                $('select[name="DeptCd"]').val(searchValues.DeptCd);
+            }
+            if (searchValues.OfficeCd) {
+                $('select[name="OfficeCd"]').val(searchValues.OfficeCd);
+            }
+            if (searchValues.TeamCd) {
+                $('select[name="TeamCd"]').val(searchValues.TeamCd);
+            }
+
+            // 법인 선택 시 메뉴 드롭다운 변경
+            $('#CorCd').on('change', function() {
+                var corCd = $(this).val();
+                var deptDropdown = $('#DeptCd');
+
+                deptDropdown.empty();
+                deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectDepartment"])'));
+
+                if (corCd) {
+                    $.ajax({
+                        url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
+                        type: 'GET',
+                        data: { corCd: corCd, deptCd : "" },
+                        success: function(data) {
+                            $.each(data, function(i, item) {
+                                deptDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+
+            // 법인 선택 시 메뉴 드롭다운 변경
+            $('#DeptCd').on('change', function() {
+                var deptCd = $(this).val();
+                var corCd = $('#CorCd').val();
+
+                var deptDropdown = $('#OfficeCd');
+
+                deptDropdown.empty();
+                deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectOffice"])'));
+
+                if (corCd) {
+                    $.ajax({
+                        url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
+                        type: 'GET',
+                        data: { corCd : corCd, deptCd: deptCd },
+                        success: function(data) {
+                            $.each(data, function(i, item) {
+                                deptDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+            
+            // 법인 선택 시 메뉴 드롭다운 변경
+            $('#OfficeCd').on('change', function() {
+                var deptCd = $(this).val();
+                var corCd = $('#CorCd').val();
+
+                var deptDropdown = $('#TeamCd');
+
+                deptDropdown.empty();
+                deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectTeam"])'));
+
+                if (corCd) {
+                    $.ajax({
+                        url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
+                        type: 'GET',
+                        data: { corCd : corCd, deptCd: deptCd },
+                        success: function(data) {
+                            $.each(data, function(i, item) {
+                                deptDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+
+        });
+    </script>
+
 }

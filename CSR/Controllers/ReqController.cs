@@ -2,6 +2,7 @@ using CSR.Models;
 using CSR.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,8 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using System;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using CSR.Authorization;
 
 namespace CSR.Controllers
 {
@@ -19,22 +22,125 @@ namespace CSR.Controllers
         private readonly ICommCodeService _commCodeService;
         private readonly UserService _userService;
         private readonly IAdminRelService _adminRelService;
+        private readonly IAuthorizationService _authorizationService;
         private readonly ILogger<ReqController> _logger;
+        private readonly CorpService _corpService;
+        private readonly DeptService _deptService;
 
-        public ReqController(IReqService reqService, ICommCodeService commCodeService, UserService userService, IAdminRelService adminRelService, ILogger<ReqController> logger)
+        public ReqController(IReqService reqService, ICommCodeService commCodeService, UserService userService, IAdminRelService adminRelService, CorpService corpService, ILogger<ReqController> logger, DeptService deptService, IAuthorizationService authorizationService)
         {
             _reqService = reqService;
             _commCodeService = commCodeService;
             _adminRelService = adminRelService;
+            _corpService = corpService;
             _userService = userService;
             _logger = logger;
+            _deptService = deptService;
+            _authorizationService = authorizationService;
         }
 
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string searchField = "TITLE", string searchValue = "")
+        public async Task<IActionResult> Index(
+            int pageNumber = 1, 
+            int pageSize = 10, 
+            string? reqTypeCd = null,
+            string? procStatusCd = null,
+            string? priorityCd = null,
+            string? reqDate = null,
+            string? dueDate = null,
+            string? expectDate = null,
+            string? regId = null, // Assuming this is ReqInfo.REQID for search
+            string? reqUserName = null,
+            string? resUserName = null,
+            string? searchValue = null,
+            string? corCd = null,
+            string? deptCd = null,
+            string? officeCd = null,
+            string? teamCd = null,
+            List<string>? assignedResponsibilities = null
+            ) // This is for title search
         {
-            ViewData["SearchField"] = searchField;
+
+            // 세션이 없으면 로그인페이지로 튕겨냄
+            var sessionTeamCd = HttpContext.Session.GetString("TeamCd");
+            var sessionOfficeCd = HttpContext.Session.GetString("OfficeCd");            
+
+            // 팀원 및 팀장 조회 제한
+            if( !User.IsInRole("R3") && !User.IsInRole("R4") ){
+
+                if (string.IsNullOrEmpty(sessionTeamCd) || string.IsNullOrEmpty(sessionOfficeCd))
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+            }
+
+            ViewData["ReqTypeCd"] = reqTypeCd;
+            ViewData["ProcStatusCd"] = procStatusCd;
+            ViewData["PriorityCd"] = priorityCd;
+            ViewData["ReqDate"] = reqDate;
+            ViewData["DueDate"] = dueDate;
+            ViewData["ExpectDate"] = expectDate;
+            ViewData["RegId"] = regId;
+            ViewData["ReqUserName"] = reqUserName;
+            ViewData["ResUserName"] = resUserName;
             ViewData["SearchValue"] = searchValue;
-            var pagedResult = await _reqService.GetReqInfosAsync(page, pageSize, searchField, searchValue);
+            ViewData["CorCd"] = corCd;
+            ViewData["DeptCd"] = deptCd;
+            ViewData["OfficeCd"] = officeCd;
+            ViewData["TeamCd"] = teamCd;
+            ViewData["AssignedResponsibilities"] = assignedResponsibilities;
+
+            ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
+            ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
+            ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
+            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61); 
+            ViewBag.AllResponsibilities = await _commCodeService.GetResponsibilitiesAsync();
+
+            // 법인
+            ViewBag.CorCdList = await _corpService.GetSelectListByCorpAsync();
+            ViewBag.DeptCdList = new List<SelectListItem>();
+            ViewBag.OfficeCdList = new List<SelectListItem>();
+            ViewBag.TeamCdList = new List<SelectListItem>();
+
+            if (!string.IsNullOrEmpty(corCd))
+            {
+                ViewBag.DeptCdList = await _deptService.GetSelectListByDeptAsync(corCd, "");
+            }
+
+            if (!string.IsNullOrEmpty(deptCd))
+            {
+                ViewBag.OfficeCdList = await _deptService.GetSelectListByDeptAsync(corCd, deptCd);
+            }
+            
+            if (!string.IsNullOrEmpty(officeCd))
+            {
+                 ViewBag.TeamCdList = await _deptService.GetSelectListByDeptAsync(corCd, officeCd);
+            }
+            
+            if( User.IsInRole("R1")) {
+                teamCd = sessionTeamCd;
+            }else if( User.IsInRole("R2")){ 
+                officeCd = sessionOfficeCd;
+            }
+            
+            var pagedResult = await _reqService.GetReqInfosAsync(
+                pageNumber, 
+                pageSize, 
+                reqTypeCd,
+                procStatusCd,
+                priorityCd,
+                reqDate,
+                dueDate,
+                expectDate,
+                regId,
+                reqUserName,
+                resUserName,
+                searchValue,
+                corCd, 
+                deptCd, 
+                officeCd, 
+                teamCd,
+                assignedResponsibilities);
             return View(pagedResult);
         }
 
@@ -42,20 +148,35 @@ namespace CSR.Controllers
         {
             var reqInfo = await _reqService.GetReqInfoByIdAsync(id);
 
-            ViewBag.ImportantCodes = await _commCodeService.GetSelectListByPCodeAsync(78); // CODEID = 78  중요도
-            ViewBag.difficultCodes = await _commCodeService.GetSelectListByPCodeAsync(7); // CODEID = 7  난이도
-
             if (reqInfo == null)
             {
                 return NotFound();
             }
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, reqInfo, new SameTeamRequirement());
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+            
+            ViewBag.ImportantCodes = await _commCodeService.GetSelectListByPCodeAsync(78); // CODEID = 78  중요도
+            ViewBag.difficultCodes = await _commCodeService.GetSelectListByPCodeAsync(7); // CODEID = 7  난이도
+
+            var users = await _userService.GetManagerOrHigherUsersForDropDownAsync();
+            ViewBag.UserList = users.Select(u => new SelectListItem
+            {
+                Value = u.UserId,
+                Text = u.UserName,
+                Selected = (u.UserId == reqInfo.RESUSERID)
+            }).ToList(); // Add ToList() to avoid multiple enumeration
+            
             return View(reqInfo);
         }
         
         [Authorize] // Authorization can be more specific if needed
         public async Task<IActionResult> Create()
         {
-            // 대상시스템
+            // 시스템
             ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
             // 요청유형
             ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
@@ -71,7 +192,7 @@ namespace CSR.Controllers
                 EXPECTDATE = DateTime.Now.AddDays(7),
                 ReqUserName = user?.UserName,                
                 ReqUserEmail = user?.EmailAddr,
-                ReqUserTel = user?.TelNo,
+                ReqUserTel = user.MobPhoneNo != null ? user.MobPhoneNo : user.TelNo,                
                 CorpName = user?.CorpName,
                 DeptName = user?.DeptName,
                 OfficeName = user?.OfficeName,
@@ -93,7 +214,6 @@ namespace CSR.Controllers
         [Authorize]
         public async Task<IActionResult> Create(ReqInfo reqInfo, List<IFormFile> files)
         {
-
             if (ModelState.IsValid)
             {
                 try
@@ -135,10 +255,16 @@ namespace CSR.Controllers
                 return NotFound();
             }
 
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, reqInfo, new SameTeamRequirement());
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
             ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
             ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
             ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
-            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(0); // 상태 수정해야됨
+            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61); // 상태 수정해야됨
 
             return View(reqInfo);
         }
@@ -154,6 +280,12 @@ namespace CSR.Controllers
                 return NotFound();
             }
 
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, reqInfo, new SameTeamRequirement());
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
             var user = await _userService.GetUserWithDetailsByIdAsync(reqInfo.REQUSERID);
 
             reqInfo.ReqUserName = user?.UserName;
@@ -167,7 +299,7 @@ namespace CSR.Controllers
             ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
             ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
             ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
-            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61); // 상태 수정해야됨
+            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61); 
 
             return View(reqInfo);
         }
@@ -186,10 +318,9 @@ namespace CSR.Controllers
             {
                 try
                 {
+                    var historyReasonValue = "";
                     reqInfo.UPDATE_USERID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";
-                    
-                    await _reqService.UpdateReqInfoAsync(reqInfo, newFiles, deletedFiles);
-
+                    await _reqService.UpdateReqInfoAsync(reqInfo, newFiles, deletedFiles, historyReasonValue);
                     return RedirectToAction(nameof(Details), new { id = reqInfo.REQID });
                 }
                 catch (Exception ex)
@@ -198,16 +329,80 @@ namespace CSR.Controllers
                     ModelState.AddModelError("", "An error occurred while updating the requirement.");
                 }
             }
-            
-            // If model state is invalid, reload data for the view
+
+            // If ModelState is invalid, return to Edit view
             ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
             ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
             ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
-            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(0); // 상태 수정해야됨
+            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61); 
             var originalReq = await _reqService.GetReqInfoByIdAsync(id);
             reqInfo.AttachFiles = originalReq?.AttachFiles ?? new List<ReqFile>();
             
             return View(reqInfo);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> SubmitAnswer(int id, ReqInfo reqInfo, List<IFormFile> newFiles, [FromForm]List<int> deletedFiles)
+        {
+            if (id != reqInfo.REQID)
+            {
+                return BadRequest();
+            }
+
+            // 답변등록 시 유효성 제외 목록
+            ModelState.Remove(nameof(ReqInfo.TITLE));
+            ModelState.Remove(nameof(ReqInfo.CONTENTS_HTML));
+            ModelState.Remove(nameof(ReqInfo.DUEDATE));            
+            ModelState.Remove(nameof(ReqInfo.REQDATE));
+            ModelState.Remove(nameof(ReqInfo.REQTYPE));
+            ModelState.Remove(nameof(ReqInfo.REQMENU));
+            ModelState.Remove(nameof(ReqInfo.REQMENU_ETC));
+            ModelState.Remove(nameof(ReqInfo.RESUSERID));
+            ModelState.Remove(nameof(ReqInfo.SYSTEMCD));
+            ModelState.Remove(nameof(ReqInfo.REQUSERID));
+            ModelState.Remove(nameof(ReqInfo.PRIORITYCD));
+            ModelState.Remove(nameof(ReqInfo.CORCD));
+            ModelState.Remove(nameof(ReqInfo.DEPTCD));
+            ModelState.Remove(nameof(ReqInfo.OFFICECD));
+            ModelState.Remove(nameof(ReqInfo.TEAMCD));
+            ModelState.Remove(nameof(ReqInfo.REG_USERID));
+
+            var modelToReturn = await _reqService.GetReqInfoByIdAsync(id);
+
+            if (modelToReturn == null) { return NotFound(); }
+
+            modelToReturn.DFCLTCD = reqInfo.DFCLTCD;
+            modelToReturn.IMPTCD = reqInfo.IMPTCD;
+            modelToReturn.MAN_DAY = reqInfo.MAN_DAY;
+            modelToReturn.BXTID = reqInfo.BXTID;
+            modelToReturn.RESTCODE = reqInfo.RESTCODE;
+            modelToReturn.ANSWER_HTML = reqInfo.ANSWER_HTML;
+            modelToReturn.NOTE_HTML = reqInfo.NOTE_HTML;
+            
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var historyReasonValue = "73"; // 요청사항 히스토리 ( 답변 등록 )
+                    modelToReturn.UPDATE_USERID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";
+                    modelToReturn.PROC_STATUS = "65"; // Set status for answering
+                    await _reqService.UpdateReqInfoAsync(modelToReturn, newFiles, deletedFiles, historyReasonValue);
+                    return RedirectToAction(nameof(Details), new { id = reqInfo.REQID });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error submitting answer for requirement.");
+                    ModelState.AddModelError("", "An error occurred while submitting the answer.");
+                }
+            }
+
+            // Repopulate ViewBag for Details view
+            ViewBag.ImportantCodes = await _commCodeService.GetSelectListByPCodeAsync(78);
+            ViewBag.difficultCodes = await _commCodeService.GetSelectListByPCodeAsync(7);
+            
+            return View("Details", modelToReturn);
         }
 
         [HttpPost]
@@ -271,6 +466,291 @@ namespace CSR.Controllers
             return File(memory, "application/octet-stream", file.REAL_FILENAME);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetTeamRequestCount()
+        {
+            var teamCd = HttpContext.Session.GetString("TeamCd");
+            if (string.IsNullOrEmpty(teamCd))
+            {
+                return Json(new { success = false, message = "TeamCd not found in session." });
+            }
+
+            try
+            {
+                var count = await _reqService.GetTeamTotalRequestsCountAsync(teamCd);
+                return Json(new { success = true, count = count });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting team request count for teamCd: {TeamCd}", teamCd);
+                return Json(new { success = false, message = "Error retrieving count." });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyRequestCount()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User ID not found." });
+            }
+
+            try
+            {
+                var count = await _reqService.GetMyTotalRequestsCountAsync(userId);
+                return Json(new { success = true, count = count });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting my request count for userId: {UserId}", userId);
+                return Json(new { success = false, message = "Error retrieving count." });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyPendingRequestsCount()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
+            var count = await _reqService.GetMyPendingRequestsCountAsync(userId);
+            return Json(new { success = true, count = count });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyInProgressRequestsCount()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
+            var count = await _reqService.GetMyInProgressRequestsCountAsync(userId);
+            return Json(new { success = true, count = count });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyInProgressCount()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
+            var count = await _reqService.GetMyInProgressCountAsync(userId);
+            return Json(new { success = true, count = count });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyOverdueRequestsCount()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
+            var count = await _reqService.GetMyOverdueRequestsCountAsync(userId);
+            return Json(new { success = true, count = count });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyCompletedRequestsCount()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
+            var count = await _reqService.GetMyCompletedRequestsCountAsync(userId);
+            return Json(new { success = true, count = count });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllRequestsCount()
+        {
+            if (!User.Identity?.IsAuthenticated == true)
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
+            try
+            {
+                var count = await _reqService.GetAllRequestsCountAsync();
+                return Json(new { success = true, count = count });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting all requests count.");
+                return Json(new { success = false, message = "Error retrieving count." });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDeptTotalRequestsCount()
+        {
+            if (!User.Identity?.IsAuthenticated == true)
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
+            var corCd = HttpContext.Session.GetString("CorCd");
+            var deptCd = HttpContext.Session.GetString("DeptCd");
+
+            if (string.IsNullOrEmpty(corCd) || string.IsNullOrEmpty(deptCd))
+            {
+                _logger.LogWarning("CorCd or DeptCd not found in session for GetDeptTotalRequestsCount.");
+                return Json(new { success = false, message = "CorCd or DeptCd not found in session." });
+            }
+
+            try
+            {
+                var count = await _reqService.GetDeptTotalRequestsCountAsync(corCd, deptCd);
+                return Json(new { success = true, count = count });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting department total requests count for CorCd: {CorCd}, DeptCd: {DeptCd}", corCd, deptCd);
+                return Json(new { success = false, message = "Error retrieving count." });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyRecentReqActivities()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
+            try
+            {
+                var activities = await _reqService.GetMyRecentReqActivitiesAsync(userId);
+                return Json(new { success = true, activities = activities });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting recent request activities for userId: {UserId}", userId);
+                return Json(new { success = false, message = "Error retrieving recent activities." });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyAssignedRecentReqActivities()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
+            try
+            {
+                var activities = await _reqService.GetMyAssignedRecentReqActivitiesAsync(userId);
+                return Json(new { success = true, activities = activities });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting recent assigned request activities for userId: {UserId}", userId);
+                return Json(new { success = false, message = "Error retrieving recent assigned activities." });
+            }
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetRequestsCountThisWeek()
+        {
+            if (!User.Identity?.IsAuthenticated == true)
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
+            try
+            {
+                var count = await _reqService.GetRequestsCountAddedThisWeekAsync();
+                return Json(new { success = true, count = count });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting requests count added this week.");
+                return Json(new { success = false, message = "Error retrieving count." });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetRequestsCountByDivisionAndPriority()
+        {
+            if (!User.Identity?.IsAuthenticated == true)
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
+            try
+            {
+                var stats = await _reqService.GetRequestsCountByDivisionAndPriorityAsync();
+                return Json(new { success = true, stats = stats });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting requests count by division and priority.");
+                return Json(new { success = false, message = "Error retrieving stats." });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetRequestsCountByOfficeAndPriority()
+        {
+            if (!User.Identity?.IsAuthenticated == true)
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
+            try
+            {
+                var stats = await _reqService.GetRequestsCountByOfficeAndPriorityAsync();
+                return Json(new { success = true, stats = stats });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting requests count by office and priority.");
+                return Json(new { success = false, message = "Error retrieving stats." });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetRequestsCountByAdminAndPriority()
+        {
+            if (!User.Identity?.IsAuthenticated == true)
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
+            try
+            {
+                var stats = await _reqService.GetRequestsCountByAdminAndPriorityAsync();
+                return Json(new { success = true, stats = stats });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting requests count by office and priority.");
+                return Json(new { success = false, message = "Error retrieving stats." });
+            }
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetRequestsDueThisWeekCount()
+        {
+            if (!User.Identity?.IsAuthenticated == true)
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
+            try
+            {
+                var count = await _reqService.GetRequestsDueThisWeekCountAsync();
+                return Json(new { success = true, count = count });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting requests due this week count.");
+                return Json(new { success = false, message = "Error retrieving count." });
+            }
+        }
+
+
         // 조치자 목록 
         [HttpGet]
         public async Task<IActionResult> GetAdminRel(int menuId)
@@ -283,9 +763,6 @@ namespace CSR.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SetProcStatus(int id, string status)
         {
-
-            Console.WriteLine("id : " + id + "status : " + status);
-
             try
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -312,6 +789,100 @@ namespace CSR.Controllers
             }
 
             return RedirectToAction(nameof(Details), new { id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Policy = "RequireManagerOrHigher")]
+        public async Task<IActionResult> UpdateExpectDate(int id, DateTime expectDate)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                // This should not happen for an authorized user, but as a safeguard:
+                return Challenge(); 
+            }
+
+            var result = await _reqService.UpdateExpectDateAsync(id, expectDate, userId);
+
+            if (result)
+            {
+                TempData["ToastMessage"] = "완료예정일이 성공적으로 변경되었습니다.";
+            }
+            else
+            {
+                TempData["ToastMessage"] = "완료예정일 변경에 실패했습니다. (요청을 찾을 수 없거나 업데이트 중 오류 발생)";
+            }
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Policy = "RequireManagerOrHigher")]
+        public async Task<IActionResult> UpdateResUser(int id, string resUserId)
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (currentUserId == null)
+            {
+                return Challenge();
+            }
+
+            var result = await _reqService.UpdateResUserAsync(id, resUserId, currentUserId);
+
+            if (result)
+            {
+                TempData["ToastMessage"] = "조치자가 성공적으로 변경되었습니다.";
+            }
+            else
+            {
+                TempData["ToastMessage"] = "조치자 변경에 실패했습니다. (요청을 찾을 수 없거나 업데이트 중 오류 발생)";
+            }
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitReInquiry(int id, string reInquiryContent)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Challenge(); // Not logged in
+            }
+
+            var reqInfo = await _reqService.GetReqInfoByIdAsync(id);
+            if (reqInfo == null)
+            {
+                return NotFound();
+            }
+
+            // Authorization: Only the original requester can submit a re-inquiry
+            if (reqInfo.REQUSERID != userId)
+            {
+                return Forbid();
+            }
+
+            // Append re-inquiry content
+            string reInquiryHeader = $"<hr><h4>재문의 ({DateTime.Now:yyyy-MM-dd})</h4>";
+            reqInfo.CONTENTS_HTML += reInquiryHeader + reInquiryContent;
+
+            // Update status to "Re-inquiry"
+            reqInfo.PROC_STATUS = "83";
+            reqInfo.UPDATE_USERID = userId;
+
+            // Call the general update service
+            try
+            {
+                await _reqService.UpdateReqInfoAsync(reqInfo, null, null, "77"); // Using "76" for Re-inquiry history
+                TempData["ToastMessage"] = "재문의가 성공적으로 등록되었습니다.";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error submitting re-inquiry for requirement {ReqId}.", id);
+                TempData["ToastMessage"] = "재문의 등록 중 오류가 발생했습니다.";
+            }
+
+            return RedirectToAction(nameof(Details), new { id = id });
         }
     }
 }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Configuration; // Add this line
 
 namespace CSR.Controllers
 {
@@ -14,10 +15,12 @@ namespace CSR.Controllers
     public class ImageController : ControllerBase
     {
         private readonly IWebHostEnvironment _hostingEnvironment;
+        private readonly IConfiguration _configuration; // Add this line
 
-        public ImageController(IWebHostEnvironment hostingEnvironment)
+        public ImageController(IWebHostEnvironment hostingEnvironment, IConfiguration configuration) // Modify constructor
         {
             _hostingEnvironment = hostingEnvironment;
+            _configuration = configuration; // Assign configuration
         }
 
         [HttpPost("upload")]
@@ -44,7 +47,14 @@ namespace CSR.Controllers
 
             try
             {
-                var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "EditorImage");
+                var imageUploadPath = _configuration["ImageUploadPath"]; // Get path from configuration
+                if (string.IsNullOrEmpty(imageUploadPath))
+                {
+                    // Fallback or throw an error if configuration is missing
+                    imageUploadPath = "EditorImage"; 
+                }
+
+                var uploadsFolder = Path.Combine(imageUploadPath == "ITSM" ? "D:\\" : _hostingEnvironment.ContentRootPath, imageUploadPath);
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(uploadsFolder);
@@ -60,7 +70,9 @@ namespace CSR.Controllers
                 }
 
                 // The editor expects a JSON response with the URL of the uploaded image.
-                var imageUrl = $"{Request.Scheme}://{Request.Host}/EditorImage/{uniqueFileName}";
+                var imageUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/{imageUploadPath}/{uniqueFileName}";
+                Console.WriteLine("imageUrl : " + imageUrl);
+                Console.WriteLine("Request.PathBase : " + Request.PathBase);
                 return Ok(new { url = imageUrl });
             }
             catch (Exception ex)

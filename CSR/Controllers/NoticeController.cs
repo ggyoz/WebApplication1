@@ -170,6 +170,21 @@ namespace CSR.Controllers
             return File(memory, "application/octet-stream", file.REAL_FILENAME);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetRecentNotices(int count = 5)
+        {
+            try
+            {
+                var notices = await _noticeService.GetRecentNoticesAsync(count);
+                return Json(new { success = true, notices = notices });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting recent notices.");
+                return Json(new { success = false, message = "Error retrieving recent notices." });
+            }
+        }
+
 
     }
 }

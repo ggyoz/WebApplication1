@@ -88,11 +88,10 @@ namespace CSR.Services
 
             await _dbConnection.ExecuteAsync(sql, parameters);
 
-            // --- 쿼리디버킹코드 ---
+            // --- 쿼리디버깅코드 ---
             Console.WriteLine("Executing CreateUserAsync Query:");
             Console.WriteLine(sql);
-            Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(commCode, Formatting.Indented));
-            // --- 쿼리디버킹코드 ---
+            Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(commCode, Formatting.Indented));            
             
             return parameters.Get<int>("NewCodeId");
         }
@@ -131,6 +130,7 @@ namespace CSR.Services
                                 });
             return items;
         }
+        
         public async Task<Dictionary<string, List<CommCode>>> GetResponsibilitiesAsync()
         {
             var parentIds = new List<int> { 20, 21, 22 };

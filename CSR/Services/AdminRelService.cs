@@ -60,7 +60,7 @@ namespace CSR.Services
         public async Task UpdateResponsibilitiesForUserAsync(string userId, List<string> assignedMenuIds, string adminUserId)
         {
 
-            Console.WriteLine("UpdateResponsibilitiesForUserAsync: " + JsonConvert.SerializeObject(assignedMenuIds, Formatting.Indented));
+            //Console.WriteLine("UpdateResponsibilitiesForUserAsync: " + JsonConvert.SerializeObject(assignedMenuIds, Formatting.Indented));
 
             using var transaction = _dbConnection.BeginTransaction();
             

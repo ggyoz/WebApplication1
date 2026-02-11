@@ -15,6 +15,7 @@ namespace CSR.Services
         Task<NoticeFile?> GetNoticeFileByIdAsync(int fileId);
         Task AddNoticeFilesAsync(int noticeId, IEnumerable<IFormFile> files, string userId);
         Task DeleteNoticeFileAsync(int fileId);
+        Task<IEnumerable<Notice>> GetRecentNoticesAsync(int count = 5);
     }
 
     public class NoticeService : INoticeService
@@ -69,7 +70,7 @@ namespace CSR.Services
         {
             var sql = @"SELECT N.*, U.USERNAME as RegUserName, C.CODENM as CodeName
                         FROM TB_NOTICE N
-                        LEFT JOIN TB_COMM_CODE C ON N.NOTICETYPE = C.CODE
+                        LEFT JOIN TB_COMM_CODE C ON N.NOTICETYPE = C.CODEID
                         LEFT JOIN TB_USER_INFO U ON N.REG_USERID = U.USERID
                         WHERE N.ID = :ID AND N.USEYN = 'Y'";
             var notice = await _dbConnection.QueryFirstOrDefaultAsync<Notice>(sql, new { ID = id });
@@ -88,7 +89,7 @@ namespace CSR.Services
             var baseQuery = @"
                 FROM TB_NOTICE N
                 LEFT JOIN TB_USER_INFO U ON N.REG_USERID = U.USERID
-                LEFT JOIN TB_COMM_CODE C ON N.NOTICETYPE = C.CODE
+                LEFT JOIN TB_COMM_CODE C ON N.NOTICETYPE = C.CODEID
                 WHERE N.USEYN = 'Y'";
             
             var parameters = new DynamicParameters();
@@ -236,6 +237,26 @@ namespace CSR.Services
         {
             var sql = "SELECT * FROM TB_NOTICE_FILE WHERE FILEID = :FILEID";
             return await _dbConnection.QueryFirstOrDefaultAsync<NoticeFile>(sql, new { FILEID = fileId });
+        }
+
+        public async Task<IEnumerable<Notice>> GetRecentNoticesAsync(int count = 5)
+        {
+            var sql = $@"
+                SELECT * FROM (
+                    SELECT
+                        N.ID, 
+                        N.TITLE, 
+                        N.REG_DATE, 
+                        U.USERNAME as RegUserName, 
+                        C.CODENM as CodeName
+                    FROM TB_NOTICE N
+                    LEFT JOIN TB_USER_INFO U ON N.REG_USERID = U.USERID
+                    LEFT JOIN TB_COMM_CODE C ON N.NOTICETYPE = C.CODEID
+                    WHERE N.USEYN = 'Y'
+                    ORDER BY N.REG_DATE DESC
+                ) WHERE ROWNUM <= :Count";
+
+            return await _dbConnection.QueryAsync<Notice>(sql, new { Count = count });
         }
     }
 }

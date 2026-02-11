@@ -15,7 +15,17 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             
-            <table class="table-layout">
+            <table class="table-layout" width="100%">
+                <colgroup>
+                    <col width="5%"></col>
+                    <col width="10%"></col>
+                    <col width="5%"></col>
+                    <col width="10%"></col>
+                    <col width="5%"></col>
+                    <col width="10%"></col>                        
+                    <col width="5%"></col>
+                    <col width="10%"></col>
+                </colgroup>
                 <tr>                    
                     <td><label asp-for="UserId" class="control-label">@SharedLocalizer["Label_UserId"] *</label></td>
                     <td>
@@ -50,15 +60,40 @@
                         <input asp-for="EmpNo" class="form-control" oninput="this.value = NumberOnly(this.value)" maxlength=9 />
                         <span asp-validation-for="EmpNo" class="text-danger"></span>
                     </td>
-                    
-
                     <td><label asp-for="SysCd" class="control-label">@SharedLocalizer["Label_SystemCode"]</label></td>
                     <td>
                         <input asp-for="SysCd" class="form-control" />
                         <span asp-validation-for="SysCd" class="text-danger"></span>
                     </td>
                 </tr>
-                <partial name="_OrganizationFieldsPartial" />
+
+                <tr>
+                    <td>@SharedLocalizer["Label_Corporation"]</td>
+                    <td>
+                        <select id="CorCd" asp-items="ViewBag.CorCdList" class="form-select" name="CorCd">
+                            <option value="">@SharedLocalizer["Placeholder_SelectCorporation"]</option>
+                        </select>
+                    </td>
+                    <td>@SharedLocalizer["Label_Department"]</td>
+                    <td>
+                        <select id="DeptCd" asp-items="ViewBag.DeptCdList"  class="form-select" name="DeptCd">
+                            <option value="">@SharedLocalizer["Placeholder_SelectDepartment"]</option>
+                        </select>
+                    </td>
+                    <td>@SharedLocalizer["Label_Office"]</td>
+                    <td>
+                        <select id="OfficeCd" asp-items="ViewBag.OfficeCdList" class="form-select" name="OfficeCd">
+                            <option value="">@SharedLocalizer["Placeholder_SelectOffice"]</option>
+                        </select>
+                    </td>
+                    <td>@SharedLocalizer["Label_Team"]</td>
+                    <td>
+                        <select id="TeamCd" asp-items="ViewBag.TeamCdList" class="form-select" name="TeamCd">
+                            <option value="">@SharedLocalizer["Placeholder_SelectTeam"]</option>
+                        </select>
+                    </td>
+                </tr>
+                
                 <tr>
                     <td><label asp-for="TelNo" class="control-label">@SharedLocalizer["Label_PhoneNumber"]</label></td>
                     <td>
@@ -74,11 +109,6 @@
                     <td>
                         <input asp-for="EmailAddr" class="form-control" type="email" />
                         <span asp-validation-for="EmailAddr" class="text-danger"></span>
-                    </td>
-                    <td><label asp-for="RetireDate" class="control-label">@SharedLocalizer["Label_RetirementDate"]</label></td>
-                    <td>
-                        <input asp-for="RetireDate" class="form-control" />
-                        <!-- <span asp-validation-for="RetireDate" class="text-danger"></span> -->
                     </td>
                 </tr>
                 <tr>                   
@@ -96,26 +126,22 @@
                         <!-- <span asp-validation-for="UserDiv" class="text-danger"></span> -->
                     </td>
                 </tr>
-                <tr>
+                <!-- <tr>
                     <td><label asp-for="BizCd" class="control-label">@SharedLocalizer["Label_BusinessPlaceCode"]</label></td>
                     <td>
                         <input asp-for="BizCd" class="form-control" />
-                        <!-- <span asp-validation-for="BizCd" class="text-danger"></span> -->
                     </td>
                     <td><label asp-for="CustCd" class="control-label">@SharedLocalizer["Label_CustomerCode"]</label></td>
                     <td>
                         <input asp-for="CustCd" class="form-control" />
-                        <!-- <span asp-validation-for="CustCd" class="text-danger"></span> -->
                     </td>
                     <td><label asp-for="VendCd" class="control-label">@SharedLocalizer["Label_VendorCode"]</label></td>
                     <td>
                         <input asp-for="VendCd" class="form-control" />
-                        <!-- <span asp-validation-for="VendCd" class="text-danger"></span> -->
                     </td>
-                    
                     <td></td>
                     <td></td>
-                </tr>
+                </tr> -->
             </table>
 
             <div class="button-area text-end mt-5 m-3">
@@ -128,7 +154,94 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}       
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+    $(function () {     
+        // 법인 선택 시 메뉴 드롭다운 변경
+            $('#CorCd').on('change', function() {
+                var corCd = $(this).val();
+                var deptDropdown = $('#DeptCd');
 
-    <partial name="_OrganizationFieldsPartial.Scripts" />
+                deptDropdown.empty();
+                deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectDepartment"])'));
+
+                if (corCd) {
+                    $.ajax({
+                        url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
+                        type: 'GET',
+                        data: { corCd: corCd, deptCd : "" },
+                        success: function(data) {
+                            $.each(data, function(i, item) {
+                                deptDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+
+            // 법인 선택 시 메뉴 드롭다운 변경
+            $('#DeptCd').on('change', function() {
+                var deptCd = $(this).val();
+                var corCd = $('#CorCd').val();
+
+                var deptDropdown = $('#OfficeCd');
+
+                deptDropdown.empty();
+                deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectOffice"])'));
+
+                if (corCd) {
+                    $.ajax({
+                        url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
+                        type: 'GET',
+                        data: { corCd : corCd, deptCd: deptCd },
+                        success: function(data) {
+                            $.each(data, function(i, item) {
+                                deptDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+            
+            // 법인 선택 시 메뉴 드롭다운 변경
+            $('#OfficeCd').on('change', function() {
+                var deptCd = $(this).val();
+                var corCd = $('#CorCd').val();
+
+                var deptDropdown = $('#TeamCd');
+
+                deptDropdown.empty();
+                deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectTeam"])'));
+
+                if (corCd) {
+                    $.ajax({
+                        url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
+                        type: 'GET',
+                        data: { corCd : corCd, deptCd: deptCd },
+                        success: function(data) {
+                            console.log(data);
+                            $.each(data, function(i, item) {
+                                
+                                deptDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+
+    });
+
+
+    </script>
+
 }

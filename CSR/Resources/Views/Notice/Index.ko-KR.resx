@@ -7,7 +7,7 @@
     <value>총 {0}개의 공지사항</value>
   </data>
   <data name="CreateNew" xml:space="preserve">
-    <value>새로 만들기</value>
+    <value>공지사항 등록</value>
   </data>
   <data name="Header_ID" xml:space="preserve">
     <value>번호</value>

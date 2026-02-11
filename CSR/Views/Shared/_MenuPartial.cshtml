@@ -1,8 +1,9 @@
 @using CSR.Models
 @model List<Menu>
 @{
-    var activeMenuIds = ViewData["ActiveMenuIds"] as HashSet<string> ?? new HashSet<string>();
-    var currentPath = ViewData["CurrentPath"] as string ?? "";
+    var activeMenuIds = ViewData["ActiveMenuIds"] as HashSet<string> ?? new HashSet<string>();    
+    var currentPath = Context.Request.Path;
+
 }
 
 @foreach (var menu in Model)
@@ -15,7 +16,7 @@
 
     var hasChildren = menu.Children != null && menu.Children.Any();
     var isExpanded = activeMenuIds.Contains(menu.MenuId);
-    var isActive = menu.GetLink().Equals(currentPath, StringComparison.OrdinalIgnoreCase);
+    var isActive = menu.GetLink().Equals(currentPath, StringComparison.OrdinalIgnoreCase);    
     var collapseId = $"menu-collapse-{menu.MenuId.Replace(".", "_")}";
 
     <li class="mb-1">
@@ -32,7 +33,7 @@
         }
         else
         {
-            <a href="@menu.GetLink()" class="btn btn-toggle-link align-items-center rounded text-decoration-none @(isActive ? "active" : "")">
+            <a href="@menu.GetLink()" class="btn btn-toggle-link align-items-center rounded text-decoration-none @(isActive ? "active" : "")" style="@(isActive ? "font-weight:600; color:navy;" : "")">
                 @menu.MenuName
             </a>
         }

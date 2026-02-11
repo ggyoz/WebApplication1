@@ -14,7 +14,6 @@ function NumberOnly(text){
   return formatted;
 }
 
- 
 function enforceMinMaxValue(inputElement) {
 
     const minValue = Number(inputElement.min);
@@ -56,6 +55,7 @@ function initializeHtmlEditor(editorSelector, inputSelector, previewSelector) {
                 'orderedList', 'bulletList', 'separator',
                 'link', 'image', // 링크 및 이미지 추가 기능
             ],
+            
         },
 
         // *** 이미지 업로드 설정 ***
@@ -69,24 +69,33 @@ function initializeHtmlEditor(editorSelector, inputSelector, previewSelector) {
                     // Assuming your server returns a JSON object like { "url": "path/to/image.png" }
                     const imageUrl = JSON.parse(e.request.response).url;
                     if (imageUrl != "") {
-                        // 값 넣는 방법
-                        //editorInstance.option("value", "<h1>New HTML Content</h1><p>This replaces the old content.</p>");
+                        // 값 넣는 방법 ( 값 추가가 아님 )
+                        // editorInstance.option("value", "<img width='100%' src='" + imageUrl + "'></img>");
                         // 이미지 삽입 방법
                         editorInstance.insertEmbed(editorInstance.getLength(), // Insert at the end
-                            "image", imageUrl                            
+                            "extendedImage", imageUrl
                         );
                     }
                 }
             }            
-        },
-
-        // 3. 값이 변경될 때마다 숨겨진 input과 미리보기 영역을 업데이트합니다.
+        },        
         onValueChanged(e) {
+
+            // var maxLength = 4000; // 최대 글자수 설정
+            // if (e.value.length > maxLength) {
+            //     alert("최대 " + maxLength + "자까지만 입력할 수 있습니다.");    
+            //     //e.value = e.value.substr(0, 3999);
+            //     return false;//e.component.html(e.previousValue);
+            // }
+
             $(inputSelector).val(e.value);
             if (previewSelector) {
                 $(previewSelector).html(e.value);
             }
         },
+        mediaResizing: {
+            enabled: true
+        }
     }).dxHtmlEditor('instance');
 
     // 4. 초기 미리보기 내용을 설정합니다.
@@ -94,3 +103,38 @@ function initializeHtmlEditor(editorSelector, inputSelector, previewSelector) {
         $(previewSelector).html(initialValue);
     }
 }
+
+const labelMode = 'static';
+
+const formatDate = (date) => {
+    if (!date) return '';
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return '';
+    const year = d.getFullYear();
+    const month = ('0' + (d.getMonth() + 1)).slice(-2);
+    const day = ('0' + d.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+};
+
+function initDateBox(selector, hiddenSelector, value){
+    const dateBox = $(selector).dxDateBox({        
+        placeholder: '날짜 선택',
+        type: 'date',
+        displayFormat: 'yyyy-MM-dd',
+        inputAttr: { 'aria-label': hiddenSelector.slice(1) },
+        labelMode,
+        value: value ? new Date(value) : null,
+        onValueChanged: function (e) {
+            const dateValue = e.value ? formatDate(e.value) : '';
+            $(hiddenSelector).val(dateValue);
+        },
+        onInput: function(){
+            $(hiddenSelector).val("");
+        }
+    }).dxDateBox('instance');
+
+    // Set initial hidden input value
+    if (value) {
+        $(hiddenSelector).val(formatDate(new Date(value)));
+    }
+};

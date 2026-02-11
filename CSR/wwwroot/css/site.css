@@ -33,6 +33,8 @@ footer, header, hgroup, menu, nav, section {
 }
 body {
 	line-height: 1;
+	font-family: 'Pretendard', sans-serif; /* Pretendard 폰트 적용 */
+  font-weight: normal;
 }
 ol, ul {
 	list-style: none;
@@ -51,7 +53,10 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
-
+ 
+h3 { 
+  font-weight: 700;
+}
 /* 
   CSS 초기화
 */
@@ -220,4 +225,129 @@ body {
 }
 .dx-fileuploader-input {
   height:15vh;
+}
+
+.content-display {
+  min-height: 150px;
+  white-space: normal; /* 텍스트가 자동으로 줄 바꿈되도록 설정 */
+  word-break: break-word; /* 긴 단어도 줄 바꿈되도록 설정 */
+}
+
+.redCard{
+  background-color:rgb(255, 200, 200);
+  color: #ff1212;
+}
+
+.blueCard{
+  background-color: #dcedff;
+  color: #1b77d3;
+}
+
+.yellowCard{
+  background-color: #fff4d4;
+  color: #f78a1f;
+}
+
+.greenCard{
+  background-color: #e5fcf1;
+  color: #1b9f62;
+}
+
+/* 대시보드 카드 높이 일관성 유지 (Bootstrap h-100이 작동하지 않을 경우 대비) */
+.card.h-100 {
+  height: 100% !important;
+  border-radius: 10px;
+}
+/* 카드 바디를 flex 컨테이너로 만들어 내부 요소 정렬 */
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* 내부 요소들을 위-아래로 최대한 분배 */
+  height: 100%; /* 부모의 높이를 채우도록 */
+  
+}
+/* 카드 타이틀과 설명 컨테이너 */
+.card-body .d-flex.flex-column {
+  flex-grow: 1; /* 남은 공간을 차지하여 제목-설명 그룹을 확장 */
+  justify-content: flex-start; /* 제목-설명은 상단에 배치 */
+}
+/* 카드 타이틀에 여백 추가 */
+.card-title {
+  margin-bottom: 0.25rem; /* 제목과 설명 사이 간격 줄임 */
+  font-weight: 600;
+}
+/* 일반 card-text 글씨 크기 키우기 */
+.card-text {
+  font-size: 1.1rem; /* 조금 더 크게 */
+}
+/* KPI 숫자 크게 표시 (정렬은 flexbox로 처리) */
+.card-text.display-5 {
+  font-size: 2.5rem; /* Bootstrap display-5 */
+  font-weight: 700;
+  line-height: 1;
+  margin-top: auto; /* 숫자가 항상 바닥에 붙도록 (선택 사항) */
+  /* text-align: right; // Flexbox로 대체됨 */
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Thin.woff2') format('woff2');
+  font-weight: 100;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-ExtraLight.woff2') format('woff2');
+  font-weight: 200;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
 }

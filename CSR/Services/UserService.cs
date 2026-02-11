@@ -108,42 +108,42 @@ namespace CSR.Services
 
             if (!string.IsNullOrWhiteSpace(search.UserId))
             {
-                whereClauses.Add("UPPER(USERID) LIKE '%' || UPPER(:UserId) || '%'");
+                whereClauses.Add("UPPER(u.USERID) LIKE '%' || UPPER(:UserId) || '%'");
                 parameters.Add("UserId", search.UserId);
             }
             if (!string.IsNullOrWhiteSpace(search.UserName))
             {
-                whereClauses.Add("UPPER(USERNAME) LIKE '%' || UPPER(:UserName) || '%'");
+                whereClauses.Add("UPPER(u.USERNAME) LIKE '%' || UPPER(:UserName) || '%'");
                 parameters.Add("UserName", search.UserName);
             }
             // 법인코드
             if (!string.IsNullOrWhiteSpace(search.CorCd))
             {
-                whereClauses.Add("CORCD = :CorCd");
+                whereClauses.Add("u.CORCD = :CorCd");
                 parameters.Add("CorCd", search.CorCd);
             }
             // 사업부 코드
             if (!string.IsNullOrWhiteSpace(search.DeptCd))
             {
-                whereClauses.Add("DEPTCD = :DeptCd");
+                whereClauses.Add("u.DEPTCD = :DeptCd");
                 parameters.Add("DeptCd", search.DeptCd);
             }
             // 사무실 코드
             if (!string.IsNullOrWhiteSpace(search.OfficeCd))
             {
-                whereClauses.Add("OFFICECD = :OfficeCd");
+                whereClauses.Add("u.OFFICECD = :OfficeCd");
                 parameters.Add("OfficeCd", search.OfficeCd);
             }
             // 팀코드
             if (!string.IsNullOrWhiteSpace(search.TeamCd))
             {
-                whereClauses.Add("TEAMCD = :TeamCd");
+                whereClauses.Add("u.TEAMCD = :TeamCd");
                 parameters.Add("TeamCd", search.TeamCd);
             }
             
             var whereSql = whereClauses.Any() ? " WHERE " + string.Join(" AND ", whereClauses) : "";
 
-            var countSql = $"SELECT COUNT(*) FROM TB_USER_INFO {whereSql}";
+            var countSql = $"SELECT COUNT(*) FROM TB_USER_INFO u {whereSql} ";
             var totalCount = await _connection.ExecuteScalarAsync<int>(countSql, parameters);
 
             var offset = (pageNumber - 1) * pageSize;
@@ -151,9 +151,23 @@ namespace CSR.Services
             var pagedSql = $@"
                 WITH PagedUsers AS (
                     SELECT 
-                        {SelectColumns},
+                        u.USERID AS UserId, u.USERPWD AS UserPwd, u.USERNAME AS UserName, u.EMPNO AS EmpNo, u.CORCD AS CorCd, 
+                        u.DEPTCD AS DeptCd, u.OFFICECD AS OfficeCd, u.TEAMCD AS TeamCd, u.SYSCD AS SysCd, u.BIZCD AS BizCd, 
+                        u.TELNO AS TelNo, u.MOB_PHONE_NO AS MobPhoneNo, u.EMAIL_ADDR AS EmailAddr, u.USERSTAT AS UserStat, 
+                        u.RETIRE_DATE AS RetireDate, u.ADMIN_FLAG AS AdminFlag, u.CUSTCD AS CustCd, u.VENDCD AS VendCd, 
+                        u.AUTH_FLAG AS AuthFlag, u.USER_DIV AS UserDiv, u.PW_MISS_COUNT AS PwMissCount, 
+                        u.REG_DATE AS RegDate, u.REG_USERID AS RegUserId, u.UPDATE_DATE AS UpdateDate, 
+                        u.UPDATE_USERID AS UpdateUserId, u.USEYN AS UseYn,
+                        c.CORNM AS CorpName,
+                        d.DEPTNAME AS DeptName,
+                        o.DEPTNAME AS OfficeName,
+                        t.DEPTNAME AS TeamName,
                         ROW_NUMBER() OVER (ORDER BY REG_DATE DESC) AS RN
-                    FROM TB_USER_INFO
+                    FROM TB_USER_INFO u
+                    LEFT JOIN TB_COR_INFO c ON u.CORCD = c.CORCD
+                    LEFT JOIN TB_DEPT_INFO d ON u.DEPTCD = d.DEPTCD
+                    LEFT JOIN TB_DEPT_INFO o ON u.OFFICECD = o.DEPTCD
+                    LEFT JOIN TB_DEPT_INFO t ON u.TEAMCD = t.DEPTCD
                     {whereSql}
                 )
                 SELECT * FROM PagedUsers
@@ -161,12 +175,6 @@ namespace CSR.Services
                 ORDER BY RN";
             
             var users = await _connection.QueryAsync<User>(pagedSql, parameters);
-
-            // // --- 쿼리디버킹코드 ---
-            // Console.WriteLine("Executing CreateUserAsync Query:");
-            // Console.WriteLine(pagedSql);
-            // Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(search, Formatting.Indented));
-            // // --- 쿼리디버킹코드 ---
             
             return new PagedResult<User>(users.ToList(), totalCount, pageNumber, pageSize);
         }
@@ -317,6 +325,53 @@ namespace CSR.Services
         {
             var sql = "DELETE FROM TB_USER_INFO WHERE USERID = :UserId";
             await _connection.ExecuteAsync(sql, new { UserId = userId });
+        }
+
+        public async Task<IEnumerable<User>> GetUsersForSearchAsync(string searchText)
+        {
+            var whereClauses = new List<string>();
+            var parameters = new DynamicParameters();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                whereClauses.Add("(UPPER(u.USERID) LIKE '%' || UPPER(:SearchText) || '%' OR UPPER(u.USERNAME) LIKE '%' || UPPER(:SearchText) || '%')");
+                parameters.Add("SearchText", searchText);
+            }
+            
+            whereClauses.Add("u.USEYN = 'Y'"); // 활성 사용자만 검색
+
+            var whereSql = whereClauses.Any() ? " WHERE " + string.Join(" AND ", whereClauses) : "";
+
+            var sql = $@"
+                SELECT 
+                    u.USERID AS UserId, u.USERNAME AS UserName, u.EMPNO AS EmpNo, u.CORCD AS CorCd, 
+                    u.DEPTCD AS DeptCd, u.OFFICECD AS OfficeCd, u.TEAMCD AS TeamCd, u.SYSCD AS SysCd, 
+                    u.MOB_PHONE_NO AS MobPhoneNo, u.EMAIL_ADDR AS EmailAddr, u.USER_DIV AS UserDiv,
+                    c.CORNM AS CorpName,
+                    d.DEPTNAME AS DeptName,
+                    o.DEPTNAME AS OfficeName,
+                    t.DEPTNAME AS TeamName
+                FROM TB_USER_INFO u
+                LEFT JOIN TB_COR_INFO c ON u.CORCD = c.CORCD
+                LEFT JOIN TB_DEPT_INFO d ON u.DEPTCD = d.DEPTCD
+                LEFT JOIN TB_DEPT_INFO o ON u.OFFICECD = o.DEPTCD
+                LEFT JOIN TB_DEPT_INFO t ON u.TEAMCD = t.DEPTCD
+                {whereSql}
+                ORDER BY u.USERNAME
+            ";
+
+            var users = await _connection.QueryAsync<User>(sql, parameters);
+            return users;
+        }
+
+        public async Task<IEnumerable<User>> GetManagerOrHigherUsersForDropDownAsync()
+        {
+            var sql = @"
+                SELECT USERID AS UserId, USERNAME AS UserName 
+                FROM TB_USER_INFO 
+                WHERE USEYN = 'Y' AND USER_DIV IN ('R3', 'R4')
+                ORDER BY USERNAME";
+            return await _connection.QueryAsync<User>(sql);
         }
     }
 }
