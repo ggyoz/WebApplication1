@@ -171,6 +171,8 @@
   <data name="Validation_ExpectDateAfterRequestDate_Part1" xml:space="preserve"><value>완료예정일은 요청일(</value></data>
   <data name="Validation_ExpectDateAfterRequestDate_Part2" xml:space="preserve"><value>) 이후여야 합니다.</value></data>
   <data name="Validation_FileNameTooLong" xml:space="preserve"><value>파일 이름이 너무 깁니다. ({0}자 이하)</value></data>
+    <data name="Message_NoHistory" xml:space="preserve"><value>요청사항 이력이 없습니다.</value></data>
+
   <!-- CommCodes (CC values) -->
   <data name="CC1" xml:space="preserve"><value>긴급도</value></data>
   <data name="CC2" xml:space="preserve"><value>긴급</value></data>
@@ -253,5 +255,13 @@
   <data name="CC80" xml:space="preserve"><value>중</value></data>
   <data name="CC81" xml:space="preserve"><value>하</value></data>
   <data name="CC83" xml:space="preserve"><value>재문의</value></data>
+  <data name="CC84" xml:space="preserve"><value>반려</value></data>
+  <data name="CC85" xml:space="preserve"><value>기타</value></data>
 
-</root>
+  <!-- MyPage specific -->
+        <data name="MyPageTitle" xml:space="preserve"><value>내 정보 수정</value></data>
+              <data name="Placeholder_PasswordChange" xml:space="preserve"><value>변경하려면 새 비밀번호를 입력하세요</value></data>
+              <data name="Help_PasswordChange" xml:space="preserve"><value>비밀번호를 비워두면 변경되지 않습니다.</value></data>
+              <data name="Validation_PasswordMismatch" xml:space="preserve"><value>비밀번호가 일치하지 않습니다.</value></data>
+              <data name="Message_ProfileUpdateSuccess" xml:space="preserve"><value>회원 정보가 성공적으로 업데이트되었습니다.</value></data>
+            </root>

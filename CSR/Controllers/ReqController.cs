@@ -168,12 +168,12 @@ namespace CSR.Controllers
                 Value = u.UserId,
                 Text = u.UserName,
                 Selected = (u.UserId == reqInfo.RESUSERID)
-            }).ToList(); // Add ToList() to avoid multiple enumeration
+            }).ToList();
             
             return View(reqInfo);
         }
         
-        [Authorize] // Authorization can be more specific if needed
+        [Authorize] 
         public async Task<IActionResult> Create()
         {
             // 시스템
@@ -264,8 +264,49 @@ namespace CSR.Controllers
             ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
             ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
             ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
-            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61); // 상태 수정해야됨
+            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61);
+            ViewBag.ImportantCodes = await _commCodeService.GetSelectListByPCodeAsync(78);
+            ViewBag.difficultCodes = await _commCodeService.GetSelectListByPCodeAsync(7);
 
+            return View(reqInfo);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> Answer(int id, ReqInfo reqInfo, List<IFormFile> newFiles, [FromForm]List<int> deletedFiles)
+        {
+            if (id != reqInfo.REQID)
+            {
+                return BadRequest();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _reqService.UpdateReqInfoAsync(reqInfo, newFiles, deletedFiles, "NonHistory");
+                    return RedirectToAction(nameof(Details), new { id = reqInfo.REQID });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error saving answer for requirement.");
+                    ModelState.AddModelError("", "An error occurred while saving the answer.");
+                }
+            }
+
+            // If ModelState is invalid, return to Answer view
+            ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
+            ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
+            ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
+            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61);
+            ViewBag.ImportantCodes = await _commCodeService.GetSelectListByPCodeAsync(78);
+            ViewBag.difficultCodes = await _commCodeService.GetSelectListByPCodeAsync(7);
+
+            var originalReq = await _reqService.GetReqInfoByIdAsync(id);
+            reqInfo.AttachFiles = originalReq?.AttachFiles ?? new List<ReqFile>();
+            
             return View(reqInfo);
         }
 
@@ -300,6 +341,7 @@ namespace CSR.Controllers
             ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
             ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
             ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61); 
+            
 
             return View(reqInfo);
         }

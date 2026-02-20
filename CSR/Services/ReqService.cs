@@ -401,10 +401,23 @@ namespace CSR.Services
                     parameters, 
                     transaction: transaction, 
                     commandType: CommandType.StoredProcedure
-                );
+                );                
                 
-                // 2. Create new history record
-                var newHistoryId = await CreateReqHistoryAsync(reqInfo, historyReasonValue, transaction);
+                var newHistoryId = 0;                  
+                // Answer 페이지에서 수정하면 히스토리 저장 X
+                if( historyReasonValue != "NonHistory"){
+                  newHistoryId = await CreateReqHistoryAsync(reqInfo, historyReasonValue, transaction);
+                }
+
+                // Handle files without creating new history record
+                var latestHistoryId = await _dbConnection.ExecuteScalarAsync<int?>(
+                    "SELECT MAX(HISTORYID) FROM TB_REQ_HIST WHERE REQID = :REQID",
+                    new { reqInfo.REQID },
+                    transaction);
+
+                if( newHistoryId == 0 ){
+                    newHistoryId = latestHistoryId.Value;
+                }
 
                 // 3. Handle files
                 if (newFiles != null && newFiles.Any())
@@ -477,6 +490,7 @@ namespace CSR.Services
                 {
                     await AddReqFilesAsync(reqInfo.REQID, latestHistoryId.Value, newFiles, reqInfo.UPDATE_USERID, transaction);
                 }
+                
                 if (deletedFiles != null && deletedFiles.Any())
                 {
                     await DeleteReqFilesAsync(deletedFiles, transaction);

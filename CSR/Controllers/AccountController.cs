@@ -74,8 +74,7 @@ namespace CSR.Controllers
                     HttpContext.Session.SetString("DeptCd", user.DeptCd);
                     HttpContext.Session.SetString("OfficeCd", user.OfficeCd);
                     HttpContext.Session.SetString("TeamCd", user.TeamCd);
-                    HttpContext.Session.SetString("SysCd", user.SysCd);
-                    // BizCd 건너뜀
+                    HttpContext.Session.SetString("SysCd", user.SysCd);                    
                     HttpContext.Session.SetString("TelNo", user.TelNo);
                     HttpContext.Session.SetString("MobPhoneNo", user.MobPhoneNo);
                     HttpContext.Session.SetString("EmailAddr", user.EmailAddr);

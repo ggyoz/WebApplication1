@@ -100,7 +100,11 @@
   <data name="Label_Affiliation_OfficeName" xml:space="preserve"><value>Office Name</value></data>
   <data name="Label_Affiliation_TeamName" xml:space="preserve"><value>Team Name</value></data>
   <data name="Label_Difficulty" xml:space="preserve"><value>Difficulty</value></data>
+  <data name="Label_Importance" xml:space="preserve"><value>Importance</value></data>
   <data name="Label_InquiryContent" xml:space="preserve"><value>Content</value></data>
+  <data name="Label_ManDay" xml:space="preserve"><value>Man Hour</value></data>
+  <data name="Label_BXTInquiryNo" xml:space="preserve"><value>BXT Inquiry No</value></data>
+  <data name="Label_ActionContentTcode" xml:space="preserve"><value>Action TCODE</value></data>
         <!-- Placeholders -->
   <data name="NoAssignedResponsibilities" xml:space="preserve"><value>No assigned responsibilities.</value></data>
   <data name="Placeholder_Password" xml:space="preserve"><value>Enter only when changing</value></data>
@@ -166,6 +170,8 @@
   <data name="Validation_ExpectDateAfterRequestDate_Part1" xml:space="preserve"><value>Expected completion date must be after request date (</value></data>
   <data name="Validation_ExpectDateAfterRequestDate_Part2" xml:space="preserve"><value>).</value></data>
   <data name="Validation_FileNameTooLong" xml:space="preserve"><value>File name is too long. (Max {0} characters)</value></data>
+  <data name="Message_NoHistory" xml:space="preserve"><value>History is empty</value></data>
+
   <!-- CommCodes (CC values) -->
   <data name="CC1" xml:space="preserve"><value>Urgency Level</value></data>
   <data name="CC2" xml:space="preserve"><value>Urgent</value></data>
@@ -248,4 +254,13 @@
   <data name="CC80" xml:space="preserve"><value>Medium</value></data>
   <data name="CC81" xml:space="preserve"><value>Low</value></data>  
   <data name="CC83" xml:space="preserve"><value>Re-inquiry</value></data>
-</root>
+  <data name="CC84" xml:space="preserve"><value>Rejected</value></data>
+  <data name="CC85" xml:space="preserve"><value>Etc</value></data>
+
+  <!-- MyPage specific -->
+        <data name="MyPageTitle" xml:space="preserve"><value>Edit My Info</value></data>
+              <data name="Placeholder_PasswordChange" xml:space="preserve"><value>Enter new password to change</value></data>
+              <data name="Help_PasswordChange" xml:space="preserve"><value>Leave blank if you don't want to change password.</value></data>
+              <data name="Validation_PasswordMismatch" xml:space="preserve"><value>Passwords do not match.</value></data>
+              <data name="Message_ProfileUpdateSuccess" xml:space="preserve"><value>Your profile has been successfully updated.</value></data>
+            </root>

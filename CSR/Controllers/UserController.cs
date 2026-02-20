@@ -11,10 +11,13 @@ using FluentValidation.Results;
 using CSR.Filters;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization; // Added for [Authorize]
+using System.Security.Claims; // Added for ClaimTypes.NameIdentifier
 
 
 namespace CSR.Controllers
 {
+    [Authorize(Roles = "R3,R4")]
     public class UserController : Controller
     {
         private readonly UserService _userService;
@@ -188,9 +191,9 @@ namespace CSR.Controllers
             ViewBag.AllResponsibilities = await _commCodeService.GetResponsibilitiesAsync();
             var assignedMenuIds = await _adminRelService.GetAssignedMenuIdsForUserAsync(id);
             user.AssignedResponsibilities = assignedMenuIds;
-            ViewBag.CorCdList = await _corpService.GetSelectListByCorpAsync();
 
-            // Initial empty lists
+            // 조직도
+            ViewBag.CorCdList = await _corpService.GetSelectListByCorpAsync();            
             ViewBag.DeptCdList = new List<SelectListItem>();
             ViewBag.OfficeCdList = new List<SelectListItem>();
             ViewBag.TeamCdList = new List<SelectListItem>();
@@ -313,8 +316,6 @@ namespace CSR.Controllers
 
         public async Task<IActionResult> SearchUsersJson(string searchText)
         {
-
-            Console.WriteLine("SearchUsersJson : true");
             var users = await _userService.GetUsersForSearchAsync(searchText);
             return Json(users);
         }

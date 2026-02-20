@@ -1,9 +1,11 @@
 @model PagedResult<ReqInfo>
 @using Microsoft.AspNetCore.Mvc.Localization
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
 @inject IViewLocalizer Localizer
 @inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
 @inject IHttpContextAccessor HttpContextAccessor
+@inject IAuthorizationService AuthorizationService
 
 @{
     ViewData["Title"] = SharedLocalizer["Title_ReqIndex"];
@@ -156,6 +158,9 @@
                 <th>@SharedLocalizer["TableHeader_DueDate"]</th>
                 <th>@SharedLocalizer["TableHeader_ExpectedCompletionDate"]</th>
                 <th>@SharedLocalizer["TableHeader_ProgressStatus"]</th>
+                @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded){
+                    <th>수정</th>
+                }                
             </tr>
         </thead>
         <tbody>
@@ -188,6 +193,9 @@
                         <td>@(item.DUEDATE.HasValue ? item.DUEDATE.Value.ToString("yyyy-MM-dd") : "")</td>
                         <td>@(item.EXPECTDATE.HasValue ? item.EXPECTDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"])</td>
                         <td>@SharedLocalizer["CC"+item.PROC_STATUS]</td>                
+                        @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded){
+                            <td><a asp-action="Answer" asp-route-id="@item.REQID" class="btn btn-sm btn-outline-secondary">@SharedLocalizer["Button_Edit"]</a></td>
+                        } 
                     </tr>
                 }
             }

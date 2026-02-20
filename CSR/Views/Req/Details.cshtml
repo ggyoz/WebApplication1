@@ -16,7 +16,8 @@
 <partial name="_PageTitlePartial" />
 
 <div>
-    <span><label>@SharedLocalizer["Label_No"] @Model.REQID</label> / <label>@Model.TITLE</label></span>
+    <span class="badge bg-secondary ms-3 me-3"><label>@SharedLocalizer["Label_No"] @Model.REQID</label></span>
+    <label>@Model.TITLE</label>
     <hr />
     <div class="row">
         <div class="col-md-12">
@@ -57,7 +58,7 @@
                     <td>@Model.ReqMenuName</td>
                     <td><label>@SharedLocalizer["Label_ActionTaker"]</label></td>
                     <td>
-                        @if ((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded)
+                        @if ((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded && Model.PROC_STATUS != "68" )
                         {
                             <form asp-action="UpdateResUser" asp-route-id="@Model.REQID" method="post" class="d-inline-flex align-items-center">
                                 @Html.AntiForgeryToken()
@@ -81,7 +82,7 @@
                     <td>@( Model.DUEDATE.HasValue ? Model.DUEDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"].Value )</td>
                     <td><label>@SharedLocalizer["Label_ExpectedCompletionDate"]</label></td>
                     <td>
-                        @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded)
+                        @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded && Model.PROC_STATUS != "68" )
                         {
                             <form asp-action="UpdateExpectDate" asp-route-id="@Model.REQID" method="post" class="d-inline-flex align-items-center">
                                 @Html.AntiForgeryToken()
@@ -105,21 +106,7 @@
                     <td><label>@SharedLocalizer["Label_Tcode"]</label></td>
                     <td>@Model.REQTCODE</td>
                 </tr>
-                @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded)
-                {
-                <tr>
-                    <td><label>@SharedLocalizer["Label_Importance"]</label></td>
-                    <td></td>
-                    <td><label>@SharedLocalizer["Label_Difficulty"]</label></td>
-                    <td></td>
-                    <td><label>@SharedLocalizer["Label_ManDay"]</label></td>
-                    <td>@Model.MAN_DAY</td>
-                    <td><label>@SharedLocalizer["Label_BXTInquiryNo"]</label></td>
-                    <td>@Model.BXTID</td>
-                    <td><label>@SharedLocalizer["Label_ActionContentTcode"]</label></td>
-                    <td>@Model.RESTCODE</td>
-                </tr>
-                }
+                
             </table>
         </div>
     </div>
@@ -131,8 +118,30 @@
         </div>
     </div>
 
-    <hr/>    
-
+    <hr/> 
+    @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded)
+    {
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table-layout Details" style="width:100%">
+                    <tr >
+                        <td><label>@SharedLocalizer["Label_Importance"]</label></td>
+                        <td>@SharedLocalizer["CC" + Model.IMPTCD]</td>
+                        <td><label>@SharedLocalizer["Label_Difficulty"]</label></td>
+                        <td>@SharedLocalizer["CC" + Model.DFCLTCD]</td>
+                        <td><label>@SharedLocalizer["Label_ManDay"]</label></td>
+                        <td>@Model.MAN_DAY</td>
+                        <td><label>@SharedLocalizer["Label_BXTInquiryNo"]</label></td>
+                        <td>@Model.BXTID</td>
+                        <td><label>@SharedLocalizer["Label_ActionContentTcode"]</label></td>
+                        <td>@Model.RESTCODE</td>
+                    </tr>
+            </table>
+        </div>
+    </div>   
+    <hr/>
+    }
+    
     @{
         var nonFormStatus = new List<string>{ "63", "65", "68", "69", "82" };
     }
@@ -231,7 +240,7 @@
     }
 
     <!-- 답변완료 시 답변 내용 출력 -->
-    @if (!string.IsNullOrEmpty(Model.ANSWER_HTML) && Model.PROC_STATUS == "65")
+    @if (!string.IsNullOrEmpty(Model.ANSWER_HTML) && ( Model.PROC_STATUS == "65" || Model.PROC_STATUS == "68" ) )
     {
         <div class="card mt-4">
             <div class="card-header">@Html.DisplayNameFor(model => model.ANSWER_HTML)</div>
@@ -239,17 +248,16 @@
                 @Html.Raw(Model.ANSWER_HTML)
             </div>
         </div>
-    }
-
-    <!-- 답변완료 시 조치사항 출력 ( 관리자만 보이면됨 ) -->
-    @if ( Model.PROC_STATUS == "65" && (await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded )
-    {
-        <div class="card mt-4">
-            <div class="card-header">@Html.DisplayNameFor(model => model.NOTE_HTML)</div>
-            <div class="card-body content-display">
-                @Html.Raw(Model.NOTE_HTML)
+        
+        @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded){
+            <div class="card mt-4">
+                <div class="card-header">@Html.DisplayNameFor(model => model.NOTE_HTML)</div>
+                <div class="card-body content-display">
+                    @Html.Raw(Model.NOTE_HTML)
+                </div>
             </div>
-        </div>
+        }
+
     }
 
     @if (Model.PROC_STATUS == "65" && Model.REQUSERID == User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier))
