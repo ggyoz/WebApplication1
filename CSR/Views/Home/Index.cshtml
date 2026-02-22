@@ -127,7 +127,34 @@
         }
         else if (User.IsInRole("R2")) // Team Leader
         {
-            <div class="col-md-4 mb-4">
+            <div class="col-md-3 mb-4">
+                <div class="card greenCard shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-column">
+                                <h5 class="card-title mb-0">법인 총 요청</h5>
+                                <p class="card-text mb-0">우리 법인의 전체 요청 건수</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r2CorpTotalRequestsCount">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card bg-info text-white shadow-sm h-100">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center"> 
+                            <div class="d-flex flex-column"> 
+                                <h5 class="card-title mb-0">부서 총 요청</h5>
+                                <p class="card-text mb-0">우리 부서의 전체 요청 건수</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r2DeptTotalRequestsCount">0</p>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
                 <div class="card blueCard shadow-sm h-100">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
@@ -140,22 +167,8 @@
                         
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card bg-info text-white shadow-sm h-100">
-                    <div class="card-body m-3">
-                        <div class="d-flex justify-content-between align-items-center"> 
-                            <div class="d-flex flex-column"> 
-                                <h5 class="card-title mb-0">할당된 업무</h5>
-                                <p class="card-text mb-0">팀원들에게 할당된 업무</p>
-                            </div>
-                            <p class="card-text display-5 mb-0">15</p>
-                        </div>
-                        
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
+            </div>            
+            <div class="col-md-3 mb-4">
                 <div class="card greenCard shadow-sm h-100">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
@@ -257,9 +270,7 @@
                     <div class="card-body m-3">
                         <h5 class="card-title mb-3">팀 최근 활동 및 알림</h5>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Team Member B가 요청 #2005 처리 시작</li>
-                            <li class="list-group-item">내 요청 #2003 승인 요청</li>
-                            <li class="list-group-item">새로운 팀원 합류</li>
+                            <li class="list-group-item">수정해야됨</li>                            
                         </ul>
                     </div>
                 </div>
@@ -280,8 +291,8 @@
             <div class="col-lg-4 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body m-3">
-                        <h5 class="card-title mb-3">내 요청 최근 활동</h5>
-                        <ul class="list-group list-group-flush" id="myRecentActivitiesList"></ul>
+                        <h5 class="card-title mb-3">공지사항</h5>    
+                        <ul class="list-group list-group-flush" id="recentNoticesList"></ul>                        
                     </div>
                 </div>
             </div>
@@ -291,21 +302,36 @@
     <div class="row">
         <div class="col-12 mb-4">
             <div class="card shadow-sm h-100">
-                <div class="card-body m-3">
-                    <h5 class="card-title mb-3">공지사항</h5>
+                <div class="card-body m-3">                    
                     <div class="row">
                         <div class="col-md-6">
-                            <ul class="list-group list-group-flush" id="recentNoticesList"></ul>
+                            <h6 class="card-title">내 요청 최근 활동</h6>
                         </div>
-                        <!-- <div class="col-md-4">
-                            <h6>빠른 링크</h6>
-                            <div class="d-flex flex-wrap gap-2">
-                                <a href="#" class="btn btn-outline-secondary btn-sm">요청 등록</a>
-                                <a href="#" class="btn btn-outline-secondary btn-sm">내 요청 보기</a>
-                                <a href="#" class="btn btn-outline-secondary btn-sm">보고서</a>
-                                <a href="#" class="btn btn-outline-secondary btn-sm">사용자 관리</a>
-                            </div>
-                        </div> -->
+                        <div class="col-md-6">
+                            <h6 class="card-title">공지사항</h6>
+                        </div>
+                        <div class="col-md-6">
+                            @if (User.IsInRole("R4") || User.IsInRole("R3"))
+                            {
+                                <ul class="list-group list-group-flush" id="r3r4RecentActivitiesList">
+                                    <li class="list-group-item">표시할 활동이 없습니다.</li>
+                                </ul>
+                            }else if (User.IsInRole("R2"))
+                            {
+                                <ul class="list-group list-group-flush" id="">
+                                    <li class="list-group-item">표시할 활동이 없습니다.</li>
+                                </ul>
+                            }else if (User.IsInRole("R2")){
+                                <ul class="list-group list-group-flush" id="myRecentActivitiesList">
+                                    <li class="list-group-item">표시할 활동이 없습니다.</li>
+                                </ul>
+                            }                            
+                        </div>
+                        <div class="col-md-6">                            
+                            <ul class="list-group list-group-flush" id="recentNoticesList">
+                                <li class="list-group-item">표시할 공지사항이 없습니다.</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -443,7 +469,7 @@
                                 console.log(activity);
                                 var date = new Date(activity.reG_DATE);
                                 var formattedDate = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
-                                activitiesList.append('<li class="list-group-item d-flex justify-content-between align-items-center"><a href="/Req/Details/' + activity.reqid + '">' + '[요청 #' + activity.reqid + '] ' + activity.title + ' (' + localizedHistoryReasons[activity.historY_REASON] + ')</a><span class="text-end">'+ formattedDate +'</span></li>');
+                                activitiesList.append('<li class="list-group-item"><a href="/Req/Details/' + activity.reqid + '">' + '[요청 #' + activity.reqid + '] ' + activity.title + ' (' + localizedHistoryReasons[activity.historY_REASON] + ')</a><span class="text-end">'+ formattedDate +'</span></li>');
                             });
                         } else {
                             var activitiesList = $('#myRecentActivitiesList');
@@ -460,6 +486,34 @@
                 });
 
             } else if (currentUserRole === 'R2') {
+                $.ajax({
+                    url: '/Req/GetCorpTotalRequestsCount',
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.success) {
+                            $('#r2CorpTotalRequestsCount').text(response.count);
+                        } else {
+                            console.error('법인 총 요청 건수 가져오기 실패:', response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('법인 총 요청 건수 AJAX 오류:', error);
+                    }
+                });
+                $.ajax({
+                    url: '/Req/GetDeptTotalRequestsCount',
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.success) {
+                            $('#r2DeptTotalRequestsCount').text(response.count);
+                        } else {
+                            console.error('부서 총 요청 건수 가져오기 실패:', response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('부서 총 요청 건수 AJAX 오류:', error);
+                    }
+                });
                 $.ajax({
                     url: '/Req/GetTeamRequestCount', 
                     type: 'GET',
