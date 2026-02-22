@@ -49,7 +49,6 @@ namespace CSR.Services
         Task<int> GetTeamTotalRequestsCountAsync(string teamCd);
         Task<int> GetMyTotalRequestsCountAsync(string userId);
         Task<int> GetAllRequestsCountAsync();
-        Task<int> GetDeptTotalRequestsCountAsync(string corCd, string deptCd);
         Task<int> GetMyPendingRequestsCountAsync(string userId);
         Task<int> GetMyInProgressRequestsCountAsync(string userId);
         Task<int> GetMyInProgressCountAsync(string userId);
@@ -62,6 +61,9 @@ namespace CSR.Services
         Task<List<DivisionRequestStats>> GetRequestsCountByOfficeAndPriorityAsync();
         Task<List<DivisionRequestStats>> GetRequestsCountByAdminAndPriorityAsync();
         Task<int> GetRequestsDueThisWeekCountAsync();        
+        Task<int> GetCorpTotalRequestsCountAsync(string corCd);
+        Task<int> GetDeptTotalRequestsCountAsync(string corCd, string deptCd);
+
 
     }
 
@@ -108,6 +110,12 @@ namespace CSR.Services
         {
             var sql = @" SELECT COUNT(*) FROM TB_REQ_INFO WHERE CORCD = :CorCd AND DEPTCD = :DeptCd AND USEYN = 'Y' ";
             return await _dbConnection.ExecuteScalarAsync<int>(sql, new { CorCd = corCd, DeptCd = deptCd });
+        }
+
+        public async Task<int> GetCorpTotalRequestsCountAsync(string corCd)
+        {
+            var sql = @" SELECT COUNT(*) FROM TB_REQ_INFO WHERE CORCD = :CorCd AND USEYN = 'Y' ";
+            return await _dbConnection.ExecuteScalarAsync<int>(sql, new { CorCd = corCd });
         }
             
         public async Task<int> GetMyPendingRequestsCountAsync(string userId)

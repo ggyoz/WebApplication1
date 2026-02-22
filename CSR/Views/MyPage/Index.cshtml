@@ -128,11 +128,19 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-    @if (ViewBag.ShowSuccessAlert != null && ViewBag.ShowSuccessAlert) {
+    @if (ViewBag.ShowSuccessAlert != null && (bool)ViewBag.ShowSuccessAlert) {
             <script type="text/javascript">
+                const logoutUrl = '@Url.Action("Logout", "Account")';
+
+                function forceLogout() {
+                    window.location.href = logoutUrl;                    
+                }
+
                 $(document).ready(function() {
-                    alert("@SharedLocalizer["Message_ProfileUpdateSuccess"]");
-                });
+                    var message = @Html.Raw(Json.Serialize(SharedLocalizer["Message_ProfileUpdateSuccess"].Value));
+                    alert(message);
+                    //forceLogout();
+                });                 
             </script>
         }
 

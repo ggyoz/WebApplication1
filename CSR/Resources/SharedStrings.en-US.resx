@@ -262,5 +262,5 @@
               <data name="Placeholder_PasswordChange" xml:space="preserve"><value>Enter new password to change</value></data>
               <data name="Help_PasswordChange" xml:space="preserve"><value>Leave blank if you don't want to change password.</value></data>
               <data name="Validation_PasswordMismatch" xml:space="preserve"><value>Passwords do not match.</value></data>
-              <data name="Message_ProfileUpdateSuccess" xml:space="preserve"><value>Your profile has been successfully updated.</value></data>
+              <data name="Message_ProfileUpdateSuccess" xml:space="preserve"><value>Your profile has been successfully updated. Please login again.</value></data>
             </root>

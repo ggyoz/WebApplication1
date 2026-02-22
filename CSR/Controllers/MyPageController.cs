@@ -90,9 +90,18 @@ namespace CSR.Controllers
                 try
                 {
                     await _myPageService.UpdateMyInfoAsync(user, userId);
+                    
+                    var updatedUser = await _myPageService.GetMyInfoAsync(userId);
+
+                    // Re-populate lists for the view
+                    ViewBag.CorCdList = await _corpService.GetSelectListByCorpAsync();
+                    ViewBag.DeptCdList = await _deptService.GetSelectListByDeptAsync(updatedUser.CorCd ?? "", "");
+                    ViewBag.OfficeCdList = await _deptService.GetSelectListByDeptAsync(updatedUser.CorCd ?? "", updatedUser.DeptCd ?? "");
+                    ViewBag.TeamCdList = await _deptService.GetSelectListByDeptAsync(updatedUser.CorCd ?? "", updatedUser.OfficeCd ?? "");
+
                     ViewBag.ShowSuccessAlert = true; // Set flag for alert
                     // Return the updated user info to the view for immediate display
-                    return View(await _myPageService.GetMyInfoAsync(userId));
+                    return View(updatedUser);
                 }
                 catch (Exception ex)
                 {
@@ -104,18 +113,19 @@ namespace CSR.Controllers
             // If model state is not valid or an exception occurred, return to the view with errors
             var fullUser = await _myPageService.GetMyInfoAsync(userId);  
 
-            Console.WriteLine(fullUser != null);
-
             if (fullUser != null)
             {
-
-                Console.WriteLine("TeamCd : " + fullUser.TeamCd);
-
                 // Repopulate the model with the submitted values to show the user what they entered
                 fullUser.UserName = user.UserName;
                 fullUser.TelNo = user.TelNo;
                 fullUser.MobPhoneNo = user.MobPhoneNo;
                 fullUser.EmailAddr = user.EmailAddr;
+                
+                // Re-populate lists for the view
+                ViewBag.CorCdList = await _corpService.GetSelectListByCorpAsync();
+                ViewBag.DeptCdList = await _deptService.GetSelectListByDeptAsync(fullUser.CorCd ?? "", "");
+                ViewBag.OfficeCdList = await _deptService.GetSelectListByDeptAsync(fullUser.CorCd ?? "", fullUser.DeptCd ?? "");
+                ViewBag.TeamCdList = await _deptService.GetSelectListByDeptAsync(fullUser.CorCd ?? "", fullUser.OfficeCd ?? "");
 
                 return View(fullUser);
             }

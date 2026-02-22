@@ -95,5 +95,13 @@ namespace CSR.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Account");
         }
+
+        [HttpGet]
+        [ActionName("Logout")]
+        public async Task<IActionResult> LogoutGet()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login", "Account");
+        }
     }
 }

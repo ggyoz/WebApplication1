@@ -636,8 +636,12 @@ namespace CSR.Controllers
             {
                 return Json(new { success = false, message = "User not authenticated." });
             }
+
             var corCd = HttpContext.Session.GetString("CorCd");
             var deptCd = HttpContext.Session.GetString("DeptCd");
+
+            Console.WriteLine("corCd: " + corCd);
+            Console.WriteLine("deptCd: " + deptCd);
 
             if (string.IsNullOrEmpty(corCd) || string.IsNullOrEmpty(deptCd))
             {
@@ -653,6 +657,35 @@ namespace CSR.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting department total requests count for CorCd: {CorCd}, DeptCd: {DeptCd}", corCd, deptCd);
+                return Json(new { success = false, message = "Error retrieving count." });
+            }
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetCorpTotalRequestsCount()
+        {
+            if (!User.Identity?.IsAuthenticated == true)
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
+
+            var corCd = HttpContext.Session.GetString("CorCd");
+            Console.WriteLine("corCd: " + corCd);
+
+            if (string.IsNullOrEmpty(corCd))
+            {
+                _logger.LogWarning("CorCd not found in session for GetCorpTotalRequestsCount.");
+                return Json(new { success = false, message = "CorCd not found in session." });
+            }
+
+            try
+            {
+                var count = await _reqService.GetCorpTotalRequestsCountAsync(corCd);
+                return Json(new { success = true, count = count });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting corp total requests count for CorCd: {CorCd}", corCd);
                 return Json(new { success = false, message = "Error retrieving count." });
             }
         }
