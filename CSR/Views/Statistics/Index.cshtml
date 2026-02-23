@@ -118,6 +118,8 @@
                         <th>진행중</th>
                         <th>종결</th>
                         <th>완료율</th>
+                        <th>완료예정</th>
+                        <th>지연</th>
                     </tr>                    
                 </thead>
                 <tbody id="divisionStatsTableBody"></tbody>
@@ -144,6 +146,8 @@
                         <th>매우낮음</th>
                         <th>합계</th>
                         <th>진행중</th>
+                        <th>종결</th>
+                        <th>완료율</th>
                         <th>종결</th>
                         <th>완료율</th>
                     </tr>
@@ -290,6 +294,8 @@
                                         <td>${item.ingStatus}</td>
                                         <td>${item.endStatus}</td>
                                         <td>${item.endPercent}%</td>
+                                        <td>${item.scheduledCount}</td>
+                                        <td>${item.delayedCount}</td>
                                     </tr>`
                                 );
                             });

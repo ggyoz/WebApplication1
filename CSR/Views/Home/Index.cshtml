@@ -169,14 +169,14 @@
                 </div>
             </div>            
             <div class="col-md-3 mb-4">
-                <div class="card greenCard shadow-sm h-100">
+                <div class="card redCard shadow-sm h-100">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
                             <div class="d-flex flex-column"> 
-                                <h5 class="card-title mb-0">팀 처리율</h5>
-                                <p class="card-text mb-0">이번 달 팀 요청 처리율</p>
+                                <h5 class="card-title mb-0">기한 초과</h5>
+                                <p class="card-text mb-0">기한을 넘긴 요청</p>
                             </div>
-                            <p class="card-text display-5 mb-0">85<small>%</small></p>
+                            <p class="card-text display-5 mb-0" id="r2OverdueRequestsCount"><small>%</small></p>
                         </div>
                         
                     </div>
@@ -237,7 +237,7 @@
             <div class="col-lg-8 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body m-3">
-                        <h5 class="card-title">전체 요청 현황 분석 (차트 Placeholder)</h5>
+                        <h5 class="card-title">전체 요청 현황 분석</h5>
                         <div id="chart" style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;"></div>
                     </div>
                 </div>
@@ -245,10 +245,8 @@
             <div class="col-lg-4 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body m-3">
-                        <h5 class="card-title">최근 시스템 활동 (관리자/매니저)</h5>
-                        <ul class="list-group list-group-flush" id="r3r4RecentActivitiesList">
-                            <li class="list-group-item">표시할 활동이 없습니다.</li>
-                        </ul>
+                        <h5 class="card-title">전체 진척율 및 지연율</h5>
+                        <div id="chart_2" style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;"></div>
                     </div>
                 </div>
             </div>
@@ -258,9 +256,9 @@
             <div class="col-lg-8 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body m-3">
-                        <h5 class="card-title mb-3">팀원별 업무 분배 현황 (차트 Placeholder)</h5>                        
-                         <div style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;">
-                            차트 라이브러리 (예: Chart.js) 연동 필요
+                        <h5 class="card-title mb-3">법인별 요청 현황</h5>
+                         <div id="chartR2" style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;">
+                            
                         </div>
                     </div>
                 </div>
@@ -268,10 +266,10 @@
             <div class="col-lg-4 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body m-3">
-                        <h5 class="card-title mb-3">팀 최근 활동 및 알림</h5>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">수정해야됨</li>                            
-                        </ul>
+                        <h5 class="card-title mb-3">법인별 진척율 및 지연율</h5>
+                        <div id="chartR2_2" style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;">
+                            
+                        </div>
                     </div>
                 </div>
             </div>
@@ -281,18 +279,18 @@
             <div class="col-lg-8 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body m-3">
-                        <h5 class="card-title mb-3">나의 요청 진행률 (차트 Placeholder)</h5>                        
-                         <div style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;">
-                            차트 라이브러리 (예: Chart.js) 연동 필요
-                        </div>
+                        <h5 class="card-title mb-3">나의 요청 현황</h5>
+                        <div id="chartR1" style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;"></div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-4 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body m-3">
-                        <h5 class="card-title mb-3">공지사항</h5>    
-                        <ul class="list-group list-group-flush" id="recentNoticesList"></ul>                        
+                        <h5 class="card-title mb-3">진척율 및 지연율</h5>
+                        <div id="chartR1_2" style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;"></div>
+                        <ul class="list-group list-group-flush">
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -321,7 +319,7 @@
                                 <ul class="list-group list-group-flush" id="">
                                     <li class="list-group-item">표시할 활동이 없습니다.</li>
                                 </ul>
-                            }else if (User.IsInRole("R2")){
+                            }else if (User.IsInRole("R1")){
                                 <ul class="list-group list-group-flush" id="myRecentActivitiesList">
                                     <li class="list-group-item">표시할 활동이 없습니다.</li>
                                 </ul>
@@ -357,44 +355,137 @@
 @section Scripts {
     <script>
 
-        // 차트 테스트데이터
-        const dataSource = [{
-        day: 'Monday',
-        oranges: 3,
-        }, {
-        day: 'Tuesday',
-        oranges: 2,
-        }, {
-        day: 'Wednesday',
-        oranges: 3,
-        }, {
-        day: 'Thursday',
-        oranges: 4,
-        }, {
-        day: 'Friday',
-        oranges: 6,
-        }, {
-        day: 'Saturday',
-        oranges: 11,
-        }, {
-        day: 'Sunday',
-        oranges: 4,
-        }];
+        $(document).ready(function() {                    
 
-        $(document).ready(function() {
-            
-            $('#chart').dxChart({
-                dataSource,
-                series: {
-                argumentField: 'day',
-                valueField: 'oranges',
-                name: 'My oranges',
-                type: 'bar',
-                color: '#ffaa66',
-                },
-            });
+            // R3, 4
+            let dataSource = [
+                { status: '대기', data: 3, }, 
+                { status: '접수', data: 2, },
+                { status: '진행중', data: 3, },                  
+                { status: '종결', data: 6, }];
 
             const currentUserRole = '@currentUserRole';
+            
+            if (currentUserRole === 'R4' || currentUserRole === 'R3') {
+            
+                $('#chart').dxChart({
+                    dataSource,
+                    series: {
+                        argumentField: 'status',
+                        valueField: 'data',
+                        type: 'bar',
+                        color: '#ffaa66',
+                    },
+                    commonSeriesSettings: {
+                        label: {
+                        visible : true,                        
+                            connector: {
+                                visible: true,
+
+                            },
+                        },
+                    },
+                    legend: {
+                        visible: false,
+                    },
+                });
+
+                $('#chart_2').dxChart({
+                    dataSource: [],
+                    series: {
+                        argumentField: 'status',
+                        valueField: 'data',
+                        type: 'bar',
+                        color: '#5bc0de',
+                    },
+                    commonSeriesSettings: {
+                        label: {
+                        visible : true,                        
+                            connector: {
+                                visible: true,
+
+                            },
+                        },
+                    },
+                    legend: {
+                        visible: false,
+                    },
+                });
+
+            }else if (currentUserRole === 'R2') {
+
+                $('#chartR2').dxChart({
+                    dataSource,
+                    series: {
+                    argumentField: 'status',
+                    valueField: 'data',
+                    type: 'bar', 
+                    color: '#0068ff',
+                    },                    
+                    commonSeriesSettings: {
+                        label: {
+                        visible : true,                        
+                            connector: {
+                                visible: true,
+
+                            },
+                        },
+                    },
+                    legend: {
+                        visible: false,
+                    },
+                });
+
+                $('#chartR2_2').dxChart({
+                    dataSource,
+                    series: {
+                    argumentField: 'status',
+                    valueField: 'data',
+                    type: 'bar', 
+                    color: '#5bc0de',
+                    },
+                    commonSeriesSettings: {
+                        label: {
+                        visible : true,
+                            connector: {
+                                visible: true
+                            }
+                        }
+                    },
+                    legend: {
+                        visible: false,
+                    },
+                });
+
+            }else if (currentUserRole === 'R1') {
+
+                $('#chartR1').dxChart({
+                    dataSource,
+                    series: {
+                    argumentField: 'status',
+                    valueField: 'data',
+                    type: 'bar', 
+                    color: '#0068ff',
+                    },
+                    legend: {
+                        visible: false,
+                    },
+                });
+
+                $('#chartR1_2').dxChart({
+                    dataSource,
+                    series: {
+                    argumentField: 'status',
+                    valueField: 'data',
+                    type: 'bar', 
+                    color: '#5bc0de',
+                    },
+                    legend: {
+                        visible: false,
+                    },
+                });
+
+            }            
             
             // JavaScript에서 사용하기 위한 지역화된 히스토리 사유 맵
             var localizedHistoryReasons = {
@@ -408,56 +499,56 @@
             };
             
             if (currentUserRole === 'R1') {
-                // 내 요청 전체 조회
+                // 신규 통합 API 호출: 내 요청 상태별 카운트 및 차트 업데이트
                 $.ajax({
-                    url: '/Req/GetMyRequestCount', // API endpoint for R1
+                    url: '/api/ReqApi/my-counts',
                     type: 'GET',
-                    success: function(response) {
-                        if (response.success) {
-                            $('#r1TotalRequestsCount').text(response.count);
-                        } else {
-                            console.error('내 요청 건수 가져오기 실패:', response.message);
+                    success: function(data) {
+                        // 카드 정보 업데이트 (대기+접수+진행+종결 = 전체)
+                        var totalCount = data.WAITCOUNT + data.RECEIVEDCOUNT + data.INPROGRESSCOUNT + data.CLOSEDCOUNT;
+                        
+                        $('#r1TotalRequestsCount').text(totalCount);
+                        $('#r1InProgressRequestsCount').text(data.INPROGRESSCOUNT);
+                        $('#r1CompletedRequestsCount').text(data.CLOSEDCOUNT);
+
+                        // 차트 데이터 업데이트
+                        var r1ChartData = [
+                            { status: '대기', data: data.WAITCOUNT },
+                            { status: '접수', data: data.RECEIVEDCOUNT },
+                            { status: '진행중', data: data.INPROGRESSCOUNT },
+                            { status: '종결', data: data.CLOSEDCOUNT }
+                        ];
+                        
+                        var chartInstance = $('#chartR1').dxChart('instance');
+                        if (chartInstance) {
+                            chartInstance.option('dataSource', r1ChartData);
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.error('내 요청 건수 AJAX 오류:', error);
+                        console.error('내 요청 통계 API 오류:', error);
                     }
                 });
 
-                // 내 진행중인 요청 수 조회
                 $.ajax({
-                    url: '/Req/GetMyInProgressRequestsCount',
+                    url: '/api/ReqApi/my-performance',
                     type: 'GET',
-                    success: function(response) {
-                        if (response.success) {
-                            console.log(response.count);
-                            $('#r1InProgressRequestsCount').text(response.count);
-                        } else {
-                            console.error('내 진행중 요청 건수 가져오기 실패:', response.message);
+                    success: function(data) {                                        
+                        var r1ChartData = [
+                            { status: '처리', data: data.completedCount },
+                            { status: '지연', data: data.delayedCount }                            
+                        ];
+                        
+                        var chartInstance = $('#chartR1_2').dxChart('instance');
+                        if (chartInstance) {
+                            chartInstance.option('dataSource', r1ChartData);
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.error('내 진행중 요청 건수 AJAX 오류:', error);
+                        console.error('내 요청 통계 API 오류:', error);
                     }
                 });
 
-                // 내 완료된 요청 수 조회
-                $.ajax({
-                    url: '/Req/GetMyCompletedRequestsCount',
-                    type: 'GET',
-                    success: function(response) {
-                        if (response.success) {
-                            $('#r1CompletedRequestsCount').text(response.count);
-                        } else {
-                            console.error('내 완료된 요청 건수 가져오기 실패:', response.message);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('내 완료된 요청 건수 AJAX 오류:', error);
-                    }
-                });
-
-                // 내 요청 최근 활동 조회
+                // 내 요청 최근 활동 조회 (기존 유지)
                 $.ajax({
                     url: '/Req/GetMyRecentReqActivities', 
                     type: 'GET',
@@ -486,20 +577,57 @@
                 });
 
             } else if (currentUserRole === 'R2') {
+                // 법인 통합 통계 API 호출
                 $.ajax({
-                    url: '/Req/GetCorpTotalRequestsCount',
+                    url: '/api/ReqApi/corp-counts',
                     type: 'GET',
-                    success: function (response) {
-                        if (response.success) {
-                            $('#r2CorpTotalRequestsCount').text(response.count);
-                        } else {
-                            console.error('법인 총 요청 건수 가져오기 실패:', response.message);
+                    success: function(data) {
+                        // 법인 총 요청 카드 업데이트
+                        var totalCount = data.WAITCOUNT + data.RECEIVEDCOUNT + data.INPROGRESSCOUNT + data.CLOSEDCOUNT;
+                        $('#r2CorpTotalRequestsCount').text(totalCount);                        
+
+                        // 법인별 요청 현황 차트 업데이트
+                        var corpChartData = [
+                            { status: '대기', data: data.WAITCOUNT },
+                            { status: '접수', data: data.RECEIVEDCOUNT },
+                            { status: '진행중', data: data.INPROGRESSCOUNT },
+                            { status: '종결', data: data.CLOSEDCOUNT }
+                        ];
+                        
+                        var chartInstance = $('#chartR2').dxChart('instance');
+                        if (chartInstance) {
+                            chartInstance.option('dataSource', corpChartData);
                         }
                     },
-                    error: function (xhr, status, error) {
-                        console.error('법인 총 요청 건수 AJAX 오류:', error);
+                    error: function(xhr, status, error) {
+                        console.error('법인 통계 API 오류:', error);
                     }
                 });
+
+                // 법인 퍼포먼스(진척율, 지연율) API 호출
+                $.ajax({
+                    url: '/api/ReqApi/corp-performance',
+                    type: 'GET',
+                    success: function(data) {
+
+                        $("#r2OverdueRequestsCount").text(data.delayedCount);
+
+                        var corpPerfData = [
+                            { status: '처리', data: data.completedCount },
+                            { status: '지연', data: data.delayedCount }
+                        ];
+
+                        
+                        var chartInstance = $('#chartR2_2').dxChart('instance');
+                        if (chartInstance) {
+                            chartInstance.option('dataSource', corpPerfData);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('법인 퍼포먼스 API 오류:', error);
+                    }
+                });
+
                 $.ajax({
                     url: '/Req/GetDeptTotalRequestsCount',
                     type: 'GET',
@@ -514,6 +642,7 @@
                         console.error('부서 총 요청 건수 AJAX 오류:', error);
                     }
                 });
+
                 $.ajax({
                     url: '/Req/GetTeamRequestCount', 
                     type: 'GET',
@@ -528,27 +657,59 @@
                         console.error('팀 요청 건수 AJAX 오류:', error);
                     }
                 });
+            
             } else if (currentUserRole === 'R3' || currentUserRole === 'R4') {
-                // 전체 요청 건수 조회 (R4 전용)
-                    $.ajax({
-                        url: '/Req/GetAllRequestsCount',
-                        type: 'GET',
-                        success: function(response) {
-                            if (response.success) {
-                                if (currentUserRole === 'R4') {
-                                    $('#r4TotalRequestsCount').text(response.count);
-                                }else{
-                                    $('#r3TotalRequestsCount').text(response.count);
-                                }
-                            } else {
-                                console.error('전체 요청 건수 가져오기 실패:', response.message);
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('전체 요청 건수 AJAX 오류:', error);
+                // 전체 시스템 통계 API 호출
+                $.ajax({
+                    url: '/api/ReqApi/all-counts',
+                    type: 'GET',
+                    success: function(data) {
+                        // 총 요청 수 카드 업데이트
+                        var totalCount = data.WAITCOUNT + data.RECEIVEDCOUNT + data.INPROGRESSCOUNT + data.CLOSEDCOUNT;
+                        if (currentUserRole === 'R4') {
+                            $('#r4TotalRequestsCount').text(totalCount);
+                        } else {
+                            $('#r3TotalRequestsCount').text(totalCount);
                         }
-                    });               
-                
+
+                        // 전체 현황 차트 업데이트
+                        var allChartData = [
+                            { status: '대기', data: data.WAITCOUNT },
+                            { status: '접수', data: data.RECEIVEDCOUNT },
+                            { status: '진행중', data: data.INPROGRESSCOUNT },
+                            { status: '종결', data: data.CLOSEDCOUNT }
+                        ];
+                        
+                        var chartInstance = $('#chart').dxChart('instance');
+                        if (chartInstance) {
+                            chartInstance.option('dataSource', allChartData);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('전체 통계 API 오류:', error);
+                    }
+                });
+
+                // 전체 시스템 퍼포먼스 API 호출
+                $.ajax({
+                    url: '/api/ReqApi/all-performance',
+                    type: 'GET',
+                    success: function(data) {
+                        var allPerfData = [
+                            { status: '처리율', data: data.completedCount },
+                            { status: '지연율', data: data.delayedCount }
+                        ];
+                        
+                        var chartInstance = $('#chart_2').dxChart('instance');
+                        if (chartInstance) {
+                            chartInstance.option('dataSource', allPerfData);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('전체 퍼포먼스 API 오류:', error);
+                    }
+                });
+
                 $.ajax({
                     url: '/Req/GetMyPendingRequestsCount',
                     type: 'GET',
@@ -566,25 +727,7 @@
                     error: function(xhr, status, error) {
                         console.error('내 접수요청 건수 AJAX 오류:', error);
                     }
-                });
-
-                // 부서 총 요청 건수 조회 (R3 전용)
-                // if (currentUserRole === 'R3') {
-                //     $.ajax({
-                //         url: '/Req/GetDeptTotalRequestsCount',
-                //         type: 'GET',
-                //         success: function(response) {
-                //             if (response.success) {
-                //                 $('#r3DeptTotalRequestsCount').text(response.count);
-                //             } else {
-                //                 console.error('부서 총 요청 건수 가져오기 실패:', response.message);
-                //             }
-                //         },
-                //         error: function(xhr, status, error) {
-                //             console.error('부서 총 요청 건수 AJAX 오류:', error);
-                //         }
-                //     });
-                // }
+                });                
 
                 $.ajax({
                     url: '/Req/GetMyInProgressCount',

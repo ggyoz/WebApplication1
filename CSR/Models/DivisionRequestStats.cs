@@ -11,7 +11,10 @@ namespace CSR.Models
         public int VeryLowCount { get; set; }
         public int TotalCount { get; set; }
         public int EndStatus { get; set; }
-        public int IngStatus { get; set; }
-        public int EndPercent { get; set; }
-    }
-}
+                public int IngStatus { get; set; }
+                public int EndPercent { get; set; }
+                public int DelayedCount { get; set; }
+                public int ScheduledCount { get; set; }
+            }
+        }
+        

@@ -63,8 +63,12 @@ namespace CSR.Services
         Task<int> GetRequestsDueThisWeekCountAsync();        
         Task<int> GetCorpTotalRequestsCountAsync(string corCd);
         Task<int> GetDeptTotalRequestsCountAsync(string corCd, string deptCd);
-
-
+        Task<dynamic> GetMyRequestCountsByStatusAsync(string userId);
+        Task<dynamic> GetMyRequestPerformanceAsync(string userId);
+        Task<dynamic> GetCorpRequestCountsByStatusAsync(string corCd);
+        Task<dynamic> GetCorpRequestPerformanceAsync(string corCd);
+        Task<dynamic> GetAllRequestCountsByStatusAsync();
+        Task<dynamic> GetAllRequestPerformanceAsync();
     }
 
     public class ReqService : IReqService
@@ -99,7 +103,125 @@ namespace CSR.Services
             var sql = @" SELECT COUNT(*) FROM TB_REQ_INFO WHERE REQUSERID = :UserId AND USEYN = 'Y' ";
             return await _dbConnection.ExecuteScalarAsync<int>(sql, new { UserId = userId });
         }
+
+        public async Task<dynamic> GetMyRequestCountsByStatusAsync(string userId)
+        {
+            var sql = @"
+                SELECT 
+                    COUNT(CASE WHEN PROC_STATUS = '61' THEN 1 END) AS WAITCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '62' THEN 1 END) AS RECEIVEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS CLOSEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS NOT IN ('61', '62', '68') AND PROC_STATUS IS NOT NULL THEN 1 END) AS INPROGRESSCOUNT
+                FROM TB_REQ_INFO
+                WHERE REQUSERID = :UserId AND USEYN = 'Y'";
+
+            return await _dbConnection.QuerySingleAsync(sql, new { UserId = userId });
+        }
         
+        public async Task<dynamic> GetMyRequestPerformanceAsync(string userId)
+        {
+            var sql = @"
+                SELECT 
+                    COUNT(*) AS TOTALCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS COMPLETEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS != '68' AND EXPECTDATE < TRUNC(SYSDATE) AND EXPECTDATE IS NOT NULL THEN 1 END) AS DELAYEDCOUNT
+                FROM TB_REQ_INFO
+                WHERE REQUSERID = :UserId AND USEYN = 'Y'";
+
+            var stats = await _dbConnection.QuerySingleAsync(sql, new { UserId = userId });
+            
+            // Dapper dynamic 결과(decimal)를 double로 안전하게 변환
+            double total = Convert.ToDouble(stats.TOTALCOUNT);
+            double completed = Convert.ToDouble(stats.COMPLETEDCOUNT);
+            double delayed = Convert.ToDouble(stats.DELAYEDCOUNT);
+
+            return new {
+                TotalCount = (int)total,
+                CompletedCount = (int)completed,
+                DelayedCount = (int)delayed,
+                CompletionRate = total > 0 ? Math.Round((completed / total) * 100, 1) : 0,
+                DelayRate = total > 0 ? Math.Round((delayed / total) * 100, 1) : 0
+            };
+        }
+
+        public async Task<dynamic> GetCorpRequestCountsByStatusAsync(string corCd)
+        {
+            var sql = @"
+                SELECT 
+                    COUNT(CASE WHEN PROC_STATUS = '61' THEN 1 END) AS WAITCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '62' THEN 1 END) AS RECEIVEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS CLOSEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS NOT IN ('61', '62', '68') AND PROC_STATUS IS NOT NULL THEN 1 END) AS INPROGRESSCOUNT
+                FROM TB_REQ_INFO
+                WHERE CORCD = :CorCd AND USEYN = 'Y'";
+
+            return await _dbConnection.QuerySingleAsync(sql, new { CorCd = corCd });
+        }
+
+        public async Task<dynamic> GetCorpRequestPerformanceAsync(string corCd)
+        {
+            var sql = @"
+                SELECT 
+                    COUNT(*) AS TOTALCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS COMPLETEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS != '68' AND EXPECTDATE < TRUNC(SYSDATE) AND EXPECTDATE IS NOT NULL THEN 1 END) AS DELAYEDCOUNT
+                FROM TB_REQ_INFO
+                WHERE CORCD = :CorCd AND USEYN = 'Y'";
+
+            var stats = await _dbConnection.QuerySingleAsync(sql, new { CorCd = corCd });
+            
+            double total = Convert.ToDouble(stats.TOTALCOUNT);
+            double completed = Convert.ToDouble(stats.COMPLETEDCOUNT);
+            double delayed = Convert.ToDouble(stats.DELAYEDCOUNT);
+
+            return new {
+                TotalCount = (int)total,
+                CompletedCount = (int)completed,
+                DelayedCount = (int)delayed,
+                CompletionRate = total > 0 ? Math.Round((completed / total) * 100, 1) : 0,
+                DelayRate = total > 0 ? Math.Round((delayed / total) * 100, 1) : 0
+            };
+        }
+
+        public async Task<dynamic> GetAllRequestCountsByStatusAsync()
+        {
+            var sql = @"
+                SELECT 
+                    COUNT(CASE WHEN PROC_STATUS = '61' THEN 1 END) AS WAITCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '62' THEN 1 END) AS RECEIVEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS CLOSEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS NOT IN ('61', '62', '68') AND PROC_STATUS IS NOT NULL THEN 1 END) AS INPROGRESSCOUNT
+                FROM TB_REQ_INFO
+                WHERE USEYN = 'Y'";
+
+            return await _dbConnection.QuerySingleAsync(sql);
+        }
+
+        public async Task<dynamic> GetAllRequestPerformanceAsync()
+        {
+            var sql = @"
+                SELECT 
+                    COUNT(*) AS TOTALCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS COMPLETEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS != '68' AND EXPECTDATE < TRUNC(SYSDATE) AND EXPECTDATE IS NOT NULL THEN 1 END) AS DELAYEDCOUNT
+                FROM TB_REQ_INFO
+                WHERE USEYN = 'Y'";
+
+            var stats = await _dbConnection.QuerySingleAsync(sql);
+            
+            double total = Convert.ToDouble(stats.TOTALCOUNT);
+            double completed = Convert.ToDouble(stats.COMPLETEDCOUNT);
+            double delayed = Convert.ToDouble(stats.DELAYEDCOUNT);
+
+            return new {
+                TotalCount = (int)total,
+                CompletedCount = (int)completed,
+                DelayedCount = (int)delayed,
+                CompletionRate = total > 0 ? Math.Round((completed / total) * 100, 1) : 0,
+                DelayRate = total > 0 ? Math.Round((delayed / total) * 100, 1) : 0
+            };
+        }
+
         public async Task<int> GetAllRequestsCountAsync()
         {
             var sql = @" SELECT COUNT(*) FROM TB_REQ_INFO WHERE USEYN = 'Y' ";
@@ -214,6 +336,8 @@ namespace CSR.Services
                     count(R.PRIORITYCD) AS TotalCount,
                     SUM(CASE WHEN R.PROC_STATUS = '68' THEN 1 ELSE 0 END) AS EndStatus,
                     SUM(CASE WHEN R.PROC_STATUS != '68' THEN 1 ELSE 0 END) AS IngStatus,
+                    SUM(CASE WHEN R.PROC_STATUS != '68' AND R.EXPECTDATE < TRUNC(SYSDATE) AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS DelayedCount,
+                    SUM(CASE WHEN R.PROC_STATUS != '68' AND R.EXPECTDATE >= TRUNC(SYSDATE) AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS ScheduledCount,                    
                     trunc( SUM(CASE WHEN R.PROC_STATUS = '68' THEN 1 ELSE 0 END) / count(R.PRIORITYCD) * 100) AS EndPercent                
                 FROM TB_REQ_INFO R
                 JOIN TB_DEPT_INFO D ON R.DEPTCD = D.DEPTCD
@@ -237,6 +361,8 @@ namespace CSR.Services
                     count(R.PRIORITYCD) AS TotalCount,
                     SUM(CASE WHEN R.PROC_STATUS = '68' THEN 1 ELSE 0 END) AS EndStatus,
                     SUM(CASE WHEN R.PROC_STATUS != '68' THEN 1 ELSE 0 END) AS IngStatus,
+                    SUM(CASE WHEN R.PROC_STATUS != '68' AND R.EXPECTDATE < TRUNC(SYSDATE) AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS DelayedCount,
+                    SUM(CASE WHEN R.PROC_STATUS != '68' AND R.EXPECTDATE >= TRUNC(SYSDATE) AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS ScheduledCount,
                     trunc( SUM(CASE WHEN R.PROC_STATUS = '68' THEN 1 ELSE 0 END) / count(R.PRIORITYCD) * 100) AS EndPercent
                 FROM TB_REQ_INFO R
                 JOIN TB_DEPT_INFO D ON R.OFFICECD = D.DEPTCD
