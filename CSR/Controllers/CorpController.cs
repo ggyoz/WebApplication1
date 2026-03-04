@@ -2,7 +2,8 @@ using CSR.Models;
 using CSR.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace CSR.Controllers
 {
@@ -16,6 +17,7 @@ namespace CSR.Controllers
         }
 
         // GET: Corp
+        [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> Index()
         {
             var corps = await _corpService.GetAllCorpsAsync();
@@ -23,6 +25,7 @@ namespace CSR.Controllers
         }
 
         // GET: Corp/Details/5
+        [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
@@ -40,6 +43,7 @@ namespace CSR.Controllers
         }
 
         // GET: Corp/Create
+        [Authorize(Policy = "RequireManagerOrHigher")]
         public IActionResult Create()
         {
             return View();
@@ -67,6 +71,7 @@ namespace CSR.Controllers
         }
 
         // GET: Corp/Edit/5
+        [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -115,6 +120,7 @@ namespace CSR.Controllers
         }
 
         // GET: Corp/Delete/5
+        [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)

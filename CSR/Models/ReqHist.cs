@@ -37,7 +37,7 @@ namespace CSR.Models
 
         [Required]
         [Display(Name = "완료예정일")]
-        public DateTime EXPECTDATE { get; set; }
+        public DateTime? EXPECTDATE { get; set; }
 
         [Required]
         [Display(Name = "실제 시작일")]

@@ -151,9 +151,9 @@ foreach (var type in serviceTypes)
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
 
-    var supportedCultures = new[] { "ko-KR", "en-US" };
+    var supportedCultures = new[] { "ko-KR", "en-US", "vi-VN" };
     // var supportedCultures = new[] { "ko-KR", "en-US", "hi-IN", "zh-CN" };
-    options.SetDefaultCulture(supportedCultures[1]); // en-US
+    options.SetDefaultCulture(supportedCultures[0]); // ko-KR
     options.AddSupportedCultures(supportedCultures);
     options.AddSupportedUICultures(supportedCultures);
 });

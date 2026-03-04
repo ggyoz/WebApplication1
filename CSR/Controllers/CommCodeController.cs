@@ -3,6 +3,8 @@ using CSR.Models;
 using CSR.Services;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace CSR.Controllers
 {
@@ -18,6 +20,7 @@ namespace CSR.Controllers
         }
 
         // GET: CommCode
+        [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> Index()
         {
             try
@@ -34,6 +37,7 @@ namespace CSR.Controllers
         }
 
         // GET: CommCode/Create
+        [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> Create(int parentId = 0)
         {
             var model = new CommCode
@@ -73,6 +77,7 @@ namespace CSR.Controllers
         }
 
         // GET: CommCode/Edit/5
+        [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> Edit(int id)
         {
             var commCode = await _commCodeService.GetCommCodeByIdAsync(id);

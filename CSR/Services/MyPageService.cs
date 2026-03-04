@@ -81,10 +81,10 @@ namespace CSR.Services
                     {string.Join(", ", setClauses)}
                 WHERE USERID = :UserId";
 
-            // --- 쿼리디버깅코드 ---
-            Console.WriteLine("Executing CreateUserAsync Query:");
-            Console.WriteLine(sql);
-            Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(user, Formatting.Indented));
+            // // --- 쿼리디버깅코드 ---
+            // Console.WriteLine("Executing CreateUserAsync Query:");
+            // Console.WriteLine(sql);
+            // Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(user, Formatting.Indented));
 
             await _connection.ExecuteAsync(sql, parameters);
 

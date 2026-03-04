@@ -16,7 +16,9 @@
     <div class="col-md-12">
         <form asp-action="Answer" asp-route-id="@Model.REQID" enctype="multipart/form-data">
             <input type="hidden" asp-for="REQID" />
+            <input type="hidden" asp-for="REG_USERID" />
             <div asp-validation-summary="All" class="text-danger"></div>
+
 
             <table class="table-layout" width="100%; min-width:600px;">
                 <colgroup>
@@ -31,16 +33,29 @@
                 </colgroup>
                 <tbody>
                     <tr>    
-                        <td><label asp-for="ReqUserName" class="control-label">요청자 이름</label></td>                    
-                        <td><input asp-for="ReqUserName" class="form-control" /></td>
+                        <td><label asp-for="ReqUserName" class="control-label" >요청자 이름</label><div id="btnSearchUser" class="ms-2"></div></td>
+                        <td><input asp-for="ReqUserName" class="form-control" readonly /></td>
+                        <td><label asp-for="REQUSERID" class="control-label" >사번</label></td>
+                        <td><input asp-for="REQUSERID" class="form-control" readonly /></td>
                         <td><label asp-for="REQDATE" class="control-label"></label></td>
                         <td><input asp-for="REQDATE" type="date" class="form-control" /></td>
                         <td><label asp-for="DUEDATE" class="control-label"></label></td>
                         <td><input asp-for="DUEDATE" type="date" class="form-control" /></td>
-                        <td><label asp-for="EXPECTDATE" class="control-label"></label></td>
-                        <td><input asp-for="EXPECTDATE" type="date" class="form-control" /></td>
+                        
+                    </tr>
+                    <tr>
+                        <td><label asp-for="CORCD" class="control-label"></label></td>
+                        <td><input asp-for="CORCD" class="form-control" readonly /></td>
+                        <td><label asp-for="DEPTCD" class="control-label"></label></td>
+                        <td><input asp-for="DEPTCD" class="form-control" readonly /></td>
+                        <td><label asp-for="OFFICECD" class="control-label"></label></td>
+                        <td><input asp-for="OFFICECD" class="form-control" readonly /></td>
+                        <td><label asp-for="TEAMCD" class="control-label"></label></td>
+                        <td><input asp-for="TEAMCD" class="form-control" readonly /></td>
                     </tr>                    
                      <tr>
+                        <td><label asp-for="EXPECTDATE" class="control-label"></label></td>
+                        <td><input asp-for="EXPECTDATE" type="date" class="form-control" /></td>
                         <td><label asp-for="STARTDATE" class="control-label"></label></td>
                         <td><input asp-for="STARTDATE" type="date" class="form-control" /></td>
                         <td><label asp-for="ENDDATE" class="control-label"></label></td>
@@ -104,7 +119,6 @@
                             <input type="hidden" asp-for="NOTE_HTML" />
                         </td>
 
-                        
                     </tr>
                     <tr>
                         <td>@SharedLocalizer["Label_Attachments"]</td>
@@ -136,6 +150,11 @@
                 <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
             </div>
         </form>
+
+        <div id="userSearchPopup">
+            <div id="userSearchDataGrid"></div>
+        </div>
+
     </div>
 </div>
 
@@ -153,7 +172,120 @@
                 name: 'newFiles',
                 multiple: true,
                 uploadMode: 'useForm'
-            });
+            });            
+
         });
+
+        // 사용자 검색 기능 초기화
+        function initializeUserSearch() {
+
+            $("#userSearchDataGrid").dxDataGrid({
+                dataSource: [], // Initialize with an empty array
+                remoteOperations: false, // Set to false for client-side operations
+                columns: [
+                    { dataField: "userId", caption: '@Html.Raw(SharedLocalizer["Label_UserId"])' },
+                    { dataField: "userName", caption: '@Html.Raw(SharedLocalizer["Label_UserName"])' },
+                    { dataField: "corpName", caption: '@Html.Raw(SharedLocalizer["Label_Affiliation_CorpName"])' },
+                    { dataField: "deptName", caption: '@Html.Raw(SharedLocalizer["Label_Affiliation_DeptName"])' },
+                    { dataField: "officeName", caption: '@Html.Raw(SharedLocalizer["Label_Affiliation_OfficeName"])' },
+                    { dataField: "teamName", caption: '@Html.Raw(SharedLocalizer["Label_Affiliation_TeamName"])' },
+                    { dataField: "emailAddr", caption: '@Html.Raw(SharedLocalizer["Label_Email"])' },
+                    { dataField: "mobPhoneNo", caption: '@Html.Raw(SharedLocalizer["Label_Contact"])' }
+                ],
+                selection: {
+                    mode: "single"
+                },
+                hoverStateEnabled: true,
+                showBorders: true,
+                showRowLines: true,
+                filterRow: {
+                    visible: true,
+                    applyFilter: "auto"
+                },
+                searchPanel: {
+                    visible: true,
+                    width: 240,
+                    placeholder: '@Html.Raw(SharedLocalizer["DataGrid_SearchUser"])'
+                },
+                paging: {
+                    pageSize: 10
+                },
+                pager: {
+                    showPageSizeSelector: true,
+                    allowedPageSizes: [5, 10, 20],
+                    showInfo: true
+                },
+                onSelectionChanged: function(selectedItems) {
+                    var data = selectedItems.selectedRowsData[0];
+                    if (data) {
+                        // Hidden fields
+                        $('input[name="CORCD"]').val(data.corCd);
+                        $('input[name="DEPTCD"]').val(data.deptCd);
+                        $('input[name="OFFICECD"]').val(data.officeCd);
+                        $('input[name="TEAMCD"]').val(data.teamCd);
+                        $('input[name="REG_USERID"]').val(data.userId); // Assuming Req and Reg user are the same if selected
+                        $('input[name="REQUSERID"]').val(data.userId);
+
+                        // Display fields
+                        $('input[name="ReqUserName"]').val(data.userName);
+                        $('input[name="ReqUserEmail"]').val(data.emailAddr);
+                        $('input[name="ReqUserTel"]').val(data.mobPhoneNo);
+
+                        // Update organization display
+                        var orgParts = [data.corpName, data.deptName, data.officeName, data.teamName].filter(p => p);
+                        $('input[name="organization"]').val(orgParts.join(" / ")); // Update the organization field.
+
+                        userSearchPopup.hide();
+                    }
+                }
+            });
+
+            var userSearchPopup = $("#userSearchPopup").dxPopup({
+                width: 900,
+                height: 600,
+                title: '@Html.Raw(SharedLocalizer["Popup_SelectUser"])',
+                showTitle: true,
+                dragEnabled: false,
+                closeOnOutsideClick: true,
+                visible: false,
+                toolbarItems: [{
+                    widget: 'dxButton',
+                    toolbar: 'bottom',
+                    location: 'after',
+                    options: {
+                        text: '@Html.Raw(SharedLocalizer["Button_Close"])',
+                        onClick: function() {
+                            userSearchPopup.hide();
+                        }
+                    }
+                }]
+            }).dxPopup("instance");
+
+            $("#btnSearchUser").dxButton({
+                text: '@Html.Raw(SharedLocalizer["Button_SearchUser"])',
+                type: 'default',
+                onClick: function() {
+                    userSearchPopup.show();
+                    // Fetch all users and set as data source
+                    $.ajax({
+                        url: '@Url.Action("SearchUsersJson", "User")',
+                        type: 'GET',
+                        data: { searchText: '' }, // Initially load all users. SearchPanel will filter client-side.
+                        success: function(data) {
+                            $("#userSearchDataGrid").dxDataGrid("instance").option("dataSource", data);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("사용자 목록을 불러오는 중 오류 발생: " + error);
+                            DevExpress.ui.notify(`사용자 목록을 불러오는 데 실패했습니다: ${error}`, "error", 2000);
+                        }
+                    });
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            initializeUserSearch();
+        });
+
     </script>
 }

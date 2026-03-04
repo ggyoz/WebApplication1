@@ -59,6 +59,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-4 mb-4">
             <div class="card greenCard shadow-sm h-100">
                 <div class="card-body m-3">
@@ -72,6 +73,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-4 mb-4">
             <div class="card yellowCard shadow-sm h-100">
                 <div class="card-body m-3">
@@ -84,7 +86,7 @@
                     </div>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 
     <!-- 차트 영역 (placeholder) -->
@@ -106,14 +108,13 @@
                     <tr>
                         <th rowspan="2">사업부서</th>
                         <th colspan="6">요청사항 수 ( 긴급도 별 )</th>
-                        <th colspan="3"> 진행상태 </th>
+                        <th colspan="5">진행상태 </th>
                     </tr>
                     <tr>
                         <th>긴급</th>
                         <th>높음</th>
                         <th>보통</th>
                         <th>낮음</th>
-                        <th>매우낮음</th>
                         <th>합계</th>
                         <th>진행중</th>
                         <th>종결</th>
@@ -136,20 +137,19 @@
                     <tr class="border">
                         <th class="border align-middle text-center" rowspan="2">사업부서</th>
                         <th class="border align-middle" colspan="6">요청사항 수 ( 긴급도 별 )</th>
-                        <th class="border align-middle" colspan="3">진행상태 </th>
+                        <th class="border align-middle" colspan="5">진행상태 </th>
                     </tr>
                     <tr>
                         <th>긴급</th>
                         <th>높음</th>
                         <th>보통</th>
                         <th>낮음</th>
-                        <th>매우낮음</th>
                         <th>합계</th>
                         <th>진행중</th>
                         <th>종결</th>
                         <th>완료율</th>
-                        <th>종결</th>
-                        <th>완료율</th>
+                        <th>완료예정</th>
+                        <th>지연</th>                        
                     </tr>
                 </thead>
                 <tbody id="officeStatsTableBody"></tbody>
@@ -172,8 +172,7 @@
                         <th>긴급</th>
                         <th>높음</th>
                         <th>보통</th>
-                        <th>낮음</th>
-                        <th>매우낮음</th>
+                        <th>낮음</th>                        
                         <th>합계</th>
                         <th>진행중</th>
                         <th>종결</th>
@@ -280,8 +279,7 @@
                         if (response.stats.length === 0) {
                             tableBody.append('<tr><td colspan="4">데이터가 없습니다.</td></tr>');
                         } else {
-                            response.stats.forEach(function(item) {
-                                console.log(item);
+                            response.stats.forEach(function(item) {                                
                                 tableBody.append(
                                     `<tr>
                                         <th>${item.divisionName}</td>
@@ -289,7 +287,7 @@
                                         <td>${item.highCount}</td>
                                         <td>${item.mediumCount}</td>
                                         <td>${item.lowCount}</td>
-                                        <td>${item.veryLowCount}</td>
+                                        
                                         <td>${item.totalCount}</td>
                                         <td>${item.ingStatus}</td>
                                         <td>${item.endStatus}</td>
@@ -332,11 +330,13 @@
                                         <td>${item.highCount}</td>
                                         <td>${item.mediumCount}</td>
                                         <td>${item.lowCount}</td>
-                                        <td>${item.veryLowCount}</td>
+                                        
                                         <td>${item.totalCount}</td>
                                         <td>${item.ingStatus}</td>
                                         <td>${item.endStatus}</td>
                                         <td>${item.endPercent}%</td>
+                                        <td>${item.scheduledCount}</td>
+                                        <td>${item.delayedCount}</td>
                                     </tr>`
                                 );
                             });
@@ -373,7 +373,7 @@
                                         <td>${item.highCount}</td>
                                         <td>${item.mediumCount}</td>
                                         <td>${item.lowCount}</td>
-                                        <td>${item.veryLowCount}</td>
+                                        
                                         <td>${item.totalCount}</td>
                                         <td>${item.ingStatus}</td>
                                         <td>${item.endStatus}</td>

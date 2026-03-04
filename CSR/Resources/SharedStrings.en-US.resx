@@ -26,6 +26,7 @@
   <data name="Button_Terminate" xml:space="preserve"><value>Terminate</value></data>
   <data name="Button_SearchUser" xml:space="preserve"><value>Search User</value></data>
   <data name="Button_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Button_ExcelDown" xml:space="preserve"><value>Excel Download</value></data>
     <!-- General Yes/No -->
   <data name="Yes" xml:space="preserve"><value>Yes</value></data>
   <data name="No" xml:space="preserve"><value>No</value></data>

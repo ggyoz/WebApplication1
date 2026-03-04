@@ -226,8 +226,6 @@
             var OfficeCdVal = @Html.Raw(Json.Serialize(Model.OfficeCd));
             var TeamCdVal = @Html.Raw(Json.Serialize(Model.TeamCd));
 
-            console.log(DeptCdVal +  " / " + OfficeCdVal + " / " + TeamCdVal);
-
         // 법인 선택 시 메뉴 드롭다운 변경
             $('#CorCd').on('change', function() {
                 var corCd = $(this).val();
@@ -295,8 +293,7 @@
                         url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
                         type: 'GET',
                         data: { corCd : corCd, deptCd: deptCd },
-                        success: function(data) {
-                            console.log(data);
+                        success: function(data) {                            
                             $.each(data, function(i, item) {
                                 
                                 deptDropdown.append($('<option></option>').val(item.value).text(item.text));

@@ -7,16 +7,16 @@
 }
 
 <div class="container mt-4">
-    <h3 class="display-6 mb-4">Dashboard</h3>
+    <h3 class="display-6 mb-4">요청 현황</h3>
 
     <div class="row">
         <!-- KPI Cards Section -->
         @if (User.IsInRole("R4")) // Admin
         {
             <div class="col-md-3 mb-4">
-                <div class="card blueCard shadow-sm h-100">
+                <div class="card blueCard shadow-sm h-100" onClick="goToReqList('', '')">
                     <div class="card-body m-3">
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center"">
                             <div class="d-flex flex-column"> 
                                 <h5 class="card-title mb-0">총 요청 수</h5>
                                 <p class="card-text mb-0">전체 시스템의 요청 현황</p>
@@ -27,21 +27,20 @@
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="card yellowCard shadow-sm h-100">
+                <div class="card yellowCard shadow-sm h-100" onClick="goToReqList('69', 'my')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column"> 
-                                <h5 class="card-title mb-0">내 접수요청</h5>
-                                <p class="card-text mb-0">내가 처리해야 할 접수된 요청</p>
+                                <h5 class="card-title mb-0">대기중인 요청</h5>
+                                <p class="card-text mb-0">내가 처리해야 할 대기 요청</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="r4PendingRequestsCount">0</p>
-                        </div>
-                        
+                        </div>                        
                     </div>
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="card greenCard shadow-sm h-100">
+                <div class="card greenCard shadow-sm h-100" onClick="goToReqList('64', 'my')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
                             <div class="d-flex flex-column"> 
@@ -54,7 +53,7 @@
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="card redCard shadow-sm h-100">
+                <div class="card redCard shadow-sm h-100" onClick="goToReqList('64', 'delay')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
@@ -70,7 +69,7 @@
         else if (User.IsInRole("R3")) // Manager
         {
             <div class="col-md-3 mb-4">
-                <div class="card blueCard shadow-sm h-100">
+                <div class="card blueCard shadow-sm h-100" onClick="goToReqList('')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
@@ -84,12 +83,12 @@
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="card yellowCard shadow-sm h-100">
+                <div class="card yellowCard shadow-sm h-100" onClick="goToReqList('69')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
-                                <h5 class="card-title mb-0">내 접수요청</h5>
-                                <p class="card-text mb-0">내가 처리해야 할 접수된 요청</p>
+                                <h5 class="card-title mb-0">대기중인 요청</h5>
+                                <p class="card-text mb-0">내가 처리해야 할 대기 요청</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="r3PendingRequestsCount">0</p>
                         </div>
@@ -98,7 +97,7 @@
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="card greenCard shadow-sm h-100">
+                <div class="card greenCard shadow-sm h-100" onClick="goToReqList('64', 'my')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
@@ -112,7 +111,7 @@
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="card redCard shadow-sm h-100">
+                <div class="card redCard shadow-sm h-100" onClick="goToReqList('64', 'delay')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
@@ -128,7 +127,7 @@
         else if (User.IsInRole("R2")) // Team Leader
         {
             <div class="col-md-3 mb-4">
-                <div class="card greenCard shadow-sm h-100">
+                <div class="card blueCard shadow-sm h-100" >
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
@@ -141,7 +140,7 @@
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="card bg-info text-white shadow-sm h-100">
+                <div class="card blueCard shadow-sm h-100" onclick="goToReqList('', '')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
                             <div class="d-flex flex-column"> 
@@ -245,7 +244,7 @@
             <div class="col-lg-4 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body m-3">
-                        <h5 class="card-title">전체 진척율 및 지연율</h5>
+                        <h5 class="card-title">전체 진척 및 지연 건수</h5>
                         <div id="chart_2" style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;"></div>
                     </div>
                 </div>
@@ -266,7 +265,7 @@
             <div class="col-lg-4 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body m-3">
-                        <h5 class="card-title mb-3">법인별 진척율 및 지연율</h5>
+                        <h5 class="card-title mb-3">법인별 진척 및 지연 건수</h5>
                         <div id="chartR2_2" style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;">
                             
                         </div>
@@ -287,7 +286,7 @@
             <div class="col-lg-4 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body m-3">
-                        <h5 class="card-title mb-3">진척율 및 지연율</h5>
+                        <h5 class="card-title mb-3">나의 진척 및 지연 건수</h5>
                         <div id="chartR1_2" style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;"></div>
                         <ul class="list-group list-group-flush">
                         </ul>
@@ -354,6 +353,26 @@
 
 @section Scripts {
     <script>
+
+    const userId = '@Context.Session.GetString("UserId")';
+    const userName = '@Html.Raw(Context.Session.GetString("UserName"))';
+    const today = new Date().toLocaleDateString('en-CA');                                                                                                                                                       
+
+    function goToReqList(status, filterType ) {
+        let url = '/Req/Index';
+        let params = [];       
+
+        if (status) params.push('ProcStatusCd=' + status);
+        if (filterType === 'my') params.push('ResUserName=' + userName );
+        if (filterType === 'delay') params.push('ExpectDate=' + today );
+
+        if (params.length > 0) {
+            url += '?' + params.join('&');
+        }
+
+        location.href = url;
+    }
+
 
         $(document).ready(function() {                    
 
@@ -505,7 +524,7 @@
                     type: 'GET',
                     success: function(data) {
                         // 카드 정보 업데이트 (대기+접수+진행+종결 = 전체)
-                        var totalCount = data.WAITCOUNT + data.RECEIVEDCOUNT + data.INPROGRESSCOUNT + data.CLOSEDCOUNT;
+                        var totalCount = data.WAITCOUNT + data.RECEIVEDCOUNT + data.INPROGRESSCOUNT + data.CLOSEDCOUNT + data.ANSWEREDCOUNT;
                         
                         $('#r1TotalRequestsCount').text(totalCount);
                         $('#r1InProgressRequestsCount').text(data.INPROGRESSCOUNT);
@@ -516,6 +535,7 @@
                             { status: '대기', data: data.WAITCOUNT },
                             { status: '접수', data: data.RECEIVEDCOUNT },
                             { status: '진행중', data: data.INPROGRESSCOUNT },
+                            { status: '답변완료', data: data.ANSWEREDCOUNT },
                             { status: '종결', data: data.CLOSEDCOUNT }
                         ];
                         
@@ -557,10 +577,9 @@
                             var activitiesList = $('#myRecentActivitiesList');
                             activitiesList.empty(); 
                             $.each(response.activities, function(index, activity) {
-                                console.log(activity);
                                 var date = new Date(activity.reG_DATE);
                                 var formattedDate = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
-                                activitiesList.append('<li class="list-group-item"><a href="/Req/Details/' + activity.reqid + '">' + '[요청 #' + activity.reqid + '] ' + activity.title + ' (' + localizedHistoryReasons[activity.historY_REASON] + ')</a><span class="text-end">'+ formattedDate +'</span></li>');
+                                activitiesList.append('<li class="list-group-item d-flex justify-content-between align-items-center"><a href="/Req/Details/' + activity.reqid + '">' + '[요청 #' + activity.reqid + '] ' + activity.title + ' (' + localizedHistoryReasons[activity.historY_REASON] + ')</a><span class="text-end">'+ formattedDate +'</span></li>');
                             });
                         } else {
                             var activitiesList = $('#myRecentActivitiesList');
@@ -583,7 +602,7 @@
                     type: 'GET',
                     success: function(data) {
                         // 법인 총 요청 카드 업데이트
-                        var totalCount = data.WAITCOUNT + data.RECEIVEDCOUNT + data.INPROGRESSCOUNT + data.CLOSEDCOUNT;
+                        var totalCount = data.WAITCOUNT + data.RECEIVEDCOUNT + data.INPROGRESSCOUNT + data.CLOSEDCOUNT + data.ANSWEREDCOUNT;
                         $('#r2CorpTotalRequestsCount').text(totalCount);                        
 
                         // 법인별 요청 현황 차트 업데이트
@@ -591,6 +610,7 @@
                             { status: '대기', data: data.WAITCOUNT },
                             { status: '접수', data: data.RECEIVEDCOUNT },
                             { status: '진행중', data: data.INPROGRESSCOUNT },
+                            { status: '답변완료', data: data.ANSWEREDCOUNT },
                             { status: '종결', data: data.CLOSEDCOUNT }
                         ];
                         
@@ -665,7 +685,7 @@
                     type: 'GET',
                     success: function(data) {
                         // 총 요청 수 카드 업데이트
-                        var totalCount = data.WAITCOUNT + data.RECEIVEDCOUNT + data.INPROGRESSCOUNT + data.CLOSEDCOUNT;
+                        var totalCount = data.WAITCOUNT + data.RECEIVEDCOUNT + data.INPROGRESSCOUNT + data.CLOSEDCOUNT + data.ANSWEREDCOUNT;
                         if (currentUserRole === 'R4') {
                             $('#r4TotalRequestsCount').text(totalCount);
                         } else {
@@ -677,6 +697,7 @@
                             { status: '대기', data: data.WAITCOUNT },
                             { status: '접수', data: data.RECEIVEDCOUNT },
                             { status: '진행중', data: data.INPROGRESSCOUNT },
+                            { status: '답변완료', data: data.ANSWEREDCOUNT },
                             { status: '종결', data: data.CLOSEDCOUNT }
                         ];
                         
@@ -696,8 +717,8 @@
                     type: 'GET',
                     success: function(data) {
                         var allPerfData = [
-                            { status: '처리율', data: data.completedCount },
-                            { status: '지연율', data: data.delayedCount }
+                            { status: '처리', data: data.completedCount },
+                            { status: '지연', data: data.delayedCount }
                         ];
                         
                         var chartInstance = $('#chart_2').dxChart('instance');
@@ -775,8 +796,7 @@
                         if (response.success && response.activities && response.activities.length > 0) {
                             var activitiesList = $('#r3r4RecentActivitiesList');
                             activitiesList.empty(); // Clear existing placeholders
-                            $.each(response.activities, function(index, activity) {
-                                console.log(activity);
+                            $.each(response.activities, function(index, activity) {                                
                                 var date = new Date(activity.reG_DATE);
                                 var formattedDate = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
                                 activitiesList.append('<li class="list-group-item d-flex justify-content-between align-items-center"><a href="/Req/Details/' + activity.reqid + '">' + '[요청 #' + activity.reqid + '] ' + activity.title + ' (' + localizedHistoryReasons[activity.historY_REASON] + ')</a><span class="text-end">'+ formattedDate +'</span></li>');

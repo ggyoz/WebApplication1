@@ -94,7 +94,7 @@
                         <td><input name="ResUserName" class="form-control" value="@ViewData["ResUserName"]" /></td> 
                         <th>@SharedLocalizer["Label_Title"]</th>
                         <td colspan="3">
-                            <input type="text" name="searchValue" value="@ViewData["SearchValue"]" class="form-control" placeholder="@SharedLocalizer["Placeholder_SearchByTitle"]" />
+                            <input type="text" name="searchValue" value="@ViewData["SearchValue"]" class="form-control" placeholder="" />
                         </td>                
                     </tr>
                     <tr>
@@ -104,15 +104,23 @@
                             var allResponsibilities = ViewBag.AllResponsibilities as Dictionary<string, List<CSR.Models.CommCode>> ?? new Dictionary<string, List<CSR.Models.CommCode>>();
                             var selectedResponsibilities = ViewData["AssignedResponsibilities"] as List<string> ?? new List<string>();
                         }
+                            <input type="hidden" name="AssignedResponsibilities" id="hiddenAssignedResponsibilities" value="@string.Join(",", selectedResponsibilities)" />
                             @foreach (var group in allResponsibilities)
                             {
-                                <div class="mb-2">
-                                    <strong>@group.Key</strong>
+                                <div class="mb-2 resp-group-container">
+                                    <div class="d-flex align-items-center mb-1">
+                                        <div class="form-check">
+                                            <input class="form-check-input select-all-group" type="checkbox" id="group_@group.Key.GetHashCode()">
+                                            <label class="form-check-label fw-bold" for="group_@group.Key.GetHashCode()">
+                                                @group.Key
+                                            </label>
+                                        </div>
+                                    </div>
                                     <div class="d-flex flex-wrap mt-1">
                                     @foreach (var responsibility in group.Value)
                                     {
                                         <div class="form-check me-3">
-                                            <input class="form-check-input" type="checkbox" name="AssignedResponsibilities" value="@responsibility.CODEID" id="resp_@responsibility.CODEID"
+                                            <input class="form-check-input resp-checkbox" type="checkbox" value="@responsibility.CODEID" id="resp_@responsibility.CODEID"
                                                 @(selectedResponsibilities.Contains(responsibility.CODEID.ToString()) ? "checked" : "") />
                                             <label class="form-check-label" for="resp_@responsibility.CODEID">
                                                 @SharedLocalizer[responsibility.CODENM]
@@ -138,8 +146,18 @@
     </form>
 </div>
 
-<div class="text-end">
-    <a asp-action="Create" class="btn btn-add">@SharedLocalizer["Button_RegisterRequest"]</a>
+<div class="d-flex justify-content-between"> 
+    <div class="text-start">
+        <a href="#" id="btnExcelDownload" class="btn btn-excel" style="">@SharedLocalizer["Button_ExcelDown"]</a>
+        <!-- 전체 개수 출력 부분 추가 -->        
+        <span class="text-muted">
+            Total: <strong class="text-primary">@Model.TotalCount</strong> 건
+        </span>
+    </div>
+
+    <div class="text-end">
+        <a asp-action="Create" class="btn btn-add">@SharedLocalizer["Button_RegisterRequest"]</a>
+    </div>
 </div>
 
 <div class="table-responsive">
@@ -168,7 +186,7 @@
             {
                 @foreach (var item in Model.Items)
                 {
-                    <tr>
+                    <tr onclick="window.location.href = '@Url.Action("Details", "Req", new { id = item.REQID })';">
                         <td>@item.REQID</td>
                         @{
                             var userDiv = HttpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
@@ -178,9 +196,10 @@
                             var actionName = "Details";
 
                         }
-                        <td><a asp-action="@actionName" asp-route-id="@item.REQID">@(item.TITLE.Length > 30 ? item.TITLE.Substring(0, 30) + "..." : item.TITLE)</a></td>
+                        <td>@(item.TITLE.Length > 30 ? item.TITLE.Substring(0, 30) + "..." : item.TITLE)</td>
                         <td>@{
-                            var orgParts = new[] { item.CorpName, item.DeptName, item.OfficeName, item.TeamName };                            
+                            //var orgParts = new[] { item.CorpName, item.DeptName, item.OfficeName, item.TeamName };
+                            var orgParts = new[] { item.CorpName, item.TeamName };
                             var organization = string.Join(" / ", orgParts.Where(p => !string.IsNullOrEmpty(p)));
                         }
                         @organization</td>
@@ -264,6 +283,22 @@
             initDateBox('#DueDateSearch', '#hiddenDueDate', searchValues.dueDate);
             initDateBox('#ExpectDateSearch', '#hiddenExpectDate', searchValues.expectDate);
             
+            // Excel Download Button Click Event
+            $('#btnExcelDownload').on('click', function (e) {
+                e.preventDefault();
+                
+                // 엑셀 다운로드 시에도 체크박스 값을 합쳐서 전달
+                var assignedStr = $('.resp-checkbox:checked').map(function() {
+                    return this.value;
+                }).get().join(',');
+
+                var currentParams = new URLSearchParams(window.location.search);
+                currentParams.set('assignedResponsibilities', assignedStr);
+                
+                var exportUrl = '@Url.Action("ExportToExcel")' + '?' + currentParams.toString();
+                window.location.href = exportUrl;
+            });
+            
             // Custom toggle logic using jQuery slideToggle
             $('#toggleSearchArea').on('click', function(e) {
                 e.preventDefault();
@@ -272,23 +307,20 @@
                     var icon = $('#collapseIcon');
                     if ($(this).is(':visible')) {
                         icon.removeClass('bi-chevron-bar-down').addClass('bi-chevron-bar-up');
+                        localStorage.setItem('reqSearch_isExpanded', 'true');
                     } else {
                         icon.removeClass('bi-chevron-bar-up').addClass('bi-chevron-bar-down');
+                        localStorage.setItem('reqSearch_isExpanded', 'false');
                     }
                 });
             });
 
-            // Set initial icon state based on whether the searchCollapse is visible (it starts with class "show")
-            // This is important because the "show" class might make it visible, but slideToggle expects it to be hidden initially
-            // if we want to slideDown on first click.
-            // Let's manually hide it if it has the "show" class and adjust icon.
-            if ($('#searchCollapse').hasClass('show')) {
-                // If it has 'show', remove it and hide it initially, and set the icon to down arrow.
-                // This will make the first click slideDown.
-                $('#searchCollapse').removeClass('show').hide();
-                $('#collapseIcon').removeClass('bi-chevron-bar-up').addClass('bi-chevron-bar-down');
+            // Set initial state based on localStorage
+            const isExpanded = localStorage.getItem('reqSearch_isExpanded');
+            if (isExpanded === 'true') {
+                $('#searchCollapse').show();
+                $('#collapseIcon').removeClass('bi-chevron-bar-down').addClass('bi-chevron-bar-up');
             } else {
-                // If it doesn't have 'show', ensure it's hidden and icon is down.
                 $('#searchCollapse').hide();
                 $('#collapseIcon').removeClass('bi-chevron-bar-up').addClass('bi-chevron-bar-down');
             }
@@ -370,6 +402,37 @@
                         }
                     });
                 }
+            });
+
+            // 담당영역 그룹별 전체 선택/해제
+            $('.select-all-group').on('change', function() {
+                var isChecked = $(this).is(':checked');
+                $(this).closest('.resp-group-container').find('.resp-checkbox').prop('checked', isChecked);
+            });
+
+            // 개별 체크박스 변경 시 상위 "전체 선택" 체크박스 상태 업데이트
+            $('.resp-checkbox').on('change', function() {
+                var container = $(this).closest('.resp-group-container');
+                var total = container.find('.resp-checkbox').length;
+                var checked = container.find('.resp-checkbox:checked').length;
+                container.find('.select-all-group').prop('checked', total === checked);
+            });
+
+            // 페이지 로드 시 이미 모두 체크된 그룹은 "전체 선택" 활성화
+            $('.resp-group-container').each(function() {
+                var total = $(this).find('.resp-checkbox').length;
+                var checked = $(this).find('.resp-checkbox:checked').length;
+                if (total > 0 && total === checked) {
+                    $(this).find('.select-all-group').prop('checked', true);
+                }
+            });
+
+            // 폼 전송 시 담당영역 체크박스 값을 콤마로 합쳐서 hidden input에 설정
+            $('form').on('submit', function() {
+                var selectedValues = $('.resp-checkbox:checked').map(function() {
+                    return this.value;
+                }).get().join(',');
+                $('#hiddenAssignedResponsibilities').val(selectedValues);
             });
 
         }); // End of $(function)

@@ -12,6 +12,9 @@ using System;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using CSR.Authorization;
+using ClosedXML.Excel;
+using System.IO;
+using System.Linq;
 
 namespace CSR.Controllers
 {
@@ -56,23 +59,29 @@ namespace CSR.Controllers
             string? deptCd = null,
             string? officeCd = null,
             string? teamCd = null,
-            List<string>? assignedResponsibilities = null
+            string? assignedResponsibilities = null
             ) // This is for title search
         {
 
             // 세션이 없으면 로그인페이지로 튕겨냄
+            var sessionCorCd = HttpContext.Session.GetString("CorCd");
             var sessionTeamCd = HttpContext.Session.GetString("TeamCd");
             var sessionOfficeCd = HttpContext.Session.GetString("OfficeCd");            
+            var sessionDeptCd = HttpContext.Session.GetString("DeptCd");            
 
             // 팀원 및 팀장 조회 제한
             if( !User.IsInRole("R3") && !User.IsInRole("R4") ){
 
-                if (string.IsNullOrEmpty(sessionTeamCd) || string.IsNullOrEmpty(sessionOfficeCd))
+                if ( string.IsNullOrEmpty(sessionOfficeCd) )
                 {
                     return RedirectToAction("Login", "Account");
                 }
 
             }
+
+            var respList = string.IsNullOrEmpty(assignedResponsibilities) 
+                ? new List<string>() 
+                : assignedResponsibilities.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
 
             ViewData["ReqTypeCd"] = reqTypeCd;
             ViewData["ProcStatusCd"] = procStatusCd;
@@ -88,7 +97,7 @@ namespace CSR.Controllers
             ViewData["DeptCd"] = deptCd;
             ViewData["OfficeCd"] = officeCd;
             ViewData["TeamCd"] = teamCd;
-            ViewData["AssignedResponsibilities"] = assignedResponsibilities;
+            ViewData["AssignedResponsibilities"] = respList;
 
             ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
             ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
@@ -116,11 +125,13 @@ namespace CSR.Controllers
             {
                  ViewBag.TeamCdList = await _deptService.GetSelectListByDeptAsync(corCd, officeCd);
             }
-            
+
             if( User.IsInRole("R1")) {
+                corCd = sessionCorCd;
                 teamCd = sessionTeamCd;
             }else if( User.IsInRole("R2")){ 
-                officeCd = sessionOfficeCd;
+                corCd = sessionCorCd;
+                deptCd = sessionDeptCd;
             }
             
             var pagedResult = await _reqService.GetReqInfosAsync(
@@ -140,8 +151,133 @@ namespace CSR.Controllers
                 deptCd, 
                 officeCd, 
                 teamCd,
-                assignedResponsibilities);
+                respList);
             return View(pagedResult);
+        }
+
+        public async Task<IActionResult> ExportToExcel(
+            string? reqTypeCd = null,
+            string? procStatusCd = null,
+            string? priorityCd = null,
+            string? reqDate = null,
+            string? dueDate = null,
+            string? expectDate = null,
+            string? regId = null,
+            string? reqUserName = null,
+            string? resUserName = null,
+            string? searchValue = null,
+            string? corCd = null,
+            string? deptCd = null,
+            string? officeCd = null,
+            string? teamCd = null,
+            string? assignedResponsibilities = null
+            )
+        {
+            // 세션이 없으면 로그인페이지로 튕겨냄
+            var sessionCorCd = HttpContext.Session.GetString("CorCd");
+            var sessionTeamCd = HttpContext.Session.GetString("TeamCd");
+            var sessionOfficeCd = HttpContext.Session.GetString("OfficeCd");            
+            var sessionDeptCd = HttpContext.Session.GetString("DeptCd");  
+
+            if (!User.IsInRole("R3") && !User.IsInRole("R4"))
+            {
+                if (string.IsNullOrEmpty(sessionOfficeCd))
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+            }
+
+            corCd = sessionCorCd;
+
+            if (User.IsInRole("R1"))
+            {
+                teamCd = sessionTeamCd;
+            }else if (User.IsInRole("R2"))
+            {
+                deptCd = sessionDeptCd;
+            }
+
+            var respList = string.IsNullOrEmpty(assignedResponsibilities) 
+                ? new List<string>() 
+                : assignedResponsibilities.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            var requests = await _reqService.GetAllReqInfosAsync(
+                reqTypeCd,
+                procStatusCd,
+                priorityCd,
+                reqDate,
+                dueDate,
+                expectDate,
+                regId,
+                reqUserName,
+                resUserName,
+                searchValue,
+                corCd,
+                deptCd,
+                officeCd,
+                teamCd,
+                respList);
+
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Requests");
+                var currentRow = 1;
+
+                // Header
+                worksheet.Cell(currentRow, 1).Value = "요청번호";
+                worksheet.Cell(currentRow, 2).Value = "제목";
+                worksheet.Cell(currentRow, 3).Value = "소속(법인)";
+                worksheet.Cell(currentRow, 4).Value = "소속(본부)";
+                worksheet.Cell(currentRow, 5).Value = "소속(사업장)";
+                worksheet.Cell(currentRow, 6).Value = "소속(팀)";
+                worksheet.Cell(currentRow, 7).Value = "요청구분";
+                worksheet.Cell(currentRow, 8).Value = "대상시스템";
+                worksheet.Cell(currentRow, 9).Value = "요청메뉴";
+                worksheet.Cell(currentRow, 10).Value = "요청자";
+                worksheet.Cell(currentRow, 11).Value = "요청일";
+                worksheet.Cell(currentRow, 12).Value = "조치자";
+                worksheet.Cell(currentRow, 13).Value = "완료요구일";
+                worksheet.Cell(currentRow, 14).Value = "완료예정일";
+                worksheet.Cell(currentRow, 15).Value = "진행상태";
+                worksheet.Cell(currentRow, 16).Value = "긴급도";
+
+                // Header Styling
+                var headerRange = worksheet.Range(currentRow, 1, currentRow, 16);
+                headerRange.Style.Font.Bold = true;
+                headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                // Data
+                foreach (var req in requests)
+                {
+                    currentRow++;
+                    worksheet.Cell(currentRow, 1).Value = req.REQID;
+                    worksheet.Cell(currentRow, 2).Value = req.TITLE;
+                    worksheet.Cell(currentRow, 3).Value = req.CorpName;
+                    worksheet.Cell(currentRow, 4).Value = req.DeptName;
+                    worksheet.Cell(currentRow, 5).Value = req.OfficeName;
+                    worksheet.Cell(currentRow, 6).Value = req.TeamName;
+                    worksheet.Cell(currentRow, 7).Value = req.ReqTypeName;
+                    worksheet.Cell(currentRow, 8).Value = req.SystemName;
+                    worksheet.Cell(currentRow, 9).Value = req.ReqMenuName;
+                    worksheet.Cell(currentRow, 10).Value = req.ReqUserName;
+                    worksheet.Cell(currentRow, 11).Value = req.REQDATE;
+                    worksheet.Cell(currentRow, 12).Value = req.ResUserName;
+                    worksheet.Cell(currentRow, 13).Value = req.DUEDATE;
+                    worksheet.Cell(currentRow, 14).Value = req.EXPECTDATE;
+                    worksheet.Cell(currentRow, 15).Value = req.ProcStatusName;
+                    worksheet.Cell(currentRow, 16).Value = req.PriorityName;
+                }
+
+                worksheet.Columns().AdjustToContents();
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    var content = stream.ToArray();
+                    return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"RequestList_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+                }
+            }
         }
 
         public async Task<IActionResult> Details(int id)

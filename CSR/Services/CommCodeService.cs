@@ -89,9 +89,9 @@ namespace CSR.Services
             await _dbConnection.ExecuteAsync(sql, parameters);
 
             // --- 쿼리디버깅코드 ---
-            Console.WriteLine("Executing CreateUserAsync Query:");
-            Console.WriteLine(sql);
-            Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(commCode, Formatting.Indented));            
+            // Console.WriteLine("Executing CreateUserAsync Query:");
+            // Console.WriteLine(sql);
+            // Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(commCode, Formatting.Indented));            
             
             return parameters.Get<int>("NewCodeId");
         }

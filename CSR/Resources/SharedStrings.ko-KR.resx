@@ -26,6 +26,7 @@
   <data name="Button_Terminate" xml:space="preserve"><value>종결</value></data>
   <data name="Button_SearchUser" xml:space="preserve"><value>사용자 검색</value></data>
   <data name="Button_Close" xml:space="preserve"><value>닫기</value></data>
+  <data name="Button_ExcelDown" xml:space="preserve"><value>엑셀 다운로드</value></data>
   <!-- General Yes/No -->
   <data name="Yes" xml:space="preserve"><value>예</value></data>
   <data name="No" xml:space="preserve"><value>아니오</value></data>
@@ -123,6 +124,7 @@
   <data name="Placeholder_SelectSystem" xml:space="preserve"><value>시스템 선택</value></data>
   <data name="Popup_SelectUser" xml:space="preserve"><value>사용자 선택</value></data>
   <data name="DataGrid_SearchUser" xml:space="preserve"><value>사용자 검색</value></data>
+  
   <!-- Table Headers -->
   <data name="TableHeader_UserId" xml:space="preserve"><value>사용자ID</value></data>
   <data name="TableHeader_UserName" xml:space="preserve"><value>사용자 이름</value></data>
@@ -171,7 +173,9 @@
   <data name="Validation_ExpectDateAfterRequestDate_Part1" xml:space="preserve"><value>완료예정일은 요청일(</value></data>
   <data name="Validation_ExpectDateAfterRequestDate_Part2" xml:space="preserve"><value>) 이후여야 합니다.</value></data>
   <data name="Validation_FileNameTooLong" xml:space="preserve"><value>파일 이름이 너무 깁니다. ({0}자 이하)</value></data>
-    <data name="Message_NoHistory" xml:space="preserve"><value>요청사항 이력이 없습니다.</value></data>
+  <data name="Validation_Required" xml:space="preserve"><value>필수 입력사항입니다.</value></data>
+  <data name="Message_NoHistory" xml:space="preserve"><value>요청사항 이력이 없습니다.</value></data>
+  
 
   <!-- CommCodes (CC values) -->
   <data name="CC1" xml:space="preserve"><value>긴급도</value></data>

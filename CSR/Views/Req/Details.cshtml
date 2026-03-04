@@ -118,17 +118,40 @@
         </div>
     </div>
 
+    @if (Model.AttachFiles.Any())
+    {   
+        var userFileCnt = 0;
+        <div class="card mt-4">
+            <div class="card-header">@SharedLocalizer["Label_Attachments"]</div>
+            <ul class="list-group list-group-flush">
+                @foreach(var file in Model.AttachFiles)
+                {
+                    @if(file.REQTYPE == "U"){
+                        userFileCnt++;
+                        <li class="list-group-item">
+                            <a asp-action="DownloadFile" asp-route-id="@file.FILEID">@file.REAL_FILENAME</a>
+                        </li>
+                    }                    
+                }
+
+                @if( userFileCnt == 0 ){
+                    <li class="list-group-item">등록된 파일이 없습니다.</li>
+                }
+            </ul>
+        </div>
+    }
+
     <hr/> 
     @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded)
     {
     <div class="row">
         <div class="col-md-12">
             <table class="table-layout Details" style="width:100%">
-                    <tr >
+                    <tr>
                         <td><label>@SharedLocalizer["Label_Importance"]</label></td>
-                        <td>@SharedLocalizer["CC" + Model.IMPTCD]</td>
+                        <td>@(string.IsNullOrEmpty(Model.IMPTCD) ? "" : SharedLocalizer["CC" + Model.IMPTCD])</td>
                         <td><label>@SharedLocalizer["Label_Difficulty"]</label></td>
-                        <td>@SharedLocalizer["CC" + Model.DFCLTCD]</td>
+                        <td>@(string.IsNullOrEmpty(Model.IMPTCD) ? "" : SharedLocalizer["CC" + Model.DFCLTCD])<td>
                         <td><label>@SharedLocalizer["Label_ManDay"]</label></td>
                         <td>@Model.MAN_DAY</td>
                         <td><label>@SharedLocalizer["Label_BXTInquiryNo"]</label></td>
@@ -209,7 +232,7 @@
             </tr>
             <tr>
                 <td>@SharedLocalizer["Label_Attachments"]</td>
-                <td colspan="3">
+                <td colspan="9">
                     @if (Model.AttachFiles.Any())
                     {
                         <ul class="list-group mb-3">
@@ -223,8 +246,8 @@
                             }
                         </ul>
                     }
-                    <div>
-                        <div id="file-uploader"></div>
+                    <div>                        
+                        <div id="file-uploader"></div>                        
                     </div>
                 </td>
             </tr>
@@ -258,6 +281,29 @@
             </div>
         }
 
+        @if (Model.AttachFiles.Any())
+        {
+            var fileCnt = 0;
+            <div class="card mt-4">
+                <div class="card-header">@SharedLocalizer["Label_Attachments"]</div>
+                <ul class="list-group list-group-flush">
+                    @foreach(var file in Model.AttachFiles)
+                    {
+                        @if(file.REQTYPE == "M"){
+                            fileCnt++;
+                            <li class="list-group-item">
+                                <a asp-action="DownloadFile" asp-route-id="@file.FILEID">@file.REAL_FILENAME</a>
+                            </li>
+                        }                    
+                    }
+
+                    @if( fileCnt == 0 ){
+                        <li class="list-group-item">등록된 파일이 없습니다.</li>
+                    }
+                </ul>
+            </div>
+        }
+
     }
 
     @if (Model.PROC_STATUS == "65" && Model.REQUSERID == User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier))
@@ -284,20 +330,7 @@
         </div>
     }
 
-    @if (Model.AttachFiles.Any())
-    {
-        <div class="card mt-4">
-            <div class="card-header">@SharedLocalizer["Label_Attachments"]</div>
-            <ul class="list-group list-group-flush">
-                @foreach(var file in Model.AttachFiles)
-                {
-                    <li class="list-group-item">
-                        <a asp-action="DownloadFile" asp-route-id="@file.FILEID">@file.REAL_FILENAME</a>
-                    </li>
-                }
-            </ul>
-        </div>
-    }
+    
 </div>
 
 
@@ -330,25 +363,34 @@
                                 <span class="card-text1"><strong>@SharedLocalizer["Label_ActionTaker"]:</strong> @hist.ResUserName</span>
                                 <span class="card-text1"><strong>@SharedLocalizer["Label_RegistrationDate"]:</strong> @hist.REG_DATE.ToString("yyyy-MM-dd HH:mm")</span>                            
                                 <span class="card-text1"><strong>@SharedLocalizer["Label_RequestDate"]:</strong> @hist.REQDATE.ToString("yyyy-MM-dd")</span>
-                                <span class="card-text1"><strong>@SharedLocalizer["Label_DueDate"]:</strong> @(hist.DUEDATE.HasValue ? hist.DUEDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"].Value)</span>
+                                <span class="card-text1"><strong>@SharedLocalizer["Label_DueDate"]:</strong> @(hist.EXPECTDATE.HasValue ? hist.EXPECTDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"].Value)</span>
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="content-display">
-                                @Html.Raw(hist.CONTENTS_HTML)
+                            <div class="content-display">                               
+
+                                @if(!string.IsNullOrEmpty(hist.HISTORY_REASON) && hist.HISTORY_REASON == "74"){                                    
+                                    <p><strong>@SharedLocalizer["CC" + hist.HISTORY_REASON]</strong> : @hist.DUEDATE.Value.ToString("yyyy-MM-dd")</p>   
+                                    <hr/>                                 
+                                }else if(!string.IsNullOrEmpty(hist.HISTORY_REASON) && hist.HISTORY_REASON == "72"){                                    
+                                    <p><strong>@SharedLocalizer["CC" + hist.HISTORY_REASON]</strong></p>                                    
+                                    <hr/>
+                                }else if(!string.IsNullOrEmpty(hist.HISTORY_REASON) && hist.HISTORY_REASON == "75"){
+                                    <p><strong>@SharedLocalizer["CC" + hist.HISTORY_REASON]</strong> : @hist.ResUserName</p>
+
+                                }else{
+                                    @Html.Raw(hist.CONTENTS_HTML)
+                                }
+
                             </div>
-                        </div>                        
-                    </div>
+                        </div>
+                    </div>                    
 
-                    @if(!string.IsNullOrEmpty(hist.HISTORY_REASON)){
-                        
-                    }
-
-                    @if(hist.ANSWER_HTML != null){
+                    @if(hist.ANSWER_HTML != null && ( hist.HISTORY_REASON == "73" || hist.HISTORY_REASON == "76") ){
 
                         <div class="card mb-2 border" style="border-style:soild;border-width:1px;">
                             <div class="card-header">
-                                <div class="justify-content-between mb-1">
+                                <div class="justify-content-between mb-1">                                    
                                     <span class="card-text1"><strong>@SharedLocalizer["Label_ActionTaker"]:</strong> @hist.ResUserName</span>
                                     <span class="card-text1"><strong>@SharedLocalizer["Label_RegistrationDate"]:</strong> @hist.REG_DATE.ToString("yyyy-MM-dd HH:mm")</span>
                                     <span class="card-text1"><strong>@SharedLocalizer["Label_RequestDate"]:</strong> @hist.REQDATE.ToString("yyyy-MM-dd")</span>
@@ -357,6 +399,8 @@
                             </div>
                             <div class="card-body">
                                 <div class="content-display">
+                                <p><strong>답변내용</strong></p>
+                                <hr/>
                                     @Html.Raw(hist.ANSWER_HTML)
                                 </div>
                             </div>
@@ -364,7 +408,7 @@
 
                     }
 
-                    @if(hist.NOTE_HTML != null && (await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded ){
+                    @if(hist.NOTE_HTML != null && ( hist.HISTORY_REASON == "73" || hist.HISTORY_REASON == "76") && (await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded  ){
 
                         <div class="card">
                             <div class="card-header">
@@ -377,6 +421,8 @@
                             </div>
                             <div class="card-body">
                                 <div class="content-display">
+                                    <p><strong>조치내역</strong></p>
+                                    <hr/>
                                     @Html.Raw(hist.NOTE_HTML)
                                 </div>
                             </div>                        
@@ -402,7 +448,7 @@
 <!-- 버튼 영역 -->
 <div class="d-flex justify-content-between align-items-center mt-5">
     <div>
-        @if(Model.PROC_STATUS == "69")
+        @if(Model.PROC_STATUS == "69" && currentUserId == Model.REQUSERID )
         {
             <form asp-action="Delete" asp-route-id="@Model.REQID" method="post" onsubmit="return confirm('@SharedLocalizer["Confirmation_Delete"]');">
                 @Html.AntiForgeryToken()
@@ -480,6 +526,13 @@
         word-break: break-word; /* 긴 단어도 줄 바꿈되도록 설정 */
         background-color:#ffffff;
     }
+
+    #file-uploader .dx-fileuploader-input-wrapper {
+        min-height: 150px;
+        border: 2px dashed #ccc;
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
     
 </style>
 
@@ -492,6 +545,27 @@
     initializeHtmlEditor('#answer-editor', 'input[name="@Html.NameFor(m => m.ANSWER_HTML)"]');
     initializeHtmlEditor('#note-editor', 'input[name="@Html.NameFor(m => m.NOTE_HTML)"]');
     initializeHtmlEditor('#re-inquiry-editor', 'input[name="reInquiryContent"]');
+    
+    $("#file-uploader").dxFileUploader({ 
+        name: 'newFiles',
+        multiple: true,
+        uploadMode: 'useForm',
+        allowCanceling: true,
+        maxFileSize: 4000000, // 4mb
+        onValueChanged: function (e) {            
+            const maxLength = 100; // 최대 허용 길이
+            const files = e.value;                
+            files.forEach(file => {
+                if (file.name.length > maxLength) {
+                    // 경고 메시지 표시
+                    DevExpress.ui.notify(`@SharedLocalizer["Validation_FileNameTooLong", 100]`, "error", 2000);
+                    // 필요 시 컴포넌트 값 초기화
+                    e.component.reset();
+                }
+            });
+        }
+        
+    });
 
     function saveDraft() {
         var form = document.getElementById('req-form');
@@ -518,11 +592,9 @@
         var requestDate = new Date(requestDateStr);
         var selectedExpectDate = new Date(expectDateValue);
 
-        // Set hours/minutes/seconds to 0 for accurate date comparison
         requestDate.setHours(0, 0, 0, 0);
         selectedExpectDate.setHours(0, 0, 0, 0);
 
-        // Validate: Expected End Date must be after Request Date
         if (selectedExpectDate <= requestDate) {
             expectDateErrorSpan.text('@Html.Raw(SharedLocalizer["Validation_ExpectDateAfterRequestDate_Part1"])' + requestDateStr + '@Html.Raw(SharedLocalizer["Validation_ExpectDateAfterRequestDate_Part2"])');
             return false;

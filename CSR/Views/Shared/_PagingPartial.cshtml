@@ -4,6 +4,8 @@
     // Preserve other query string parameters like for sorting or filtering
     var routeData = new Dictionary<string, string>();
     var queryData = ViewContext.HttpContext.Request.Query;
+
+    Console.WriteLine("queryData : " + queryData);
     if (queryData != null)
     {
         foreach (var key in queryData.Keys)

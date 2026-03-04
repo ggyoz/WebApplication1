@@ -56,29 +56,33 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>@SharedLocalizer["Label_Corporation"]</td>
+                    <td>@SharedLocalizer["Label_Corporation"] *</td>
                     <td>
                         <select asp-for="CorCd" id="CorCd" asp-items="ViewBag.CorCdList" class="form-select" name="CorCd">
                             <option value="">@SharedLocalizer["Placeholder_SelectCorporation"]</option>
                         </select>
+                        <span asp-validation-for="CorCd" class="text-danger"></span>
                     </td>
-                    <td>@SharedLocalizer["Label_Department"]</td>
+                    <td>@SharedLocalizer["Label_Department"] *</td>
                     <td>
                         <select asp-for="DeptCd" id="DeptCd" asp-items="ViewBag.DeptCdList"  class="form-select" name="DeptCd">
                             <option value="">@SharedLocalizer["Placeholder_SelectDepartment"]</option>
                         </select>
+                        <span asp-validation-for="DeptCd" class="text-danger"></span>
                     </td>
-                    <td>@SharedLocalizer["Label_Office"]</td>
+                    <td>@SharedLocalizer["Label_Office"] *</td>
                     <td>
                         <select asp-for="OfficeCd" id="OfficeCd" asp-items="ViewBag.OfficeCdList" class="form-select" name="OfficeCd">
                             <option value="">@SharedLocalizer["Placeholder_SelectOffice"]</option>
                         </select>
+                        <span asp-validation-for="OfficeCd" class="text-danger"></span>
                     </td>
-                    <td>@SharedLocalizer["Label_Team"]</td>
+                    <td>@SharedLocalizer["Label_Team"] *</td>
                     <td>
                         <select asp-for="TeamCd" id="TeamCd" asp-items="ViewBag.TeamCdList" class="form-select" name="TeamCd">
                             <option value="">@SharedLocalizer["Placeholder_SelectTeam"]</option>
                         </select>
+                        <span asp-validation-for="TeamCd" class="text-danger"></span>
                     </td>
                 </tr>
                 <tr>
@@ -129,7 +133,9 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     @if (ViewBag.ShowSuccessAlert != null && (bool)ViewBag.ShowSuccessAlert) {
+
             <script type="text/javascript">
+
                 const logoutUrl = '@Url.Action("Logout", "Account")';
 
                 function forceLogout() {
@@ -139,7 +145,7 @@
                 $(document).ready(function() {
                     var message = @Html.Raw(Json.Serialize(SharedLocalizer["Message_ProfileUpdateSuccess"].Value));
                     alert(message);
-                    //forceLogout();
+                    forceLogout();
                 });                 
             </script>
         }
@@ -256,8 +262,7 @@
                         url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
                         type: 'GET',
                         data: { corCd : corCd, deptCd: deptCd },
-                        success: function(data) {
-                            console.log(data);
+                        success: function(data) {                            
                             $.each(data, function(i, item) {
                                 
                                 deptDropdown.append($('<option></option>').val(item.value).text(item.text));
@@ -278,13 +283,11 @@
                 var submitButton = $('input[type="submit"]');
 
                 if (password && confirmPassword && password !== confirmPassword) {
-                    console.log("1");
                     validationSpan.text('@Html.Raw(SharedLocalizer["Validation_PasswordMismatch"])'); // New localization key needed
                     submitButton.prop('disabled', true);
                 } else {
 
                     if( _.isEmpty(confirmPassword) ) {
-                        console.log("2");
                         validationSpan.text('@Html.Raw(SharedLocalizer["Validation_PasswordMismatch"])'); // New localization key needed
                         submitButton.prop('disabled', true);
                     }else{
@@ -305,18 +308,51 @@
 
             $('form').on('submit', function(e) {
 
-                console.log("submit test");
+                // 필수 입력 체크
+                var userName = $('#UserName').val();
+                var corCd = $('#CorCd').val();
+                var deptCd = $('#DeptCd').val();
+                var officeCd = $('#OfficeCd').val();
+                var teamCd = $('#TeamCd').val();
+
+                if (!userName) {
+                    alert("@Html.Raw(SharedLocalizer["Label_UserName"]) @Html.Raw(SharedLocalizer["Validation_Required"])");
+                    $('#UserName').focus();
+                    e.preventDefault();
+                    return false;
+                }
+                if (!corCd) {
+                    alert("@Html.Raw(SharedLocalizer["Label_Corporation"]) @Html.Raw(SharedLocalizer["Validation_Required"])");
+                    $('#CorCd').focus();
+                    e.preventDefault();
+                    return false;
+                }
+                if (!deptCd) {
+                    alert("@Html.Raw(SharedLocalizer["Label_Department"]) @Html.Raw(SharedLocalizer["Validation_Required"])");
+                    $('#DeptCd').focus();
+                    e.preventDefault();
+                    return false;
+                }
+                if (!officeCd) {
+                    alert("@Html.Raw(SharedLocalizer["Label_Office"]) @Html.Raw(SharedLocalizer["Validation_Required"])");
+                    $('#OfficeCd').focus();
+                    e.preventDefault();
+                    return false;
+                }
+                if (!teamCd) {
+                    alert("@Html.Raw(SharedLocalizer["Label_Team"]) @Html.Raw(SharedLocalizer["Validation_Required"])");
+                    $('#TeamCd').focus();
+                    e.preventDefault();
+                    return false;
+                }
+
                 var password = $('#UserPwd').val();
                 var confirmPassword = $('#ConfirmPassword').val();
 
-                console.log(password , confirmPassword);
-                console.log("confirmPassword" +  confirmPassword);
-
                 if (password && password !== confirmPassword) {
-                    console.log("not matched");
                     e.preventDefault(); // Prevent form submission
                     validatePassword(); // Show error message if not already shown
-                    alert("비밀번호를 다시 확인해주세요");
+                    alert("@Html.Raw(SharedLocalizer["Validation_PasswordMismatch"])");
                 }
 
             });

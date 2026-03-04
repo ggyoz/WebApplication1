@@ -14,7 +14,7 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="Create" enctype="multipart/form-data">
+        <form asp-action="Create" enctype="multipart/form-data" id="reqCreateForm">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <input type="hidden" asp-for="CORCD" />
@@ -185,15 +185,14 @@
                 'input[name="@Html.NameFor(m => m.CONTENTS_HTML)"]',
                 null 
             );
-            
+
             $("#file-uploader").dxFileUploader({ 
                 name: 'files',
                 multiple: true,
                 uploadMode: 'useForm',
                 allowCanceling: true,
                 maxFileSize: 4000000, // 4mb
-                onValueChanged: function (e) {
-                    console.log("file name test");
+                onValueChanged: function (e) {                    
                     const maxLength = 100; // 최대 허용 길이
                     const files = e.value;                
                     files.forEach(file => {
@@ -204,8 +203,42 @@
                             e.component.reset();
                         }
                     });
+                }                
+            });
+
+            $('#reqCreateForm').on('submit', function (e) {
+                const fields = [
+                    { id: '#REQTYPE', label: '@Html.Raw(SharedLocalizer["Label_RequestType"])' },
+                    { id: '#SYSTEMCD', label: '@Html.Raw(SharedLocalizer["Label_SystemCode"])' },
+                    { id: '#ReqMenu', label: '@Html.Raw(SharedLocalizer["Label_RequestMenu"])' },
+                    { id: '#RESUSERID', label: '@Html.Raw(SharedLocalizer["Label_ActionTaker"])' },
+                    { id: '#REQDATE', label: '@Html.Raw(SharedLocalizer["Label_RequestDate"])' },
+                    { id: '#DUEDATE', label: '@Html.Raw(SharedLocalizer["Label_DueDate"])' },
+                    { id: '#PRIORITYCD', label: '@Html.Raw(SharedLocalizer["Label_Urgency"])' },
+                    { id: 'input[name="TITLE"]', label: '@Html.Raw(SharedLocalizer["Label_Title"])' }
+                ];
+
+                for (const field of fields) {
+                    const $el = $(field.id);
+                    if (!$el.val() || $el.val().trim() === "") {
+                        DevExpress.ui.notify(field.label + " @Html.Raw(SharedLocalizer["Validation_Required"])", "error", 3000);
+                        $el.focus();
+                        e.preventDefault();
+                        return false;
+                    }
                 }
-                
+
+                // HTML Editor (Contents) 검증
+                const contents = $('input[name="CONTENTS_HTML"]').val();
+                if (!contents || contents === "" || contents === "<p><br></p>") {
+                    const msg = "@Html.Raw(SharedLocalizer["Label_Content"]) @Html.Raw(SharedLocalizer["Validation_Required"])";
+                    DevExpress.ui.notify(msg, "error", 3000);
+                    $('.html-editor').focus();
+                    e.preventDefault();
+                    return false;
+                }
+
+                return true;
             });
 
             // 시스템 선택 시 메뉴 드롭다운 변경

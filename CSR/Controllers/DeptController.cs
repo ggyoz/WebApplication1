@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using System;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 
 namespace CSR.Controllers
@@ -20,6 +22,7 @@ namespace CSR.Controllers
             _logger = logger;
         }
 
+        [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> Index()
         {
             try
@@ -35,6 +38,7 @@ namespace CSR.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> Create(long? parentId = null)
         {
             var dept = new Dept { UseYn = "Y", SortOrder = 0 };
@@ -82,6 +86,7 @@ namespace CSR.Controllers
             return View(dept);
         }
 
+        [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> Edit(long id)
         {
             var dept = await _deptService.GetDeptByIdAsync(id);
@@ -120,6 +125,7 @@ namespace CSR.Controllers
             return View(dept);
         }
 
+        [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> Delete(long id)
         {
             var dept = await _deptService.GetDeptByIdAsync(id);
@@ -188,7 +194,7 @@ namespace CSR.Controllers
             return Json(menus);
         }
 
-         [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> GetDeptCdById(int deptId)
         {
             var dept = await _deptService.GetDeptByIdAsync(deptId);

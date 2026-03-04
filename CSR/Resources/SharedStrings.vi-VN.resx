@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Button_Save" xml:space="preserve"><value>Lưu</value></data>
+  <data name="Button_Edit" xml:space="preserve"><value>Chỉnh sửa</value></data>
+  <data name="Button_Delete" xml:space="preserve"><value>Xóa</value></data>
+  <data name="Button_Cancel" xml:space="preserve"><value>Hủy</value></data>
+  <data name="Button_List" xml:space="preserve"><value>Danh sách</value></data>
+  <data name="Button_BackToList" xml:space="preserve"><value>Quay lại danh sách</value></data>
+  <data name="Button_Search" xml:space="preserve"><value>Tìm kiếm</value></data>
+  <data name="Button_SearchOrganization" xml:space="preserve"><value>Tìm kiếm tổ chức</value></data>
+  <data name="Button_RegisterUser" xml:space="preserve"><value>Đăng ký người dùng</value></data>
+  <data name="Button_ResetPassword" xml:space="preserve"><value>Đặt lại mật khẩu</value></data>
+  <data name="Button_Login" xml:space="preserve"><value>Đăng nhập</value></data>
+  <data name="Button_Logout" xml:space="preserve"><value>Đăng xuất</value></data>
+  <data name="Button_AddTopLevelDept" xml:space="preserve"><value>Thêm bộ phận cấp cao nhất</value></data>
+  <data name="Button_AddSubItem" xml:space="preserve"><value>Thêm mục con</value></data>
+  <data name="Button_Create" xml:space="preserve"><value>Tạo</value></data>
+  <data name="Button_RegisterRequest" xml:space="preserve"><value>Đăng ký yêu cầu</value></data>
+  <data name="Button_Accept" xml:space="preserve"><value>Tiếp nhận</value></data>
+  <data name="Button_Reject" xml:space="preserve"><value>Từ chối</value></data>
+  <data name="Button_RegisterAnswer" xml:space="preserve"><value>Đăng ký câu trả lời</value></data>
+  <data name="Button_SaveDraft" xml:space="preserve"><value>Lưu bản nháp</value></data>
+  <data name="Button_Change" xml:space="preserve"><value>Thay đổi</value></data>
+  <data name="Button_SendReInquiry" xml:space="preserve"><value>Gửi yêu cầu lại</value></data>  
+  <data name="Button_Terminate" xml:space="preserve"><value>Kết thúc</value></data>
+  <data name="Button_SearchUser" xml:space="preserve"><value>Tìm kiếm người dùng</value></data>
+  <data name="Button_Close" xml:space="preserve"><value>Đóng</value></data>
+  <data name="Button_ExcelDown" xml:space="preserve"><value>Tải xuống Excel</value></data>
+  <data name="Yes" xml:space="preserve"><value>Có</value></data>
+  <data name="No" xml:space="preserve"><value>Không</value></data>
+  <data name="Used" xml:space="preserve"><value>Sử dụng</value></data>
+  <data name="NotUsed" xml:space="preserve"><value>Không sử dụng</value></data>
+  <data name="Label_No" xml:space="preserve"><value>STT</value></data>
+  <data name="Label_UserId" xml:space="preserve"><value>ID người dùng</value></data>
+  <data name="Label_Password" xml:space="preserve"><value>Mật khẩu</value></data>
+  <data name="Label_ConfirmPassword" xml:space="preserve"><value>Xác nhận mật khẩu</value></data>
+  <data name="Label_EmployeeNo" xml:space="preserve"><value>Mã nhân viên</value></data>
+  <data name="Label_UserName" xml:space="preserve"><value>Họ và tên</value></data>
+  <data name="Label_SystemCode" xml:space="preserve"><value>Hệ thống</value></data>
+  <data name="Label_CorporationCode" xml:space="preserve"><value>Mã pháp nhân</value></data>
+  <data name="Label_BusinessUnitCode" xml:space="preserve"><value>Mã đơn vị kinh doanh</value></data>
+  <data name="Label_OfficeCode" xml:space="preserve"><value>Mã văn phòng</value></data>
+  <data name="Label_TeamCode" xml:space="preserve"><value>Mã nhóm</value></data>
+  <data name="Label_PhoneNumber" xml:space="preserve"><value>Số điện thoại</value></data>
+  <data name="Label_MobilePhoneNumber" xml:space="preserve"><value>Số điện thoại di động</value></data>
+  <data name="Label_EmailAddress" xml:space="preserve"><value>Địa chỉ Email</value></data>
+  <data name="Label_Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Label_RetirementDate" xml:space="preserve"><value>Ngày nghỉ việc (YYYYMMDD)</value></data>
+  <data name="Label_AdminPrivileges" xml:space="preserve"><value>Quyền quản trị</value></data>
+  <data name="Label_UserDivision" xml:space="preserve"><value>Phân loại người dùng</value></data>
+  <data name="Label_BusinessPlaceCode" xml:space="preserve"><value>Mã nơi làm việc</value></data>
+  <data name="Label_CustomerCode" xml:space="preserve"><value>Mã khách hàng</value></data>
+  <data name="Label_VendorCode" xml:space="preserve"><value>Mã nhà cung cấp</value></data>
+  <data name="Label_DepartmentCode" xml:space="preserve"><value>Mã bộ phận</value></data>
+  <data name="Label_InUse" xml:space="preserve"><value>Trạng thái sử dụng</value></data>
+  <data name="Label_UserStat" xml:space="preserve"><value>Trạng thái</value></data>
+  <data name="Label_Authorization" xml:space="preserve"><value>Quyền hạn</value></data>
+  <data name="Label_RegistrationDate" xml:space="preserve"><value>Ngày đăng ký</value></data>
+  <data name="Label_Registrant" xml:space="preserve"><value>Người đăng ký</value></data>
+  <data name="Label_ModificationDate" xml:space="preserve"><value>Ngày chỉnh sửa</value></data>
+  <data name="Label_Modifier" xml:space="preserve"><value>Người chỉnh sửa</value></data>
+  <data name="Label_PasswordFailCount" xml:space="preserve"><value>Số lần sai mật khẩu</value></data>
+  <data name="Label_AssignedResponsibilities" xml:space="preserve"><value>Khu vực phụ trách</value></data>
+  <data name="Label_SortOrder" xml:space="preserve"><value>Thứ tự sắp xếp</value></data>
+  <data name="Label_Actions" xml:space="preserve"><value>Thao tác</value></data>
+  <data name="Label_DeptName" xml:space="preserve"><value>Tên bộ phận</value></data>
+  <data name="Label_DeptCode" xml:space="preserve"><value>Mã bộ phận</value></data>
+  <data name="Label_ParentDept" xml:space="preserve"><value>Bộ phận cấp trên</value></data>
+  <data name="Label_Description" xml:space="preserve"><value>Mô tả</value></data>
+  <data name="Label_RememberMe" xml:space="preserve"><value>Duy trì đăng nhập</value></data>
+  <data name="Label_Search" xml:space="preserve"><value>Tìm kiếm</value></data>
+  <data name="Label_Title" xml:space="preserve"><value>Tiêu đề</value></data>
+  <data name="Label_Type" xml:space="preserve"><value>Loại</value></data>
+  <data name="Label_Content" xml:space="preserve"><value>Nội dung</value></data>
+  <data name="Label_Attachments" xml:space="preserve"><value>Tệp đính kèm</value></data>
+  <data name="Label_History" xml:space="preserve"><value>Lịch sử</value></data>
+  <data name="Label_Corporation" xml:space="preserve"><value>Pháp nhân</value></data>
+  <data name="Label_Department" xml:space="preserve"><value>Đơn vị kinh doanh</value></data>
+  <data name="Label_Office" xml:space="preserve"><value>Văn phòng</value></data>
+  <data name="Label_Team" xml:space="preserve"><value>Nhóm</value></data>
+  <data name="Label_Request" xml:space="preserve"><value>Menu yêu cầu</value></data>  
+  <data name="Label_RequestType" xml:space="preserve"><value>Loại yêu cầu</value></data>
+  <data name="Label_RequestDate" xml:space="preserve"><value>Ngày yêu cầu</value></data>
+  <data name="Label_DueDate" xml:space="preserve"><value>Ngày yêu cầu hoàn thành</value></data>
+  <data name="Label_ExpectedCompletionDate" xml:space="preserve"><value>Ngày dự kiến hoàn thành</value></data>
+  <data name="Label_ProgressStatus" xml:space="preserve"><value>Trạng thái tiến độ</value></data>
+  <data name="Label_Urgency" xml:space="preserve"><value>Mức độ khẩn cấp</value></data>
+  <data name="Label_RequestNo" xml:space="preserve"><value>Mã yêu cầu</value></data>
+  <data name="Label_Requester" xml:space="preserve"><value>Người yêu cầu</value></data>
+  <data name="Label_ActionTaker" xml:space="preserve"><value>Người xử lý</value></data>
+  <data name="Label_ResponsibleArea" xml:space="preserve"><value>Khu vực phụ trách</value></data>
+  <data name="Label_ReInquiry" xml:space="preserve"><value>Yêu cầu lại</value></data>   
+  <data name="Label_Contact" xml:space="preserve"><value>Thông tin liên lạc</value></data>
+  <data name="Label_Tcode" xml:space="preserve"><value>TCODE</value></data>
+  <data name="Label_Affiliation" xml:space="preserve"><value>Trực thuộc</value></data>
+  <data name="Label_Affiliation_CorpName" xml:space="preserve"><value>Tên pháp nhân</value></data>
+  <data name="Label_Affiliation_DeptName" xml:space="preserve"><value>Tên đơn vị kinh doanh</value></data>
+  <data name="Label_Affiliation_OfficeName" xml:space="preserve"><value>Tên văn phòng</value></data>
+  <data name="Label_Affiliation_TeamName" xml:space="preserve"><value>Tên nhóm</value></data>
+  <data name="Label_Difficulty" xml:space="preserve"><value>Độ khó</value></data>
+  <data name="Label_Importance" xml:space="preserve"><value>Mức độ quan trọng</value></data>
+  <data name="Label_ManDay" xml:space="preserve"><value>Công sức (Man-day)</value></data>
+  <data name="Label_BXTInquiryNo" xml:space="preserve"><value>Số yêu cầu BXT</value></data>
+  <data name="Label_ActionContentTcode" xml:space="preserve"><value>TCODE người xử lý</value></data>
+  <data name="Label_InquiryContent" xml:space="preserve"><value>Nội dung yêu cầu</value></data>
+  <data name="Label_RequestMenu" xml:space="preserve"><value>Menu yêu cầu</value></data>
+  <data name="NoAssignedResponsibilities" xml:space="preserve"><value>Không có khu vực phụ trách nào được chỉ định.</value></data>
+  <data name="Placeholder_Password" xml:space="preserve"><value>Chỉ nhập khi muốn thay đổi</value></data>
+  <data name="Placeholder_SelectCorporation" xml:space="preserve"><value>Chọn pháp nhân</value></data>
+  <data name="Placeholder_SelectDepartment" xml:space="preserve"><value>Chọn đơn vị kinh doanh</value></data>
+  <data name="Placeholder_SelectOffice" xml:space="preserve"><value>Chọn văn phòng</value></data>
+  <data name="Placeholder_SelectTeam" xml:space="preserve"><value>Chọn nhóm</value></data>
+  <data name="Placeholder_SelectRequestType" xml:space="preserve"><value>Chọn loại yêu cầu</value></data>
+  <data name="Placeholder_SelectProgressStatus" xml:space="preserve"><value>Chọn trạng thái tiến độ</value></data>
+  <data name="Placeholder_SelectUrgency" xml:space="preserve"><value>Chọn mức độ khẩn cấp</value></data>
+  <data name="Placeholder_SelectMenu" xml:space="preserve"><value>Chọn menu</value></data>
+  <data name="Placeholder_SelectActionTaker" xml:space="preserve"><value>Chọn người xử lý</value></data>
+  <data name="Placeholder_SelectDifficulty" xml:space="preserve"><value>Chọn độ khó</value></data>
+  <data name="Placeholder_SelectImportance" xml:space="preserve"><value>Chọn mức độ quan trọng</value></data>
+  <data name="Placeholder_SelectSystem" xml:space="preserve"><value>Chọn hệ thống</value></data>
+  <data name="Popup_SelectUser" xml:space="preserve"><value>Chọn người dùng</value></data>
+  <data name="DataGrid_SearchUser" xml:space="preserve"><value>Tìm kiếm người dùng</value></data>
+  <data name="TableHeader_UserId" xml:space="preserve"><value>ID người dùng</value></data>
+  <data name="TableHeader_UserName" xml:space="preserve"><value>Tên người dùng</value></data>
+  <data name="TableHeader_CorperationCode" xml:space="preserve"><value>Mã pháp nhân</value></data>
+  <data name="TableHeader_DepartmentCode" xml:space="preserve"><value>Mã bộ phận</value></data>
+  <data name="TableHeader_OfficeCode" xml:space="preserve"><value>Mã văn phòng</value></data>
+  <data name="TableHeader_TeamCode" xml:space="preserve"><value>Mã nhóm</value></data>
+  <data name="TableHeader_Email" xml:space="preserve"><value>Email</value></data>
+  <data name="TableHeader_InUse" xml:space="preserve"><value>Trạng thái sử dụng</value></data>
+  <data name="TableHeader_AdminPrivileges" xml:space="preserve"><value>Quyền quản trị</value></data>
+  <data name="TableHeader_RegistrationDate" xml:space="preserve"><value>Ngày đăng ký</value></data>
+  <data name="TableHeader_ActionTaker" xml:space="preserve"><value>Người xử lý</value></data>
+  <data name="TableHeader_RequestNo" xml:space="preserve"><value>Mã yêu cầu</value></data>
+  <data name="TableHeader_Title" xml:space="preserve"><value>Tiêu đề</value></data>
+  <data name="TableHeader_Affiliation" xml:space="preserve"><value>Trực thuộc</value></data>
+  <data name="TableHeader_RequestClassification" xml:space="preserve"><value>Phân loại yêu cầu</value></data>
+  <data name="TableHeader_TargetSystem" xml:space="preserve"><value>Hệ thống</value></data>
+  <data name="TableHeader_RequestMenu" xml:space="preserve"><value>Menu yêu cầu</value></data>
+  <data name="TableHeader_Requester" xml:space="preserve"><value>Người yêu cầu</value></data>
+  <data name="TableHeader_RequestDate" xml:space="preserve"><value>Ngày yêu cầu</value></data>
+  <data name="TableHeader_DueDate" xml:space="preserve"><value>Ngày yêu cầu hoàn thành</value></data>
+  <data name="TableHeader_ExpectedCompletionDate" xml:space="preserve"><value>Ngày dự kiến hoàn thành</value></data>
+  <data name="TableHeader_ProgressStatus" xml:space="preserve"><value>Trạng thái tiến độ</value></data>
+  <data name="Status_Waiting" xml:space="preserve"><value>Đang chờ</value></data>
+  <data name="Status_Undecided" xml:space="preserve"><value>Chưa quyết định</value></data>
+  <data name="Title_DeptManagement" xml:space="preserve"><value>Quản lý tổ chức</value></data>
+  <data name="Title_CreateDept" xml:space="preserve"><value>Tạo bộ phận</value></data>
+  <data name="Title_EditDept" xml:space="preserve"><value>Chỉnh sửa bộ phận</value></data>
+  <data name="Title_DeleteDept" xml:space="preserve"><value>Xóa bộ phận</value></data>
+  <data name="Title_ReqIndex" xml:space="preserve"><value>Danh sách yêu cầu</value></data>
+  <data name="Title_CreateReq" xml:space="preserve"><value>Đăng ký yêu cầu</value></data>
+  <data name="Title_EditReq" xml:space="preserve"><value>Chỉnh sửa yêu cầu</value></data>
+  <data name="Title_ReqDetails" xml:space="preserve"><value>Chi tiết yêu cầu</value></data>
+  <data name="Confirmation_Terminate" xml:space="preserve"><value>Bạn có muốn kết thúc yêu cầu này không?</value></data>
+  <data name="InvalidLoginAttempt" xml:space="preserve"><value>ID người dùng hoặc mật khẩu không chính xác.</value></data>
+  <data name="Message_NoDepts" xml:space="preserve"><value>Không có bộ phận nào để hiển thị.</value></data>
+  <data name="Confirmation_DeleteDept" xml:space="preserve"><value>Bạn có chắc chắn muốn xóa bộ phận này không?</value></data>
+  <data name="Warning_CannotBeUndone" xml:space="preserve"><value>Thao tác này không thể hoàn tác.</value></data>
+  <data name="Warning_HasSubDepts" xml:space="preserve"><value>Không thể xóa vì có {0} bộ phận con.</value></data>
+  <data name="Confirmation_Delete" xml:space="preserve"><value>Bạn có chắc chắn muốn xóa không?</value></data>
+  <data name="Validation_SelectExpectDate" xml:space="preserve"><value>Vui lòng chọn ngày dự kiến hoàn thành.</value></data>
+  <data name="Validation_SameExpectDate" xml:space="preserve"><value>Ngày dự kiến hoàn thành giống với ngày cũ.</value></data>
+  <data name="Validation_ExpectDateAfterRequestDate_Part1" xml:space="preserve"><value>Ngày dự kiến hoàn thành phải sau ngày yêu cầu (</value></data>
+  <data name="Validation_ExpectDateAfterRequestDate_Part2" xml:space="preserve"><value>).</value></data>
+  <data name="Validation_FileNameTooLong" xml:space="preserve"><value>Tên tệp quá dài. (Phải từ {0} ký tự trở xuống)</value></data>
+  <data name="Validation_Required" xml:space="preserve"><value>Đây là thông tin bắt buộc.</value></data>
+  <data name="Message_NoHistory" xml:space="preserve"><value>Không có lịch sử yêu cầu.</value></data>
+  <data name="CC1" xml:space="preserve"><value>Mức độ khẩn cấp</value></data>
+  <data name="CC2" xml:space="preserve"><value>Khẩn cấp</value></data>
+  <data name="CC3" xml:space="preserve"><value>Cao</value></data>
+  <data name="CC4" xml:space="preserve"><value>Bình thường</value></data>
+  <data name="CC5" xml:space="preserve"><value>Thấp</value></data>
+  <data name="CC6" xml:space="preserve"><value>Rất thấp</value></data>    
+  <data name="CC7" xml:space="preserve"><value>Độ khó</value></data>
+  <data name="CC8" xml:space="preserve"><value>Rất cao</value></data>
+  <data name="CC9" xml:space="preserve"><value>Cao</value></data>
+  <data name="CC10" xml:space="preserve"><value>Bình thường</value></data>
+  <data name="CC11" xml:space="preserve"><value>Thấp</value></data>
+  <data name="CC12" xml:space="preserve"><value>Rất thấp</value></data>
+  <data name="CC13" xml:space="preserve"><value>Loại yêu cầu</value></data>
+  <data name="CC14" xml:space="preserve"><value>Dịch vụ</value></data>
+  <data name="CC15" xml:space="preserve"><value>Lỗi hệ thống</value></data>
+  <data name="CC16" xml:space="preserve"><value>Yêu cầu chung</value></data>
+  <data name="CC17" xml:space="preserve"><value>Chỉnh sửa phát triển</value></data>
+  <data name="CC18" xml:space="preserve"><value>Phát triển mới</value></data>
+  <data name="CC19" xml:space="preserve"><value>Lĩnh vực</value></data>
+  <data name="CC20" xml:space="preserve"><value>SAP</value></data>
+  <data name="CC21" xml:space="preserve"><value>Non-SAP</value></data>
+  <data name="CC22" xml:space="preserve"><value>Công việc chung</value></data>
+  <data name="CC23" xml:space="preserve"><value>ABAP</value></data>
+  <data name="CC24" xml:space="preserve"><value>BC</value></data>
+  <data name="CC25" xml:space="preserve"><value>CO</value></data>
+  <data name="CC26" xml:space="preserve"><value>EXP</value></data>
+  <data name="CC27" xml:space="preserve"><value>FI</value></data>
+  <data name="CC28" xml:space="preserve"><value>HR</value></data>
+  <data name="CC29" xml:space="preserve"><value>IMP</value></data>
+  <data name="CC30" xml:space="preserve"><value>MD</value></data>
+  <data name="CC31" xml:space="preserve"><value>MM</value></data>
+  <data name="CC32" xml:space="preserve"><value>PM</value></data>
+  <data name="CC33" xml:space="preserve"><value>PP</value></data>
+  <data name="CC34" xml:space="preserve"><value>PS</value></data>
+  <data name="CC35" xml:space="preserve"><value>QM</value></data>
+  <data name="CC36" xml:space="preserve"><value>SAP v.v.</value></data>
+  <data name="CC37" xml:space="preserve"><value>SD</value></data>
+  <data name="CC38" xml:space="preserve"><value>TR</value></data>
+  <data name="CC39" xml:space="preserve"><value>XI(PO)</value></data>
+  <data name="CC40" xml:space="preserve"><value>SCM</value></data>
+  <data name="CC41" xml:space="preserve"><value>QMS</value></data>
+  <data name="CC42" xml:space="preserve"><value>ERM</value></data>
+  <data name="CC43" xml:space="preserve"><value>MIS</value></data>
+  <data name="CC44" xml:space="preserve"><value>PLM</value></data>
+  <data name="CC45" xml:space="preserve"><value>POP</value></data>
+  <data name="CC46" xml:space="preserve"><value>EIS</value></data>
+  <data name="CC47" xml:space="preserve"><value>Groupware</value></data>
+  <data name="CC48" xml:space="preserve"><value>HR</value></data>
+  <data name="CC49" xml:space="preserve"><value>Công việc khác</value></data>
+  <data name="CC50" xml:space="preserve"><value>Trạng thái người dùng</value></data>
+  <data name="CC51" xml:space="preserve"><value>Đang làm việc</value></data>
+  <data name="CC52" xml:space="preserve"><value>Nghỉ phép</value></data>
+  <data name="CC53" xml:space="preserve"><value>Đã nghỉ việc</value></data>
+  <data name="CC54" xml:space="preserve"><value>Loại thông báo</value></data>
+  <data name="CC55" xml:space="preserve"><value>Thông báo chung</value></data>
+  <data name="CC56" xml:space="preserve"><value>Thông báo khẩn cấp</value></data>
+  <data name="CC57" xml:space="preserve"><value>Phân loại dự án lớn</value></data>
+  <data name="CC58" xml:space="preserve"><value>Dự án cải tiến</value></data>
+  <data name="CC59" xml:space="preserve"><value>Dự án</value></data>
+  <data name="CC61" xml:space="preserve"><value>Trạng thái tiến độ yêu cầu</value></data>
+  <data name="CC62" xml:space="preserve"><value>Tiếp nhận</value></data>
+  <data name="CC63" xml:space="preserve"><value>Từ chối</value></data>
+  <data name="CC64" xml:space="preserve"><value>Đang thực hiện</value></data>
+  <data name="CC65" xml:space="preserve"><value>Đã trả lời</value></data>
+  <data name="CC66" xml:space="preserve"><value>Thay đổi người phụ trách</value></data>
+  <data name="CC67" xml:space="preserve"><value>Thay đổi lịch trình</value></data>
+  <data name="CC68" xml:space="preserve"><value>Kết thúc</value></data>
+  <data name="CC69" xml:space="preserve"><value>Đang chờ</value></data>
+  <data name="CC70" xml:space="preserve"><value>Phân loại lịch sử yêu cầu</value></data>
+  <data name="CC71" xml:space="preserve"><value>Đăng ký lần đầu</value></data>
+  <data name="CC72" xml:space="preserve"><value>Tiếp nhận hoàn tất</value></data>
+  <data name="CC73" xml:space="preserve"><value>Đăng ký câu trả lời</value></data>
+  <data name="CC74" xml:space="preserve"><value>Thay đổi lịch trình</value></data>
+  <data name="CC75" xml:space="preserve"><value>Thay đổi người phụ trách</value></data>
+  <data name="CC76" xml:space="preserve"><value>Kết thúc</value></data>
+  <data name="CC77" xml:space="preserve"><value>Yêu cầu lại</value></data>
+  <data name="CC78" xml:space="preserve"><value>Mức độ quan trọng</value></data>
+  <data name="CC79" xml:space="preserve"><value>Cao</value></data>
+  <data name="CC80" xml:space="preserve"><value>Trung bình</value></data>
+  <data name="CC81" xml:space="preserve"><value>Thấp</value></data>
+  <data name="CC83" xml:space="preserve"><value>Yêu cầu lại</value></data>
+  <data name="CC84" xml:space="preserve"><value>Từ chối</value></data>
+  <data name="CC85" xml:space="preserve"><value>Khác</value></data>
+  <data name="MyPageTitle" xml:space="preserve"><value>Chỉnh sửa thông tin cá nhân</value></data>
+  <data name="Placeholder_PasswordChange" xml:space="preserve"><value>Nhập mật khẩu mới nếu muốn thay đổi</value></data>
+  <data name="Help_PasswordChange" xml:space="preserve"><value>Nếu để trống mật khẩu sẽ không thay đổi.</value></data>
+  <data name="Validation_PasswordMismatch" xml:space="preserve"><value>Mật khẩu không khớp.</value></data>
+  <data name="Message_ProfileUpdateSuccess" xml:space="preserve"><value>Thông tin thành viên đã được cập nhật thành công. Vui lòng đăng nhập lại.</value></data>
+</root>

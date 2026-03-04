@@ -37,6 +37,25 @@ namespace CSR.Services
             string? teamCd,
             List<string>? assignedResponsibilities
             );
+
+        Task<IEnumerable<ReqInfo>> GetAllReqInfosAsync(
+            string? reqTypeCd,
+            string? procStatusCd,
+            string? priorityCd,
+            string? reqDate,
+            string? dueDate,
+            string? expectDate,
+            string? regId,
+            string? reqUserName,
+            string? resUserName,
+            string? searchValue,
+            string? corCd,
+            string? deptCd,
+            string? officeCd,
+            string? teamCd,
+            List<string>? assignedResponsibilities
+            );
+
         Task<ReqInfo?> GetReqInfoByIdAsync(int id);
         Task<int> CreateReqInfoAsync(ReqInfo reqInfo, IEnumerable<IFormFile> files);
         Task<bool> UpdateReqInfoAsync(ReqInfo reqInfo, IEnumerable<IFormFile> newFiles, List<int> deletedFiles, string historyReasonValue);
@@ -108,10 +127,11 @@ namespace CSR.Services
         {
             var sql = @"
                 SELECT 
-                    COUNT(CASE WHEN PROC_STATUS = '61' THEN 1 END) AS WAITCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '69' THEN 1 END) AS WAITCOUNT,
                     COUNT(CASE WHEN PROC_STATUS = '62' THEN 1 END) AS RECEIVEDCOUNT,
                     COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS CLOSEDCOUNT,
-                    COUNT(CASE WHEN PROC_STATUS NOT IN ('61', '62', '68') AND PROC_STATUS IS NOT NULL THEN 1 END) AS INPROGRESSCOUNT
+                    COUNT(CASE WHEN PROC_STATUS = '65' THEN 1 END) AS ANSWEREDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS NOT IN ('69', '62', '68', '63', '65') AND PROC_STATUS IS NOT NULL THEN 1 END) AS INPROGRESSCOUNT                    
                 FROM TB_REQ_INFO
                 WHERE REQUSERID = :UserId AND USEYN = 'Y'";
 
@@ -148,10 +168,11 @@ namespace CSR.Services
         {
             var sql = @"
                 SELECT 
-                    COUNT(CASE WHEN PROC_STATUS = '61' THEN 1 END) AS WAITCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '69' THEN 1 END) AS WAITCOUNT,
                     COUNT(CASE WHEN PROC_STATUS = '62' THEN 1 END) AS RECEIVEDCOUNT,
                     COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS CLOSEDCOUNT,
-                    COUNT(CASE WHEN PROC_STATUS NOT IN ('61', '62', '68') AND PROC_STATUS IS NOT NULL THEN 1 END) AS INPROGRESSCOUNT
+                    COUNT(CASE WHEN PROC_STATUS = '65' THEN 1 END) AS ANSWEREDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS NOT IN ('69', '62', '68', '63', '65') AND PROC_STATUS IS NOT NULL THEN 1 END) AS INPROGRESSCOUNT
                 FROM TB_REQ_INFO
                 WHERE CORCD = :CorCd AND USEYN = 'Y'";
 
@@ -187,10 +208,11 @@ namespace CSR.Services
         {
             var sql = @"
                 SELECT 
-                    COUNT(CASE WHEN PROC_STATUS = '61' THEN 1 END) AS WAITCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '69' THEN 1 END) AS WAITCOUNT,
                     COUNT(CASE WHEN PROC_STATUS = '62' THEN 1 END) AS RECEIVEDCOUNT,
                     COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS CLOSEDCOUNT,
-                    COUNT(CASE WHEN PROC_STATUS NOT IN ('61', '62', '68') AND PROC_STATUS IS NOT NULL THEN 1 END) AS INPROGRESSCOUNT
+                    COUNT(CASE WHEN PROC_STATUS = '65' THEN 1 END) AS ANSWEREDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS NOT IN ('69', '62', '68', '63') AND PROC_STATUS IS NOT NULL THEN 1 END) AS INPROGRESSCOUNT
                 FROM TB_REQ_INFO
                 WHERE USEYN = 'Y'";
 
@@ -251,7 +273,7 @@ namespace CSR.Services
         public async Task<int> GetMyInProgressCountAsync(string userId)
         {
             // PROC_STATUS '64' is '진행중' (In Progress)
-            var sql = @" SELECT COUNT(*) FROM TB_REQ_INFO WHERE RESUSERID = :UserId AND PROC_STATUS = '64' AND USEYN = 'Y' ";
+            var sql = @" SELECT COUNT(*) FROM TB_REQ_INFO WHERE RESUSERID = :UserId AND PROC_STATUS NOT IN ('69', '68', '63') AND USEYN = 'Y' ";
             return await _dbConnection.ExecuteScalarAsync<int>(sql, new { UserId = userId });
         }
 
@@ -259,7 +281,7 @@ namespace CSR.Services
         public async Task<int> GetMyInProgressRequestsCountAsync(string userId)
         {
             // PROC_STATUS '64' is '진행중' (In Progress)
-            var sql = @" SELECT COUNT(*) FROM TB_REQ_INFO WHERE REQUSERID = :UserId AND PROC_STATUS = '64' AND USEYN = 'Y' ";
+            var sql = @" SELECT COUNT(*) FROM TB_REQ_INFO WHERE REQUSERID = :UserId AND PROC_STATUS NOT IN ('69', '68', '63') AND USEYN = 'Y' ";
             return await _dbConnection.ExecuteScalarAsync<int>(sql, new { UserId = userId });
         }
 
@@ -332,7 +354,6 @@ namespace CSR.Services
                     SUM(CASE WHEN R.PRIORITYCD = '3' THEN 1 ELSE 0 END) AS HighCount,
                     SUM(CASE WHEN R.PRIORITYCD = '4' THEN 1 ELSE 0 END) AS MediumCount,
                     SUM(CASE WHEN R.PRIORITYCD = '5' THEN 1 ELSE 0 END) AS LowCount,
-                    SUM(CASE WHEN R.PRIORITYCD = '6' THEN 1 ELSE 0 END) AS VeryLowCount,                    
                     count(R.PRIORITYCD) AS TotalCount,
                     SUM(CASE WHEN R.PROC_STATUS = '68' THEN 1 ELSE 0 END) AS EndStatus,
                     SUM(CASE WHEN R.PROC_STATUS != '68' THEN 1 ELSE 0 END) AS IngStatus,
@@ -357,7 +378,6 @@ namespace CSR.Services
                     SUM(CASE WHEN R.PRIORITYCD = '3' THEN 1 ELSE 0 END) AS HighCount,
                     SUM(CASE WHEN R.PRIORITYCD = '4' THEN 1 ELSE 0 END) AS MediumCount,
                     SUM(CASE WHEN R.PRIORITYCD = '5' THEN 1 ELSE 0 END) AS LowCount,
-                    SUM(CASE WHEN R.PRIORITYCD = '6' THEN 1 ELSE 0 END) AS VeryLowCount,                    
                     count(R.PRIORITYCD) AS TotalCount,
                     SUM(CASE WHEN R.PROC_STATUS = '68' THEN 1 ELSE 0 END) AS EndStatus,
                     SUM(CASE WHEN R.PROC_STATUS != '68' THEN 1 ELSE 0 END) AS IngStatus,
@@ -382,8 +402,7 @@ namespace CSR.Services
                     SUM(CASE WHEN R.PRIORITYCD = '2' THEN 1 ELSE 0 END) AS VeryHighCount,
                     SUM(CASE WHEN R.PRIORITYCD = '3' THEN 1 ELSE 0 END) AS HighCount,
                     SUM(CASE WHEN R.PRIORITYCD = '4' THEN 1 ELSE 0 END) AS MediumCount,
-                    SUM(CASE WHEN R.PRIORITYCD = '5' THEN 1 ELSE 0 END) AS LowCount,
-                    SUM(CASE WHEN R.PRIORITYCD = '6' THEN 1 ELSE 0 END) AS VeryLowCount,                    
+                    SUM(CASE WHEN R.PRIORITYCD = '5' THEN 1 ELSE 0 END) AS LowCount,                    
                     count(R.PRIORITYCD) AS TotalCount,
                     SUM(CASE WHEN R.PROC_STATUS = '68' THEN 1 ELSE 0 END) AS EndStatus,
                     SUM(CASE WHEN R.PROC_STATUS != '68' THEN 1 ELSE 0 END) AS IngStatus,
@@ -404,7 +423,7 @@ namespace CSR.Services
                 SELECT COUNT(*) FROM TB_REQ_INFO
                 WHERE EXPECTDATE >= (TRUNC(SYSDATE) - CASE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) WHEN 6 THEN 0 WHEN 7 THEN 1 ELSE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) + 1 END)
                 AND EXPECTDATE < (TRUNC(SYSDATE) - CASE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) WHEN 6 THEN 0 WHEN 7 THEN 1 ELSE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) + 1 END + 7)
-                AND USEYN = 'Y'";
+                AND USEYN = 'Y' ";
             return await _dbConnection.ExecuteScalarAsync<int>(sql);
         }
 
@@ -467,7 +486,7 @@ namespace CSR.Services
                 // 3. Add files
                 if (files != null && files.Any())
                 {
-                    await AddReqFilesAsync(newReqId, newHistoryId, files, reqInfo.REG_USERID, transaction);
+                    await AddReqFilesAsync(newReqId, newHistoryId, files, reqInfo.REQUSERID, transaction, reqInfo.PROC_STATUS);
                 }
 
                 transaction.Commit();
@@ -549,14 +568,22 @@ namespace CSR.Services
                     new { reqInfo.REQID },
                     transaction);
 
+                Console.WriteLine("latestHistoryId : " + latestHistoryId.Value);                
+
                 if( newHistoryId == 0 ){
-                    newHistoryId = latestHistoryId.Value;
+                    if( latestHistoryId.HasValue){
+                        newHistoryId = latestHistoryId.Value;
+                    }else{
+                        newHistoryId = await CreateReqHistoryAsync(reqInfo, "71", transaction);
+                    }                    
                 }
+
+                Console.WriteLine("newHistoryId : " + newHistoryId);
 
                 // 3. Handle files
                 if (newFiles != null && newFiles.Any())
                 {
-                    await AddReqFilesAsync(reqInfo.REQID, newHistoryId, newFiles, reqInfo.UPDATE_USERID, transaction);
+                    await AddReqFilesAsync(reqInfo.REQID, newHistoryId, newFiles, reqInfo.UPDATE_USERID, transaction, reqInfo.PROC_STATUS);
                 }
                 if (deletedFiles != null && deletedFiles.Any())
                 {
@@ -622,7 +649,7 @@ namespace CSR.Services
 
                 if (newFiles != null && newFiles.Any())
                 {
-                    await AddReqFilesAsync(reqInfo.REQID, latestHistoryId.Value, newFiles, reqInfo.UPDATE_USERID, transaction);
+                    await AddReqFilesAsync(reqInfo.REQID, latestHistoryId.Value, newFiles, reqInfo.UPDATE_USERID, transaction, reqInfo.PROC_STATUS);
                 }
                 
                 if (deletedFiles != null && deletedFiles.Any())
@@ -672,9 +699,7 @@ namespace CSR.Services
             }
         }
 
-        public async Task<PagedResult<ReqInfo>> GetReqInfosAsync(
-            int page, 
-            int pageSize, 
+        public async Task<IEnumerable<ReqInfo>> GetAllReqInfosAsync(
             string? reqTypeCd,
             string? procStatusCd,
             string? priorityCd,
@@ -691,7 +716,48 @@ namespace CSR.Services
             string? teamCd,
             List<string>? assignedResponsibilities)
         {
-            
+            var (baseQuery, parameters) = BuildReqInfoBaseQuery(
+                reqTypeCd, procStatusCd, priorityCd, reqDate, dueDate, expectDate,
+                regId, reqUserName, resUserName, searchValue, corCd, deptCd, officeCd, teamCd,
+                assignedResponsibilities);
+
+            var dataSql = $@"
+                SELECT 
+                    R.*,
+                    U_REQ.USERNAME as ReqUserName,
+                    U_RES.USERNAME as ResUserName,
+                    S.CODENM as SystemName,
+                    RT.CODENM as ReqTypeName,
+                    P.CODENM as PriorityName,
+                    PS.CODENM as ProcStatusName,
+                    M.CODENM as ReqMenuName,
+                    CO.CORNM as CorpName,
+                    D.DEPTNAME as DeptName,
+                    OFI.DEPTNAME as OfficeName,
+                    TM.DEPTNAME as TeamName
+                {baseQuery}
+                ORDER BY R.REQID DESC";
+
+            return await _dbConnection.QueryAsync<ReqInfo>(dataSql, parameters);
+        }
+
+        private (string Query, DynamicParameters Parameters) BuildReqInfoBaseQuery(
+            string? reqTypeCd,
+            string? procStatusCd,
+            string? priorityCd,
+            string? reqDate,
+            string? dueDate,
+            string? expectDate,
+            string? regId,
+            string? reqUserName,
+            string? resUserName,
+            string? searchValue,
+            string? corCd,
+            string? deptCd,
+            string? officeCd,
+            string? teamCd,
+            List<string>? assignedResponsibilities)
+        {
             var baseQuery = new System.Text.StringBuilder(@"
                 FROM TB_REQ_INFO R
                 LEFT JOIN TB_USER_INFO U_REQ ON R.REQUSERID = U_REQ.USERID
@@ -716,8 +782,14 @@ namespace CSR.Services
             }
             if (!string.IsNullOrEmpty(procStatusCd))
             {
-                baseQuery.Append(" AND R.PROC_STATUS = :ProcStatusCd");
+
+                if( procStatusCd == "64"){
+                    baseQuery.Append(" AND R.PROC_STATUS not in ('69', '68', '63') ");
+                }else{
+                    baseQuery.Append(" AND R.PROC_STATUS = :ProcStatusCd");
+                }
                 parameters.Add("ProcStatusCd", procStatusCd);
+
             }
             if (!string.IsNullOrEmpty(priorityCd))
             {
@@ -736,12 +808,11 @@ namespace CSR.Services
             }
             if (!string.IsNullOrEmpty(expectDate))
             {
-                baseQuery.Append(" AND TRUNC(R.EXPECTDATE) = TO_DATE(:ExpectDate, 'YYYY-MM-DD')");
+                baseQuery.Append(" AND TRUNC(R.EXPECTDATE) < TO_DATE(:ExpectDate, 'YYYY-MM-DD')");
                 parameters.Add("ExpectDate", expectDate);
             }
             if (!string.IsNullOrEmpty(regId))
             {
-                // Assuming RegId is an integer and directly corresponds to REQID
                 if (int.TryParse(regId, out int parsedRegId))
                 {
                     baseQuery.Append(" AND R.REQID = :RegId");
@@ -770,17 +841,19 @@ namespace CSR.Services
             }
             if (!string.IsNullOrEmpty(deptCd))
             {
-                baseQuery.Append(" AND R.DEPTCD = :DeptCd");
+                baseQuery.Append(" AND ( R.DEPTCD = :DeptCd OR R.DEPTCD in ('ST00', 'CM00') ) ");
+                //baseQuery.Append(" AND R.DEPTCD = :DeptCd ");
                 parameters.Add("DeptCd", deptCd);
             }
             if (!string.IsNullOrEmpty(officeCd))
             {
-                baseQuery.Append(" AND R.OFFICECD = :OfficeCd");
+                baseQuery.Append(" AND (R.OFFICECD = :OfficeCd OR R.OFFICECD in ('ST01', 'CM01') )");
+                //baseQuery.Append(" AND R.OFFICECD = :OfficeCd ");
                 parameters.Add("OfficeCd", officeCd);
             }
             if (!string.IsNullOrEmpty(teamCd))
             {
-                baseQuery.Append(" AND R.TEAMCD = :TeamCd");
+                baseQuery.Append(" AND (R.TEAMCD = :TeamCd OR R.TEAMCD in ('ST0101', 'CM0101') ) ");
                 parameters.Add("TeamCd", teamCd);
             }
             if (assignedResponsibilities != null && assignedResponsibilities.Any())
@@ -788,8 +861,35 @@ namespace CSR.Services
                 baseQuery.Append(" AND R.REQMENU IN :AssignedResponsibilities");
                 parameters.Add("AssignedResponsibilities", assignedResponsibilities);
             }
+
+            return (baseQuery.ToString(), parameters);
+        }
+
+        public async Task<PagedResult<ReqInfo>> GetReqInfosAsync(
+            int page, 
+            int pageSize, 
+            string? reqTypeCd,
+            string? procStatusCd,
+            string? priorityCd,
+            string? reqDate,
+            string? dueDate,
+            string? expectDate,
+            string? regId,
+            string? reqUserName,
+            string? resUserName,
+            string? searchValue,
+            string? corCd,
+            string? deptCd,
+            string? officeCd,
+            string? teamCd,
+            List<string>? assignedResponsibilities)
+        {
+            var (baseQuery, parameters) = BuildReqInfoBaseQuery(
+                reqTypeCd, procStatusCd, priorityCd, reqDate, dueDate, expectDate,
+                regId, reqUserName, resUserName, searchValue, corCd, deptCd, officeCd, teamCd,
+                assignedResponsibilities);
             
-            var countSql = "SELECT COUNT(*) " + baseQuery.ToString();
+            var countSql = "SELECT COUNT(*) " + baseQuery;
             var totalCount = await _dbConnection.ExecuteScalarAsync<int>(countSql, parameters);
 
             var offset = (page - 1) * pageSize;
@@ -809,7 +909,7 @@ namespace CSR.Services
                             D.DEPTNAME as DeptName,
                             OFI.DEPTNAME as OfficeName,
                             TM.DEPTNAME as TeamName
-                        {baseQuery.ToString()}
+                        {baseQuery}
                         ORDER BY R.REQID DESC
                     ) a WHERE ROWNUM <= :EndRow
                 ) WHERE rnum > :StartRow";
@@ -817,7 +917,12 @@ namespace CSR.Services
             parameters.Add("StartRow", offset);
             parameters.Add("EndRow", offset + pageSize);
 
-            var items = await _dbConnection.QueryAsync<ReqInfo>(dataSql, parameters);
+            // --- 쿼리디버깅코드 ---
+            Console.WriteLine("Executing CreateUserAsync Query:");
+            Console.WriteLine(dataSql);
+            Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(assignedResponsibilities, Formatting.Indented));                  
+
+            var items = await _dbConnection.QueryAsync<ReqInfo>(dataSql, parameters);            
 
             return new PagedResult<ReqInfo>(items.ToList(), totalCount, page, pageSize);
         }
@@ -939,12 +1044,17 @@ namespace CSR.Services
             return parameters.Get<int>("P_NEW_HISTORYID");
         }
         
-        private async Task AddReqFilesAsync(int reqId, int historyId, IEnumerable<IFormFile> files, string userId, IDbTransaction transaction)
+        private async Task AddReqFilesAsync(int reqId, int historyId, IEnumerable<IFormFile> files, string userId, IDbTransaction transaction, string procStatusCd)
         {
             foreach (var file in files)
             {
                 if (file.Length > 0)
                 {
+                    var reqType = "U";
+                    if( procStatusCd != "69"){
+                        reqType = "M";
+                    }
+
                     var fileExtension = Path.GetExtension(file.FileName);
                     var uniqueFileName = $"{Guid.NewGuid()}{fileExtension}";
                     var filePath = Path.Combine("uploads", "req", uniqueFileName);
@@ -959,7 +1069,7 @@ namespace CSR.Services
                     {
                         REQID = reqId,
                         HISTORYID = historyId,
-                        REQTYPE = "F", // General file type
+                        REQTYPE = reqType, // General file type
                         UPLOAD_FILENAME = uniqueFileName,
                         REAL_FILENAME = file.FileName,
                         FILEPATH = filePath,
@@ -997,12 +1107,26 @@ namespace CSR.Services
             }
 
             var historyReason = "72"; // 접수 CODEID
-            // 종결상태
-            if (statusVal == "68"){
-                historyReason = "76";                
-            }else if( statusVal == "63"){
+
+            var sql = new System.Text.StringBuilder(@"UPDATE TB_REQ_INFO SET 
+                                                        PROC_STATUS = :PROC_STATUS, 
+                                                        UPDATE_USERID = :UPDATE_USERID, 
+                                                        UPDATE_DATE = SYSDATE");
+            var parameters = new DynamicParameters();
+            parameters.Add("PROC_STATUS", statusVal);
+            parameters.Add("UPDATE_USERID", userId);
+            parameters.Add("REQID", reqid);
+
+            if( statusVal == "62"){ // 접수
+                sql.Append(", STARTDATE = SYSDATE");
+            }else if (statusVal == "68"){ // 종결
+                sql.Append(", ENDDATE = SYSDATE"); // 종결 시 종료일자 기록
+                historyReason = "76";
+            }else if( statusVal == "63"){ // 반려
                 historyReason = "84";
             }
+
+            sql.Append(" WHERE REQID = :REQID");
 
             using var transaction = _dbConnection.BeginTransaction();
             try
@@ -1011,23 +1135,9 @@ namespace CSR.Services
                 reqInfo.PROC_STATUS = statusVal;
                 reqInfo.UPDATE_USERID = userId;
                 reqInfo.UPDATE_DATE = DateTime.Now;
-
-                // Define the SQL to update the process status
-                var sql = @"
-                    UPDATE TB_REQ_INFO SET 
-                        PROC_STATUS = :PROC_STATUS,
-                        UPDATE_USERID = :UPDATE_USERID,
-                        UPDATE_DATE = :UPDATE_DATE
-                    WHERE REQID = :REQID";
                 
                 // Execute the update
-                var affectedRows = await _dbConnection.ExecuteAsync(sql, new 
-                { 
-                    PROC_STATUS = statusVal, 
-                    UPDATE_USERID = userId,
-                    UPDATE_DATE = reqInfo.UPDATE_DATE,
-                    REQID = reqid 
-                }, transaction);
+                var affectedRows = await _dbConnection.ExecuteAsync(sql.ToString(), parameters, transaction);
 
                 // If the update was successful, create a history record
                 if (affectedRows > 0)
@@ -1074,7 +1184,7 @@ namespace CSR.Services
 
                 if (affectedRows > 0)
                 {                    
-                    await CreateReqHistoryAsync(reqInfo, "67", transaction); 
+                    await CreateReqHistoryAsync(reqInfo, "74", transaction); // 일정변경
                     transaction.Commit();
                     return true;
                 }

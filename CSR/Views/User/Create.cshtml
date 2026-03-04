@@ -225,8 +225,7 @@
                         url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
                         type: 'GET',
                         data: { corCd : corCd, deptCd: deptCd },
-                        success: function(data) {
-                            console.log(data);
+                        success: function(data) {                            
                             $.each(data, function(i, item) {
                                 
                                 deptDropdown.append($('<option></option>').val(item.value).text(item.text));

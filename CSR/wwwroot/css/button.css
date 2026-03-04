@@ -164,3 +164,29 @@
     background-color: #6C7A89;
     border-color: #6C7A89;
 }
+
+/* .btn-excel */
+.btn-excel {
+    color: #fff;
+    background-color: #18a758;
+    border-color: #18a758;
+}
+.btn-excel:hover {
+    color: #fff;
+    background-color: #53ca88;
+    border-color: #53ca88;
+}
+.btn-excel:focus, .btn-excel.focus {
+    box-shadow: 0 0 0 0.25rem rgba(49, 132, 253, 0.5);
+}
+.btn-excel:active, .btn-excel.active {
+    color: #fff;
+    background-color: #18a758;
+    border-color: #18a758;
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn-excel:disabled, .btn-excel.disabled {
+    color: #fff;
+    background-color: #6C7A89;
+    border-color: #6C7A89;
+}

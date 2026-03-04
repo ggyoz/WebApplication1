@@ -253,6 +253,16 @@ body {
   color: #1b9f62;
 }
 
+/* 기존 스타일 유지하면서 추가 */
+.card.blueCard, .card.yellowCard, .card.greenCard, .card.redCard {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.card.blueCard:hover, .card.yellowCard:hover, .card.greenCard:hover, .card.redCard:hover {
+  transform: translateY(-5px);
+}
+/* ... (기존 스타일) ... */
+
 /* 대시보드 카드 높이 일관성 유지 (Bootstrap h-100이 작동하지 않을 경우 대비) */
 .card.h-100 {
   height: 100% !important;
