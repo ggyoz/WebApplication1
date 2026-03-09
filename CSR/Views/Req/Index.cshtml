@@ -435,6 +435,11 @@
                 $('#hiddenAssignedResponsibilities').val(selectedValues);
             });
 
+            // 검색 조건 저장 (목록으로 돌아올 때 사용)
+            if (window.location.search) {
+                sessionStorage.setItem('reqLastSearch', window.location.search);
+            }
+
         }); // End of $(function)
     </script>
 }

@@ -43,7 +43,6 @@ namespace CSR.Controllers
                 return NotFound();
             }
 
-
             // 조직도
             ViewBag.CorCdList = await _corpService.GetSelectListByCorpAsync();            
             ViewBag.DeptCdList = new List<SelectListItem>();

@@ -65,14 +65,14 @@ namespace CSR.Controllers
 
             // 세션이 없으면 로그인페이지로 튕겨냄
             var sessionCorCd = HttpContext.Session.GetString("CorCd");
-            var sessionTeamCd = HttpContext.Session.GetString("TeamCd");
-            var sessionOfficeCd = HttpContext.Session.GetString("OfficeCd");            
-            var sessionDeptCd = HttpContext.Session.GetString("DeptCd");            
+            var sessionDeptCd = HttpContext.Session.GetString("DeptCd");
+            var sessionOfficeCd = HttpContext.Session.GetString("OfficeCd");
+            var sessionTeamCd = HttpContext.Session.GetString("TeamCd");            
 
             // 팀원 및 팀장 조회 제한
             if( !User.IsInRole("R3") && !User.IsInRole("R4") ){
 
-                if ( string.IsNullOrEmpty(sessionOfficeCd) )
+                if ( string.IsNullOrEmpty(sessionDeptCd) )
                 {
                     return RedirectToAction("Login", "Account");
                 }
@@ -129,9 +129,18 @@ namespace CSR.Controllers
             if( User.IsInRole("R1")) {
                 corCd = sessionCorCd;
                 teamCd = sessionTeamCd;
-            }else if( User.IsInRole("R2")){ 
+            }else if( User.IsInRole("R2")){                
+
                 corCd = sessionCorCd;
                 deptCd = sessionDeptCd;
+
+                if(!string.IsNullOrEmpty(sessionOfficeCd)){
+                    officeCd = sessionOfficeCd;
+                }
+
+                if(!string.IsNullOrEmpty(sessionTeamCd)){
+                    teamCd = sessionTeamCd;
+                }
             }
             
             var pagedResult = await _reqService.GetReqInfosAsync(
@@ -187,14 +196,21 @@ namespace CSR.Controllers
                 }
             }
 
-            corCd = sessionCorCd;
-
-            if (User.IsInRole("R1"))
-            {
+            if( User.IsInRole("R1")) {
+                corCd = sessionCorCd;
                 teamCd = sessionTeamCd;
-            }else if (User.IsInRole("R2"))
-            {
+            }else if( User.IsInRole("R2")){                
+
+                corCd = sessionCorCd;
                 deptCd = sessionDeptCd;
+
+                if(!string.IsNullOrEmpty(sessionOfficeCd)){
+                    officeCd = sessionOfficeCd;
+                }
+
+                if(!string.IsNullOrEmpty(sessionTeamCd)){
+                    teamCd = sessionTeamCd;
+                }
             }
 
             var respList = string.IsNullOrEmpty(assignedResponsibilities) 
@@ -635,13 +651,9 @@ namespace CSR.Controllers
                 return NotFound();
             }
             
-            var memory = new MemoryStream();
-            using (var stream = new FileStream(filePath, FileMode.Open))
-            {
-                await stream.CopyToAsync(memory);
-            }
-            memory.Position = 0;
-            return File(memory, "application/octet-stream", file.REAL_FILENAME);
+            // PhysicalFile은 ASP.NET Core에서 파일을 효율적으로 스트리밍하며, 
+            // 내부적으로 읽기 전용으로 파일을 열기 때문에 ReadWrite 권한 부족 문제를 해결합니다.
+            return PhysicalFile(filePath, "application/octet-stream", file.REAL_FILENAME);
         }
 
         [HttpGet]

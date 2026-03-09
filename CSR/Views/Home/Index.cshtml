@@ -126,66 +126,75 @@
         }
         else if (User.IsInRole("R2")) // Team Leader
         {
+            var userCorCd = Context.Session.GetString("CorCd");
+            var userDeptCd = Context.Session.GetString("DeptCd");
+            var userOfficeCd = Context.Session.GetString("OfficeCd");
+            var userTeamCd = Context.Session.GetString("TeamCd");
+
+            string scopeTitle = "법인";
+            string scopeIdPrefix = "r2Corp";
+
+            if (!string.IsNullOrEmpty(userTeamCd)) { scopeTitle = "팀"; scopeIdPrefix = "r2Team"; }
+            else if (!string.IsNullOrEmpty(userOfficeCd)) { scopeTitle = "사무실"; scopeIdPrefix = "r2Office"; }
+            else if (!string.IsNullOrEmpty(userDeptCd)) { scopeTitle = "부서"; scopeIdPrefix = "r2Dept"; }
+
             <div class="col-md-3 mb-4">
-                <div class="card blueCard shadow-sm h-100" >
+                <div class="card blueCard shadow-sm h-100" onclick="goToReqList('','')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
-                                <h5 class="card-title mb-0">법인 총 요청</h5>
-                                <p class="card-text mb-0">우리 법인의 전체 요청 건수</p>
+                                <h5 class="card-title mb-0">@scopeTitle 총 요청</h5>
+                                <p class="card-text mb-0">우리 @(scopeTitle)의 전체 요청 건수</p>
                             </div>
-                            <p class="card-text display-5 mb-0" id="r2CorpTotalRequestsCount">0</p>
+                            <p class="card-text display-5 mb-0" id="@(scopeIdPrefix)TotalCount">0</p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="card blueCard shadow-sm h-100" onclick="goToReqList('', '')">
+                <div class="card yellowCard shadow-sm h-100" onclick="goToReqList('64','')">
                     <div class="card-body m-3">
-                        <div class="d-flex justify-content-between align-items-center"> 
-                            <div class="d-flex flex-column"> 
-                                <h5 class="card-title mb-0">부서 총 요청</h5>
-                                <p class="card-text mb-0">우리 부서의 전체 요청 건수</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-column">
+                                <h5 class="card-title mb-0">진행 중</h5>
+                                <p class="card-text mb-0">현재 진행 중인 요청</p>
                             </div>
-                            <p class="card-text display-5 mb-0" id="r2DeptTotalRequestsCount">0</p>
+                            <p class="card-text display-5 mb-0" id="@(scopeIdPrefix)InProgressCount">0</p>
                         </div>
-                        
                     </div>
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="card blueCard shadow-sm h-100">
+                <div class="card greenCard shadow-sm h-100" onclick="goToReqList('65','')">
                     <div class="card-body m-3">
-                        <div class="d-flex justify-content-between align-items-center"> 
-                            <div class="d-flex flex-column"> 
-                                <h5 class="card-title mb-0">팀 총 요청</h5>
-                                <p class="card-text mb-0">우리 팀의 전체 요청 건수</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-column">
+                                <h5 class="card-title mb-0">답변 완료</h5>
+                                <p class="card-text mb-0">답변 완료된 요청</p>
                             </div>
-                            <p class="card-text display-5 mb-0" id="r2TeamTotalRequestsCount">0</p>
+                            <p class="card-text display-5 mb-0" id="@(scopeIdPrefix)AnsweredCount">0</p>
                         </div>
-                        
                     </div>
                 </div>
-            </div>            
+            </div>
             <div class="col-md-3 mb-4">
-                <div class="card redCard shadow-sm h-100">
+                <div class="card redCard shadow-sm h-100" onClick="goToReqList('64', 'delay')">
                     <div class="card-body m-3">
-                        <div class="d-flex justify-content-between align-items-center"> 
-                            <div class="d-flex flex-column"> 
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-column">
                                 <h5 class="card-title mb-0">기한 초과</h5>
                                 <p class="card-text mb-0">기한을 넘긴 요청</p>
                             </div>
-                            <p class="card-text display-5 mb-0" id="r2OverdueRequestsCount"><small>%</small></p>
+                            <p class="card-text display-5 mb-0" id="@(scopeIdPrefix)OverdueCount">0</p>
                         </div>
-                        
                     </div>
                 </div>
             </div>
         }
         else if (User.IsInRole("R1")) // Team Member
         {
-            <div class="col-md-4 mb-4">
-                <div class="card blueCard shadow-sm h-100">
+            <div class="col-md-3 mb-4">
+                <div class="card blueCard shadow-sm h-100" onclick="goToReqList('','')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
                             <div class="d-flex flex-column"> 
@@ -194,12 +203,11 @@
                             </div>
                             <p class="card-text display-5 mb-0" id="r1TotalRequestsCount"></p>
                         </div>
-                        
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="card yellowCard shadow-sm h-100">
+            <div class="col-md-3 mb-4">
+                <div class="card yellowCard shadow-sm h-100" onclick="goToReqList('64','myReq')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
                             <div class="d-flex flex-column"> 
@@ -208,21 +216,34 @@
                             </div>
                             <p class="card-text display-5 mb-0" id="r1InProgressRequestsCount"></p>
                         </div>
-                        
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="card greenCard shadow-sm h-100">
+            
+            <div class="col-md-3 mb-4">
+                <div class="card greenCard shadow-sm h-100" onclick="goToReqList('65','myReq')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
                             <div class="d-flex flex-column"> 
                                 <h5 class="card-title mb-0">답변 완료</h5>
                                 <p class="card-text mb-0">답변 완료된 나의 요청</p>
                             </div>
+                            <p class="card-text display-5 mb-0" id="r1AnsweredRequestsCount"></p>
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <div class="card greenCard shadow-sm h-100" onclick="goToReqList('68','myReq')">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center"> 
+                            <div class="d-flex flex-column"> 
+                                <h5 class="card-title mb-0">종결</h5>
+                                <p class="card-text mb-0">종결된 나의 요청</p>
+                            </div>
                             <p class="card-text display-5 mb-0" id="r1CompletedRequestsCount"></p>
-                        </div>
-                        
+                        </div>                        
                     </div>
                 </div>
             </div>
@@ -364,6 +385,7 @@
 
         if (status) params.push('ProcStatusCd=' + status);
         if (filterType === 'my') params.push('ResUserName=' + userName );
+        if (filterType === 'myReq') params.push('ReqUserName=' + userName );
         if (filterType === 'delay') params.push('ExpectDate=' + today );
 
         if (params.length > 0) {
@@ -527,8 +549,9 @@
                         var totalCount = data.WAITCOUNT + data.RECEIVEDCOUNT + data.INPROGRESSCOUNT + data.CLOSEDCOUNT + data.ANSWEREDCOUNT;
                         
                         $('#r1TotalRequestsCount').text(totalCount);
-                        $('#r1InProgressRequestsCount').text(data.INPROGRESSCOUNT);
+                        $('#r1InProgressRequestsCount').text(data.INPROGRESSCOUNT + data.RECEIVEDCOUNT);
                         $('#r1CompletedRequestsCount').text(data.CLOSEDCOUNT);
+                        $('#r1AnsweredRequestsCount').text(data.ANSWEREDCOUNT);
 
                         // 차트 데이터 업데이트
                         var r1ChartData = [
@@ -596,17 +619,30 @@
                 });
 
             } else if (currentUserRole === 'R2') {
-                // 법인 통합 통계 API 호출
+                // R2 권한: 스코프에 따른 API 호출
+                const userTeamCd = '@Context.Session.GetString("TeamCd")';
+                const userOfficeCd = '@Context.Session.GetString("OfficeCd")';
+                const userDeptCd = '@Context.Session.GetString("DeptCd")';
+                const userCorCd = '@Context.Session.GetString("CorCd")';
+
+                let apiScope = 'corp';
+                let elementPrefix = 'r2Corp';
+
+                if (userTeamCd) { apiScope = 'team'; elementPrefix = 'r2Team'; }
+                else if (userOfficeCd) { apiScope = 'office'; elementPrefix = 'r2Office'; }
+                else if (userDeptCd) { apiScope = 'dept'; elementPrefix = 'r2Dept'; }
+
+                // 1. 상태별 카운트 조회
                 $.ajax({
-                    url: '/api/ReqApi/corp-counts',
+                    url: `/api/ReqApi/${apiScope}-counts`,
                     type: 'GET',
                     success: function(data) {
-                        // 법인 총 요청 카드 업데이트
                         var totalCount = data.WAITCOUNT + data.RECEIVEDCOUNT + data.INPROGRESSCOUNT + data.CLOSEDCOUNT + data.ANSWEREDCOUNT;
-                        $('#r2CorpTotalRequestsCount').text(totalCount);                        
+                        $(`#${elementPrefix}TotalCount`).text(totalCount);
+                        $(`#${elementPrefix}InProgressCount`).text(data.INPROGRESSCOUNT + data.RECEIVEDCOUNT);
+                        $(`#${elementPrefix}AnsweredCount`).text(data.ANSWEREDCOUNT);
 
-                        // 법인별 요청 현황 차트 업데이트
-                        var corpChartData = [
+                        var chartData = [
                             { status: '대기', data: data.WAITCOUNT },
                             { status: '접수', data: data.RECEIVEDCOUNT },
                             { status: '진행중', data: data.INPROGRESSCOUNT },
@@ -615,66 +651,24 @@
                         ];
                         
                         var chartInstance = $('#chartR2').dxChart('instance');
-                        if (chartInstance) {
-                            chartInstance.option('dataSource', corpChartData);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('법인 통계 API 오류:', error);
+                        if (chartInstance) chartInstance.option('dataSource', chartData);
                     }
                 });
 
-                // 법인 퍼포먼스(진척율, 지연율) API 호출
+                // 2. 퍼포먼스(지연건수 등) 조회
                 $.ajax({
-                    url: '/api/ReqApi/corp-performance',
+                    url: `/api/ReqApi/${apiScope}-performance`,
                     type: 'GET',
                     success: function(data) {
+                        $(`#${elementPrefix}OverdueCount`).text(data.delayedCount);
 
-                        $("#r2OverdueRequestsCount").text(data.delayedCount);
-
-                        var corpPerfData = [
+                        var perfData = [
                             { status: '처리', data: data.completedCount },
                             { status: '지연', data: data.delayedCount }
                         ];
 
-                        
                         var chartInstance = $('#chartR2_2').dxChart('instance');
-                        if (chartInstance) {
-                            chartInstance.option('dataSource', corpPerfData);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('법인 퍼포먼스 API 오류:', error);
-                    }
-                });
-
-                $.ajax({
-                    url: '/Req/GetDeptTotalRequestsCount',
-                    type: 'GET',
-                    success: function (response) {
-                        if (response.success) {
-                            $('#r2DeptTotalRequestsCount').text(response.count);
-                        } else {
-                            console.error('부서 총 요청 건수 가져오기 실패:', response.message);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('부서 총 요청 건수 AJAX 오류:', error);
-                    }
-                });
-
-                $.ajax({
-                    url: '/Req/GetTeamRequestCount', 
-                    type: 'GET',
-                    success: function(response) {
-                        if (response.success) {
-                            $('#r2TeamTotalRequestsCount').text(response.count);
-                        } else {
-                            console.error('팀 요청 건수 가져오기 실패:', response.message);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('팀 요청 건수 AJAX 오류:', error);
+                        if (chartInstance) chartInstance.option('dataSource', perfData);
                     }
                 });
             

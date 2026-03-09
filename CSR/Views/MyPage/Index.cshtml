@@ -32,6 +32,10 @@
             <input type="hidden" asp-for="UseYn" />
             <input type="hidden" asp-for="UpdateDate" />
             <input type="hidden" asp-for="UpdateUserId" />
+            <input type="hidden" asp-for="CorCd"/>
+            <input type="hidden" asp-for="DeptCd"/>
+            <input type="hidden" asp-for="OfficeCd"/>
+            <input type="hidden" asp-for="TeamCd"/>
 
             <table class="table-layout" width="100%">
                 <colgroup>
@@ -56,30 +60,30 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>@SharedLocalizer["Label_Corporation"] *</td>
+                    <td>@SharedLocalizer["Label_Corporation"]</td>                    
                     <td>
-                        <select asp-for="CorCd" id="CorCd" asp-items="ViewBag.CorCdList" class="form-select" name="CorCd">
+                        <select asp-for="CorCd" id="CorCd" asp-items="ViewBag.CorCdList" class="form-select" disabled >
                             <option value="">@SharedLocalizer["Placeholder_SelectCorporation"]</option>
                         </select>
                         <span asp-validation-for="CorCd" class="text-danger"></span>
                     </td>
-                    <td>@SharedLocalizer["Label_Department"] *</td>
+                    <td>@SharedLocalizer["Label_Department"]</td>
                     <td>
-                        <select asp-for="DeptCd" id="DeptCd" asp-items="ViewBag.DeptCdList"  class="form-select" name="DeptCd">
+                        <select asp-for="DeptCd" id="DeptCd" asp-items="ViewBag.DeptCdList"  class="form-select" disabled>
                             <option value="">@SharedLocalizer["Placeholder_SelectDepartment"]</option>
                         </select>
                         <span asp-validation-for="DeptCd" class="text-danger"></span>
                     </td>
-                    <td>@SharedLocalizer["Label_Office"] *</td>
+                    <td>@SharedLocalizer["Label_Office"]</td>
                     <td>
-                        <select asp-for="OfficeCd" id="OfficeCd" asp-items="ViewBag.OfficeCdList" class="form-select" name="OfficeCd">
+                        <select asp-for="OfficeCd" id="OfficeCd" asp-items="ViewBag.OfficeCdList" class="form-select" disabled>
                             <option value="">@SharedLocalizer["Placeholder_SelectOffice"]</option>
                         </select>
                         <span asp-validation-for="OfficeCd" class="text-danger"></span>
                     </td>
-                    <td>@SharedLocalizer["Label_Team"] *</td>
+                    <td>@SharedLocalizer["Label_Team"]</td>
                     <td>
-                        <select asp-for="TeamCd" id="TeamCd" asp-items="ViewBag.TeamCdList" class="form-select" name="TeamCd">
+                        <select asp-for="TeamCd" id="TeamCd" asp-items="ViewBag.TeamCdList" class="form-select" disabled>
                             <option value="">@SharedLocalizer["Placeholder_SelectTeam"]</option>
                         </select>
                         <span asp-validation-for="TeamCd" class="text-danger"></span>

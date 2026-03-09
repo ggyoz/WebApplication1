@@ -48,10 +48,10 @@ namespace CSR.Services
             parameters.Add("TelNo", user.TelNo);
             parameters.Add("MobPhoneNo", user.MobPhoneNo);
             parameters.Add("EmailAddr", user.EmailAddr);
-            parameters.Add("CorCd", user.CorCd);
-            parameters.Add("DeptCd", user.DeptCd);
-            parameters.Add("OfficeCd", user.OfficeCd);
-            parameters.Add("TeamCd", user.TeamCd);
+            // parameters.Add("CorCd", user.CorCd);
+            // parameters.Add("DeptCd", user.DeptCd);
+            // parameters.Add("OfficeCd", user.OfficeCd);
+            // parameters.Add("TeamCd", user.TeamCd);
             parameters.Add("UpdateUserId", updateUserId);
 
 
@@ -62,10 +62,10 @@ namespace CSR.Services
                 "MOB_PHONE_NO = :MobPhoneNo",
                 "EMAIL_ADDR = :EmailAddr",
                 "UPDATE_DATE = SYSDATE",
-                "CORCD = :CorCd",
-                "DEPTCD = :DeptCd",
-                "OFFICECD = :OfficeCd",
-                "TEAMCD = :TEAMCD",
+                // "CORCD = :CorCd",
+                // "DEPTCD = :DeptCd",
+                // "OFFICECD = :OfficeCd",
+                // "TEAMCD = :TEAMCD",
                 "UPDATE_USERID = :UpdateUserId"
             };
 

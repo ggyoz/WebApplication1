@@ -82,10 +82,16 @@ namespace CSR.Services
         Task<int> GetRequestsDueThisWeekCountAsync();        
         Task<int> GetCorpTotalRequestsCountAsync(string corCd);
         Task<int> GetDeptTotalRequestsCountAsync(string corCd, string deptCd);
-        Task<dynamic> GetMyRequestCountsByStatusAsync(string userId);
-        Task<dynamic> GetMyRequestPerformanceAsync(string userId);
+        Task<dynamic> GetMyRequestCountsByStatusAsync(string corCd, string userId);
+        Task<dynamic> GetMyRequestPerformanceAsync(string corCd, string userId);
         Task<dynamic> GetCorpRequestCountsByStatusAsync(string corCd);
         Task<dynamic> GetCorpRequestPerformanceAsync(string corCd);
+        Task<dynamic> GetDeptRequestCountsByStatusAsync(string deptCd);
+        Task<dynamic> GetDeptRequestPerformanceAsync(string deptCd);
+        Task<dynamic> GetOfficeRequestCountsByStatusAsync(string officeCd);
+        Task<dynamic> GetOfficeRequestPerformanceAsync(string officeCd);
+        Task<dynamic> GetTeamRequestCountsByStatusAsync(string corCd, string teamCd);
+        Task<dynamic> GetTeamRequestPerformanceAsync(string corCd, string teamCd);
         Task<dynamic> GetAllRequestCountsByStatusAsync();
         Task<dynamic> GetAllRequestPerformanceAsync();
     }
@@ -123,7 +129,7 @@ namespace CSR.Services
             return await _dbConnection.ExecuteScalarAsync<int>(sql, new { UserId = userId });
         }
 
-        public async Task<dynamic> GetMyRequestCountsByStatusAsync(string userId)
+        public async Task<dynamic> GetMyRequestCountsByStatusAsync(string corCd, string userId)
         {
             var sql = @"
                 SELECT 
@@ -133,22 +139,23 @@ namespace CSR.Services
                     COUNT(CASE WHEN PROC_STATUS = '65' THEN 1 END) AS ANSWEREDCOUNT,
                     COUNT(CASE WHEN PROC_STATUS NOT IN ('69', '62', '68', '63', '65') AND PROC_STATUS IS NOT NULL THEN 1 END) AS INPROGRESSCOUNT                    
                 FROM TB_REQ_INFO
-                WHERE REQUSERID = :UserId AND USEYN = 'Y'";
+                WHERE REQUSERID = :UserId AND CORCD = :CorCd AND USEYN = 'Y'";
 
-            return await _dbConnection.QuerySingleAsync(sql, new { UserId = userId });
+            return await _dbConnection.QuerySingleAsync(sql, new { UserId = userId, CorCd = corCd });
         }
         
-        public async Task<dynamic> GetMyRequestPerformanceAsync(string userId)
+        public async Task<dynamic> GetMyRequestPerformanceAsync(string corCd, string userId)
         {
+            Console.WriteLine("corCd : " + corCd );
             var sql = @"
                 SELECT 
                     COUNT(*) AS TOTALCOUNT,
                     COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS COMPLETEDCOUNT,
                     COUNT(CASE WHEN PROC_STATUS != '68' AND EXPECTDATE < TRUNC(SYSDATE) AND EXPECTDATE IS NOT NULL THEN 1 END) AS DELAYEDCOUNT
                 FROM TB_REQ_INFO
-                WHERE REQUSERID = :UserId AND USEYN = 'Y'";
+                WHERE REQUSERID = :UserId AND CORCD = :CorCd AND USEYN = 'Y' ";
 
-            var stats = await _dbConnection.QuerySingleAsync(sql, new { UserId = userId });
+            var stats = await _dbConnection.QuerySingleAsync(sql, new { UserId = userId, CorCd = corCd });
             
             // Dapper dynamic 결과(decimal)를 double로 안전하게 변환
             double total = Convert.ToDouble(stats.TOTALCOUNT);
@@ -204,6 +211,126 @@ namespace CSR.Services
             };
         }
 
+        public async Task<dynamic> GetDeptRequestCountsByStatusAsync(string deptCd)
+        {
+            var sql = @"
+                SELECT 
+                    COUNT(CASE WHEN PROC_STATUS = '69' THEN 1 END) AS WAITCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '62' THEN 1 END) AS RECEIVEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS CLOSEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '65' THEN 1 END) AS ANSWEREDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS NOT IN ('69', '62', '68', '63', '65') AND PROC_STATUS IS NOT NULL THEN 1 END) AS INPROGRESSCOUNT
+                FROM TB_REQ_INFO
+                WHERE DEPTCD = :DeptCd AND USEYN = 'Y'";
+
+            return await _dbConnection.QuerySingleAsync(sql, new { DeptCd = deptCd });
+        }
+
+        public async Task<dynamic> GetDeptRequestPerformanceAsync(string deptCd)
+        {
+            var sql = @"
+                SELECT 
+                    COUNT(*) AS TOTALCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS COMPLETEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS != '68' AND EXPECTDATE < TRUNC(SYSDATE) AND EXPECTDATE IS NOT NULL THEN 1 END) AS DELAYEDCOUNT
+                FROM TB_REQ_INFO
+                WHERE DEPTCD = :DeptCd AND USEYN = 'Y'";
+
+            var stats = await _dbConnection.QuerySingleAsync(sql, new { DeptCd = deptCd });
+            
+            double total = Convert.ToDouble(stats.TOTALCOUNT);
+            double completed = Convert.ToDouble(stats.COMPLETEDCOUNT);
+            double delayed = Convert.ToDouble(stats.DELAYEDCOUNT);
+
+            return new {
+                TotalCount = (int)total,
+                CompletedCount = (int)completed,
+                DelayedCount = (int)delayed,
+                CompletionRate = total > 0 ? Math.Round((completed / total) * 100, 1) : 0,
+                DelayRate = total > 0 ? Math.Round((delayed / total) * 100, 1) : 0
+            };
+        }
+
+        public async Task<dynamic> GetOfficeRequestCountsByStatusAsync(string officeCd)
+        {
+            var sql = @"
+                SELECT 
+                    COUNT(CASE WHEN PROC_STATUS = '69' THEN 1 END) AS WAITCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '62' THEN 1 END) AS RECEIVEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS CLOSEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '65' THEN 1 END) AS ANSWEREDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS NOT IN ('69', '62', '68', '63', '65') AND PROC_STATUS IS NOT NULL THEN 1 END) AS INPROGRESSCOUNT
+                FROM TB_REQ_INFO
+                WHERE OFFICECD = :OfficeCd AND USEYN = 'Y'";
+
+            return await _dbConnection.QuerySingleAsync(sql, new { OfficeCd = officeCd });
+        }
+
+        public async Task<dynamic> GetOfficeRequestPerformanceAsync(string officeCd)
+        {
+            var sql = @"
+                SELECT 
+                    COUNT(*) AS TOTALCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS COMPLETEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS != '68' AND EXPECTDATE < TRUNC(SYSDATE) AND EXPECTDATE IS NOT NULL THEN 1 END) AS DELAYEDCOUNT
+                FROM TB_REQ_INFO
+                WHERE OFFICECD = :OfficeCd AND USEYN = 'Y'";
+
+            var stats = await _dbConnection.QuerySingleAsync(sql, new { OfficeCd = officeCd });
+            
+            double total = Convert.ToDouble(stats.TOTALCOUNT);
+            double completed = Convert.ToDouble(stats.COMPLETEDCOUNT);
+            double delayed = Convert.ToDouble(stats.DELAYEDCOUNT);
+
+            return new {
+                TotalCount = (int)total,
+                CompletedCount = (int)completed,
+                DelayedCount = (int)delayed,
+                CompletionRate = total > 0 ? Math.Round((completed / total) * 100, 1) : 0,
+                DelayRate = total > 0 ? Math.Round((delayed / total) * 100, 1) : 0
+            };
+        }
+
+        public async Task<dynamic> GetTeamRequestCountsByStatusAsync(string corCd, string teamCd)
+        {
+            var sql = @"
+                SELECT 
+                    COUNT(CASE WHEN PROC_STATUS = '69' THEN 1 END) AS WAITCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '62' THEN 1 END) AS RECEIVEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS CLOSEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '65' THEN 1 END) AS ANSWEREDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS NOT IN ('69', '62', '68', '63', '65') AND PROC_STATUS IS NOT NULL THEN 1 END) AS INPROGRESSCOUNT
+                FROM TB_REQ_INFO
+                WHERE TEAMCD = :TeamCd AND USEYN = 'Y'";
+
+            return await _dbConnection.QuerySingleAsync(sql, new { TeamCd = teamCd });
+        }
+
+        public async Task<dynamic> GetTeamRequestPerformanceAsync(string corCd, string teamCd)
+        {
+            var sql = @"
+                SELECT 
+                    COUNT(*) AS TOTALCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS COMPLETEDCOUNT,
+                    COUNT(CASE WHEN PROC_STATUS != '68' AND EXPECTDATE < TRUNC(SYSDATE) AND EXPECTDATE IS NOT NULL THEN 1 END) AS DELAYEDCOUNT
+                FROM TB_REQ_INFO
+                WHERE TEAMCD = :TeamCd AND USEYN = 'Y'";
+
+            var stats = await _dbConnection.QuerySingleAsync(sql, new { TeamCd = teamCd });
+            
+            double total = Convert.ToDouble(stats.TOTALCOUNT);
+            double completed = Convert.ToDouble(stats.COMPLETEDCOUNT);
+            double delayed = Convert.ToDouble(stats.DELAYEDCOUNT);
+
+            return new {
+                TotalCount = (int)total,
+                CompletedCount = (int)completed,
+                DelayedCount = (int)delayed,
+                CompletionRate = total > 0 ? Math.Round((completed / total) * 100, 1) : 0,
+                DelayRate = total > 0 ? Math.Round((delayed / total) * 100, 1) : 0
+            };
+        }
+
         public async Task<dynamic> GetAllRequestCountsByStatusAsync()
         {
             var sql = @"
@@ -212,7 +339,7 @@ namespace CSR.Services
                     COUNT(CASE WHEN PROC_STATUS = '62' THEN 1 END) AS RECEIVEDCOUNT,
                     COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS CLOSEDCOUNT,
                     COUNT(CASE WHEN PROC_STATUS = '65' THEN 1 END) AS ANSWEREDCOUNT,
-                    COUNT(CASE WHEN PROC_STATUS NOT IN ('69', '62', '68', '63') AND PROC_STATUS IS NOT NULL THEN 1 END) AS INPROGRESSCOUNT
+                    COUNT(CASE WHEN PROC_STATUS NOT IN ('69', '62', '68', '63', '65') AND PROC_STATUS IS NOT NULL THEN 1 END) AS INPROGRESSCOUNT
                 FROM TB_REQ_INFO
                 WHERE USEYN = 'Y'";
 
@@ -312,7 +439,7 @@ namespace CSR.Services
                     FROM TB_REQ_HIST H
                     INNER JOIN TB_REQ_INFO R ON H.REQID = R.REQID
                     LEFT JOIN TB_COMM_CODE PS ON H.HISTORY_REASON = PS.CODEID 
-                    WHERE R.REQUSERID = :UserId AND H.HISTORY_REASON IS NOT NULL
+                    WHERE R.REQUSERID = :UserId AND H.HISTORY_REASON IS NOT NULL AND R.USEYN = 'Y'
                     ORDER BY H.REG_DATE DESC
                 ) WHERE ROWNUM <= :Count";
             
@@ -567,8 +694,6 @@ namespace CSR.Services
                     "SELECT MAX(HISTORYID) FROM TB_REQ_HIST WHERE REQID = :REQID",
                     new { reqInfo.REQID },
                     transaction);
-
-                Console.WriteLine("latestHistoryId : " + latestHistoryId.Value);                
 
                 if( newHistoryId == 0 ){
                     if( latestHistoryId.HasValue){

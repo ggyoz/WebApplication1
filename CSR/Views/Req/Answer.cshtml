@@ -9,12 +9,21 @@
     ViewData["Title"] = "요구사항 수정";
 }
 
-<partial name="_PageTitlePartial" />
+<div class="d-flex justify-content-between"> 
+    <div class="text-start">
+        <partial name="_PageTitlePartial" />
+    </div>
+
+    <div class="text-end">
+        <a id="btnSaveTop" class="btn btn-primary" style="cursor:pointer;">@SharedLocalizer["Button_Save"]</a>
+        <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
+    </div>
+</div>
 
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="Answer" asp-route-id="@Model.REQID" enctype="multipart/form-data">
+        <form id="answerForm" asp-action="Answer" asp-route-id="@Model.REQID" enctype="multipart/form-data">
             <input type="hidden" asp-for="REQID" />
             <input type="hidden" asp-for="REG_USERID" />
             <div asp-validation-summary="All" class="text-danger"></div>
@@ -69,9 +78,11 @@
                         <td><label asp-for="SYSTEMCD" class="control-label"></label></td>
                         <td><select asp-for="SYSTEMCD" asp-items="ViewBag.SystemCodes" class="form-select"></select></td>
                         <td><label asp-for="REQMENU" class="control-label"></label></td>
-                        <td><select asp-for="REQMENU" id="ReqMenu" asp-items="ViewBag.SystemCodes" class="form-select"></select></td>
-                        <td><label asp-for="RESUSERID" class="control-label"></label></td>
-                        <td><input asp-for="RESUSERID" class="form-control" /></td>
+                        <td><select asp-for="REQMENU" id="ReqMenu" asp-items="ViewBag.ReqMenu" class="form-select"></select></td>
+                        <td><label asp-for="RESUSERID" class="control-label"></label></td>                        
+                        <td><select asp-for="RESUSERID" class="form-select"></select></td>
+                        
+                        
                     </tr>
                     <tr>
                         <td><label asp-for="PRIORITYCD" class="control-label"></label></td>
@@ -172,9 +183,129 @@
                 name: 'newFiles',
                 multiple: true,
                 uploadMode: 'useForm'
-            });            
+            });          
+
+            var systemcd = $('#SYSTEMCD').val();
+
+            // 메뉴 
+            if (systemcd) {
+                var reqMenuValue = @Html.Raw(Json.Serialize(Model.REQMENU));
+                var adminId = @Html.Raw(Json.Serialize(Model.RESUSERID));
+                getReqMenuDropdown(reqMenuValue, systemcd, adminId);
+            };
+            
+           
+
+
+        // 시스템 선택 시 메뉴 드롭다운 변경
+            $('#SYSTEMCD').on('change', function() {
+                var systemCodeId = $(this).val();
+                var reqMenuDropdown = $('#ReqMenu');
+
+                reqMenuDropdown.empty();
+                reqMenuDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectMenu"])'));
+
+                if (systemCodeId) {
+                    $.ajax({
+                        url: '@Url.Action("GetMenusBySystemCode", "CommCode")',
+                        type: 'GET',
+                        data: { systemCodeId: systemCodeId },
+                        success: function(data) {
+                            $.each(data, function(i, item) {
+                                reqMenuDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+
+            // 메뉴 선택 시 조치자 드롭다운 변경
+            $('#ReqMenu').on('change', function() {
+                var menuId = $(this).val();
+                var adminDropdown = $('#RESUSERID');
+
+                adminDropdown.empty();
+                adminDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectActionTaker"])'));
+
+                if (menuId) {
+                    $.ajax({
+                        url: '@Url.Action("GetAdminRel", "Req")',
+                        type: 'GET',
+                        data: { menuId: menuId },
+                        success: function(data) {
+                            $.each(data, function(i, item) {
+                                adminDropdown.append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("An error occurred while fetching menus: " + error);
+                        }
+                    });
+                }
+            });
+        
 
         });
+
+
+         // 메뉴 dropdown function
+        const getReqMenuDropdown = function (reqMenuValue, systemCd, adminId){
+
+            var reqMenuDropdown = $('#ReqMenu');
+
+            reqMenuDropdown.empty();
+            reqMenuDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectMenu"])'));
+
+            $.ajax({
+                url: '@Url.Action("GetMenusBySystemCode", "CommCode")',
+                type: 'GET',
+                data: { systemCodeId: systemCd },
+                success: function(data) {
+                    $.each(data, function(i, item) {
+                        reqMenuDropdown.append($('<option></option>').val(item.value).text(item.text));
+                    });
+
+                    reqMenuDropdown.val(reqMenuValue);      
+
+                    getadminDropdown(adminId, reqMenuValue);
+                },
+                error: function(xhr, status, error) {
+                    console.error("An error occurred while fetching menus: " + error);
+                }
+            });
+
+        }
+
+        // 조치자 dropdown function
+        const getadminDropdown = function( adminId, menuId ){
+            
+            var adminDropdown = $('#RESUSERID');
+
+            adminDropdown.empty();
+            adminDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectActionTaker"])'));
+
+            if (menuId) {
+                $.ajax({
+                    url: '@Url.Action("GetAdminRel", "Req")',
+                    type: 'GET',
+                    data: { menuId: menuId },
+                    success: function(data) {
+                        $.each(data, function(i, item) {
+                            adminDropdown.append($('<option></option>').val(item.value).text(item.text));
+                        });
+
+                        adminDropdown.val(adminId);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("An error occurred while fetching menus: " + error);
+                    }
+                });
+            }
+
+        }
 
         // 사용자 검색 기능 초기화
         function initializeUserSearch() {
@@ -285,6 +416,20 @@
 
         $(document).ready(function() {
             initializeUserSearch();
+
+            // 상단 저장 버튼 클릭 시 폼 제출
+            $('#btnSaveTop').on('click', function () {
+                $('#answerForm').submit();
+            });
+
+            // "목록" 버튼 클릭 시 저장된 검색 조건이 있으면 해당 주소로 이동
+            $('.btn-list').on('click', function (e) {
+                var lastSearch = sessionStorage.getItem('reqLastSearch');
+                if (lastSearch) {
+                    e.preventDefault();
+                    window.location.href = '@Url.Action("Index", "Req")' + lastSearch;
+                }
+            });
         });
 
     </script>

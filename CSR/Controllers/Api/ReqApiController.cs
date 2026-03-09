@@ -29,6 +29,7 @@ namespace CSR.Controllers.Api
             try
             {
                 // 로그인한 사용자의 ID 가져오기 (ClaimTypes.Name 또는 Identity.Name)
+                var corCd = HttpContext.Session.GetString("CorCd");
                 var userId = User.Identity?.Name;
                 
                 if (string.IsNullOrEmpty(userId))
@@ -36,7 +37,7 @@ namespace CSR.Controllers.Api
                     return Unauthorized();
                 }
 
-                var counts = await _reqService.GetMyRequestCountsByStatusAsync(userId);
+                var counts = await _reqService.GetMyRequestCountsByStatusAsync(corCd, userId);
                 return Ok(counts);
             }
             catch (Exception ex)
@@ -54,10 +55,11 @@ namespace CSR.Controllers.Api
         {
             try
             {
+                var corCd = HttpContext.Session.GetString("CorCd");
                 var userId = User.Identity?.Name;
                 if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-                var performance = await _reqService.GetMyRequestPerformanceAsync(userId);
+                var performance = await _reqService.GetMyRequestPerformanceAsync(corCd, userId);
                 return Ok(performance);
             }
             catch (Exception ex)
@@ -115,6 +117,128 @@ namespace CSR.Controllers.Api
             catch (Exception ex)
             {
                 _logger.LogError(ex, "법인 퍼포먼스 데이터 조회 중 오류 발생. CorCd: {CorCd}", HttpContext.Session.GetString("CorCd"));
+                return StatusCode(500, new { message = "내부 서버 오류가 발생했습니다." });
+            }
+        }
+
+        /// <summary>
+        /// 로그인한 사용자가 속한 부서의 요청사항 상태별 갯수를 가져옵니다.
+        /// </summary>
+        [HttpGet("dept-counts")]
+        public async Task<IActionResult> GetDeptRequestCounts()
+        {
+            try
+            {
+                var deptCd = HttpContext.Session.GetString("DeptCd");
+                if (string.IsNullOrEmpty(deptCd)) return Ok(new { WAITCOUNT = 0, RECEIVEDCOUNT = 0, CLOSEDCOUNT = 0, ANSWEREDCOUNT = 0, INPROGRESSCOUNT = 0 });
+                var counts = await _reqService.GetDeptRequestCountsByStatusAsync(deptCd);
+                return Ok(counts);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "부서별 요청 카운트 조회 중 오류 발생. DeptCd: {DeptCd}", HttpContext.Session.GetString("DeptCd"));
+                return StatusCode(500, new { message = "내부 서버 오류가 발생했습니다." });
+            }
+        }
+
+        /// <summary>
+        /// 로그인한 사용자가 속한 부서의 요청 처리율 및 지연율 통계를 가져옵니다.
+        /// </summary>
+        [HttpGet("dept-performance")]
+        public async Task<IActionResult> GetDeptRequestPerformance()
+        {
+            try
+            {
+                var deptCd = HttpContext.Session.GetString("DeptCd");
+                if (string.IsNullOrEmpty(deptCd)) return Ok(new { TotalCount = 0, CompletedCount = 0, DelayedCount = 0, CompletionRate = 0, DelayRate = 0 });
+                var performance = await _reqService.GetDeptRequestPerformanceAsync(deptCd);
+                return Ok(performance);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "부서 퍼포먼스 데이터 조회 중 오류 발생. DeptCd: {DeptCd}", HttpContext.Session.GetString("DeptCd"));
+                return StatusCode(500, new { message = "내부 서버 오류가 발생했습니다." });
+            }
+        }
+
+        /// <summary>
+        /// 로그인한 사용자가 속한 사무실의 요청사항 상태별 갯수를 가져옵니다.
+        /// </summary>
+        [HttpGet("office-counts")]
+        public async Task<IActionResult> GetOfficeRequestCounts()
+        {
+            try
+            {
+                var officeCd = HttpContext.Session.GetString("OfficeCd");
+                if (string.IsNullOrEmpty(officeCd)) return Ok(new { WAITCOUNT = 0, RECEIVEDCOUNT = 0, CLOSEDCOUNT = 0, ANSWEREDCOUNT = 0, INPROGRESSCOUNT = 0 });
+                var counts = await _reqService.GetOfficeRequestCountsByStatusAsync(officeCd);
+                return Ok(counts);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "사무실별 요청 카운트 조회 중 오류 발생. OfficeCd: {OfficeCd}", HttpContext.Session.GetString("OfficeCd"));
+                return StatusCode(500, new { message = "내부 서버 오류가 발생했습니다." });
+            }
+        }
+
+        /// <summary>
+        /// 로그인한 사용자가 속한 사무실의 요청 처리율 및 지연율 통계를 가져옵니다.
+        /// </summary>
+        [HttpGet("office-performance")]
+        public async Task<IActionResult> GetOfficeRequestPerformance()
+        {
+            try
+            {
+                var officeCd = HttpContext.Session.GetString("OfficeCd");
+                if (string.IsNullOrEmpty(officeCd)) return Ok(new { TotalCount = 0, CompletedCount = 0, DelayedCount = 0, CompletionRate = 0, DelayRate = 0 });
+                var performance = await _reqService.GetOfficeRequestPerformanceAsync(officeCd);
+                return Ok(performance);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "사무실 퍼포먼스 데이터 조회 중 오류 발생. OfficeCd: {OfficeCd}", HttpContext.Session.GetString("OfficeCd"));
+                return StatusCode(500, new { message = "내부 서버 오류가 발생했습니다." });
+            }
+        }
+
+        /// <summary>
+        /// 로그인한 사용자가 속한 팀의 요청사항 상태별 갯수를 가져옵니다.
+        /// </summary>
+        [HttpGet("team-counts")]
+        public async Task<IActionResult> GetTeamRequestCounts()
+        {
+            try
+            {
+                var corCd = HttpContext.Session.GetString("CorCd");
+                var teamCd = HttpContext.Session.GetString("TeamCd");
+                if (string.IsNullOrEmpty(teamCd)) return Ok(new { WAITCOUNT = 0, RECEIVEDCOUNT = 0, CLOSEDCOUNT = 0, ANSWEREDCOUNT = 0, INPROGRESSCOUNT = 0 });
+                var counts = await _reqService.GetTeamRequestCountsByStatusAsync(corCd, teamCd);
+                return Ok(counts);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "팀별 요청 카운트 조회 중 오류 발생. TeamCd: {TeamCd}", HttpContext.Session.GetString("TeamCd"));
+                return StatusCode(500, new { message = "내부 서버 오류가 발생했습니다." });
+            }
+        }
+
+        /// <summary>
+        /// 로그인한 사용자가 속한 팀의 요청 처리율 및 지연율 통계를 가져옵니다.
+        /// </summary>
+        [HttpGet("team-performance")]
+        public async Task<IActionResult> GetTeamRequestPerformance()
+        {
+            try
+            {
+                var corCd = HttpContext.Session.GetString("CorCd");
+                var teamCd = HttpContext.Session.GetString("TeamCd");
+                if (string.IsNullOrEmpty(teamCd)) return Ok(new { TotalCount = 0, CompletedCount = 0, DelayedCount = 0, CompletionRate = 0, DelayRate = 0 });
+                var performance = await _reqService.GetTeamRequestPerformanceAsync(corCd, teamCd);
+                return Ok(performance);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "팀 퍼포먼스 데이터 조회 중 오류 발생. TeamCd: {TeamCd}", HttpContext.Session.GetString("TeamCd"));
                 return StatusCode(500, new { message = "내부 서버 오류가 발생했습니다." });
             }
         }

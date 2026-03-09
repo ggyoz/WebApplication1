@@ -134,8 +134,11 @@
                         <td colspan="7">
                             <span asp-validation-for="CONTENTS_HTML" class="text-danger"></span>
                             <div class="html-editor"></div>
-                            <input type="hidden" asp-for="CONTENTS_HTML" />
-                            
+                            <input type="hidden" asp-for="CONTENTS_HTML" value="
+                            <내용 작성가이드> <br/> 
+                            1. 목적 <br/> 
+                            2. 현재상태 <br/> 
+                            3. 샘플데이터"/>                            
                         </td>
                     </tr>                    
                     <tr>
@@ -401,6 +404,15 @@
         
         $(document).ready(function() {
             initializeUserSearch();
+
+            // "목록" 버튼 클릭 시 저장된 검색 조건이 있으면 해당 주소로 이동
+            $('.btn-list').on('click', function (e) {
+                var lastSearch = sessionStorage.getItem('reqLastSearch');
+                if (lastSearch) {
+                    e.preventDefault();
+                    window.location.href = '@Url.Action("Index", "Req")' + lastSearch;
+                }
+            });
         });
 
     </script>

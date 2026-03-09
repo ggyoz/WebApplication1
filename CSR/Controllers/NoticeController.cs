@@ -12,12 +12,14 @@ namespace CSR.Controllers
         private readonly INoticeService _noticeService;
         private readonly ICommCodeService _commCodeService;
         private readonly ILogger<NoticeController> _logger;
+        private readonly IWebHostEnvironment _environment;
 
-        public NoticeController(INoticeService noticeService, ICommCodeService commCodeService, ILogger<NoticeController> logger)
+        public NoticeController(INoticeService noticeService, ICommCodeService commCodeService, ILogger<NoticeController> logger, IWebHostEnvironment environment)
         {
             _noticeService = noticeService;
             _commCodeService = commCodeService;
             _logger = logger;
+            _environment = environment;
         }
 
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string searchField = "TITLE", string searchValue = "")
@@ -119,6 +121,15 @@ namespace CSR.Controllers
                     
                     await _noticeService.UpdateNoticeAsync(notice);
 
+                    // 삭제된 파일 처리
+                    if (deletedFiles != null && deletedFiles.Count > 0)
+                    {
+                        foreach (var fileId in deletedFiles)
+                        {
+                            await _noticeService.DeleteNoticeFileAsync(fileId);
+                        }
+                    }
+
                     if (newFiles != null && newFiles.Count > 0)
                     {
                         await _noticeService.AddNoticeFilesAsync(id, newFiles, notice.UPDATE_USERID);
@@ -155,19 +166,16 @@ namespace CSR.Controllers
                 return NotFound();
             }
 
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", file.FILEPATH);
+            var filePath = Path.Combine(_environment.WebRootPath, file.FILEPATH);
             if (!System.IO.File.Exists(filePath))
             {
+                _logger.LogWarning("File not found: {FilePath}", filePath);
                 return NotFound();
             }
             
-            var memory = new MemoryStream();
-            using (var stream = new FileStream(filePath, FileMode.Open))
-            {
-                await stream.CopyToAsync(memory);
-            }
-            memory.Position = 0;
-            return File(memory, "application/octet-stream", file.REAL_FILENAME);
+            // PhysicalFile은 ASP.NET Core에서 파일을 효율적으로 스트리밍하며, 
+            // 내부적으로 읽기 전용으로 파일을 열기 때문에 ReadWrite 권한 부족 문제를 해결합니다.
+            return PhysicalFile(filePath, "application/octet-stream", file.REAL_FILENAME);
         }
 
         [HttpGet]

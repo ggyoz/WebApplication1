@@ -313,6 +313,15 @@
                 }
             });
 
+            // "목록" 버튼 클릭 시 저장된 검색 조건이 있으면 해당 주소로 이동
+            $('.btn-list').on('click', function (e) {
+                var lastSearch = sessionStorage.getItem('reqLastSearch');
+                if (lastSearch) {
+                    e.preventDefault();
+                    window.location.href = '@Url.Action("Index", "Req")' + lastSearch;
+                }
+            });
+
         });
     </script>
 }
