@@ -66,8 +66,6 @@ namespace CSR.Controllers
         public async Task<IActionResult> Create([Bind("DeptCd,ParentId,ParentCd,DeptName,CorCd,SortOrder,Note,UseYn")] Dept dept)
         {
 
-            Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(dept, Formatting.Indented));   
-
             if (ModelState.IsValid)
             {
                 try

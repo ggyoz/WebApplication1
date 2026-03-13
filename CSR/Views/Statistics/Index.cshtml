@@ -89,98 +89,119 @@
         </div>
     </div>
 
-    <!-- 차트 영역 (placeholder) -->
-    <!-- <div class="card mb-4">
-        <div class="card-header">월별 요청 추이</div>
-        <div class="card-body">
-            <div id="monthlyChart" style="height: 300px; border: 1px dashed #ccc; display: flex; justify-content: center; align-items: center;">
-                차트가 표시될 영역
+    <!-- 탭 내비게이션 -->
+    <ul class="nav nav-tabs mb-4" id="statsTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="division-tab" data-bs-toggle="tab" data-bs-target="#division-pane" type="button" role="tab" aria-controls="division-pane" aria-selected="true">사업부서별</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="office-tab" data-bs-toggle="tab" data-bs-target="#office-pane" type="button" role="tab" aria-controls="office-pane" aria-selected="false">사무실별</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin-pane" type="button" role="tab" aria-controls="admin-pane" aria-selected="false">담당자별</button>
+        </li>
+    </ul>
+
+    <!-- 탭 콘텐츠 -->
+    <div class="tab-content" id="statsTabsContent">
+        <!-- 사업부서별 탭 -->
+        <div class="tab-pane fade show active" id="division-pane" role="tabpanel" aria-labelledby="division-tab" tabindex="0">
+            <!-- 차트 영역 -->
+            <div class="card mb-4">
+                <div class="card-header">사업부서별 요청사항 수</div>
+                <div class="card-body">
+                    <div id="deptChart" style="height: 300px; border: 1px dashed #ccc; display: flex; justify-content: center; align-items: center;"></div>
+                </div>
+            </div>
+
+            <!-- 테이블 영역 -->
+            <div class="card">
+                <div class="card-header">사업부서별 요청사항 수</div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">사업부서</th>
+                                <th colspan="5">요청사항 수 ( 긴급도 별 )</th>
+                                <th colspan="6">진행상태 </th>
+                            </tr>
+                            <tr>
+                                <th>긴급</th>
+                                <th>높음</th>
+                                <th>보통</th>
+                                <th>낮음</th>
+                                <th>계</th>
+                                <th>진행중</th>
+                                <th>종결</th>
+                                <th>완료율</th>
+                                <th>금주 완료예정</th>
+                                <th>지연</th>
+                            </tr>                    
+                        </thead>
+                        <tbody id="divisionStatsTableBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div> -->
 
-    <!-- 테이블 영역 (placeholder) -->
-    <div class="card">
-        <div class="card-header">사업부서별 요청사항 수</div>
-        <div class="card-body">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th rowspan="2">사업부서</th>
-                        <th colspan="6">요청사항 수 ( 긴급도 별 )</th>
-                        <th colspan="5">진행상태 </th>
-                    </tr>
-                    <tr>
-                        <th>긴급</th>
-                        <th>높음</th>
-                        <th>보통</th>
-                        <th>낮음</th>
-                        <th>합계</th>
-                        <th>진행중</th>
-                        <th>종결</th>
-                        <th>완료율</th>
-                        <th>완료예정</th>
-                        <th>지연</th>
-                    </tr>                    
-                </thead>
-                <tbody id="divisionStatsTableBody"></tbody>
-            </table>
+        <!-- 사무실별 탭 -->
+        <div class="tab-pane fade" id="office-pane" role="tabpanel" aria-labelledby="office-tab" tabindex="0">
+            <div class="card">
+                <div class="card-header">사무실별 요청사항 수</div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr class="border">
+                                <th class="border align-middle text-center" rowspan="2">사업부서</th>
+                                <th class="border align-middle" colspan="6">요청사항 수 ( 긴급도 별 )</th>
+                                <th class="border align-middle" colspan="5">진행상태 </th>
+                            </tr>
+                            <tr>
+                                <th>긴급</th>
+                                <th>높음</th>
+                                <th>보통</th>
+                                <th>낮음</th>
+                                <th>집계</th>
+                                <th>진행중</th>
+                                <th>종결</th>
+                                <th>완료율</th>
+                                <th>완료예정</th>
+                                <th>지연</th>                        
+                            </tr>
+                        </thead>
+                        <tbody id="officeStatsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <!-- 테이블 영역 (사무실별 요청사항 수) -->
-    <div class="card mt-4">
-        <div class="card-header">사무실별 요청사항 수</div>
-        <div class="card-body">
-            <table class="table table-bordered">
-                <thead>
-                    <tr class="border">
-                        <th class="border align-middle text-center" rowspan="2">사업부서</th>
-                        <th class="border align-middle" colspan="6">요청사항 수 ( 긴급도 별 )</th>
-                        <th class="border align-middle" colspan="5">진행상태 </th>
-                    </tr>
-                    <tr>
-                        <th>긴급</th>
-                        <th>높음</th>
-                        <th>보통</th>
-                        <th>낮음</th>
-                        <th>합계</th>
-                        <th>진행중</th>
-                        <th>종결</th>
-                        <th>완료율</th>
-                        <th>완료예정</th>
-                        <th>지연</th>                        
-                    </tr>
-                </thead>
-                <tbody id="officeStatsTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- 테이블 영역 (담당자별 요청사항 수) -->
-    <div class="card mt-4">
-        <div class="card-header">담당자별 요청사항 수</div>
-        <div class="card-body">
-            <table class="table table-bordered">
-                <thead>
-                    <tr class="border">
-                        <th class="border align-middle text-center" rowspan="2">담당자</th>
-                        <th class="border align-middle" colspan="6">요청사항 수 ( 긴급도 별 )</th>
-                        <th class="border align-middle" colspan="3">진행상태 </th>
-                    </tr>
-                    <tr>
-                        <th>긴급</th>
-                        <th>높음</th>
-                        <th>보통</th>
-                        <th>낮음</th>                        
-                        <th>합계</th>
-                        <th>진행중</th>
-                        <th>종결</th>
-                        <th>완료율</th>
-                    </tr>
-                </thead>
-                <tbody id="adminStatsTableBody"></tbody>
-            </table>
+        <!-- 담당자별 탭 -->
+        <div class="tab-pane fade" id="admin-pane" role="tabpanel" aria-labelledby="admin-tab" tabindex="0">
+            <div class="card">
+                <div class="card-header">담당자별 요청사항 수</div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr class="border">
+                                <th class="border align-middle text-center" rowspan="2">담당자</th>
+                                <th class="border align-middle" colspan="6">요청사항 수 ( 긴급도 별 )</th>
+                                <th class="border align-middle" colspan="3">진행상태 </th>
+                            </tr>
+                            <tr>
+                                <th>긴급</th>
+                                <th>높음</th>
+                                <th>보통</th>
+                                <th>낮음</th>                        
+                                <th>집계</th>
+                                <th>진행중</th>
+                                <th>종결</th>
+                                <th>완료율</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminStatsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -207,38 +228,54 @@
     </style>
 
 
-    <script>
+    <script>       
+
         $(document).ready(function() {
-            // 기준일 (가장 최근의 금요일)을 계산하여 표시
-            function setReferenceDate() {
-                const today = new Date();
-                let dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 5 = Friday, 6 = Saturday
 
-                // 금요일(5)을 찾기 위해 날짜 조정
-                // 만약 오늘이 일요일(0)부터 금요일(5)까지라면, 그 주의 금요일로
-                // 만약 오늘이 토요일(6)이라면, 현재 날짜에서 1일 전 (오늘) 금요일로
-                let daysToSubtract = 0;
-                if (dayOfWeek < 5) { // 일(0), 월(1), 화(2), 수(3), 목(4)
-                    daysToSubtract = dayOfWeek + 2; // 예를 들어 월요일(1)이면 1+2=3일 빼서 지난 금요일로
-                } else if (dayOfWeek === 6) { // 토요일(6)
-                    daysToSubtract = 1; // 1일 빼서 금요일로
-                } else { // 금요일(5)
-                    daysToSubtract = 0;
-                }
-                
-                const referenceDate = new Date(today);
-                referenceDate.setDate(today.getDate() - daysToSubtract);
+             let dataSource = [{
+                state: '경영사업본부',
+                young: 5.3,
+                middle: 26,
+                }, {
+                state: '1',
+                young: 6.45,
+                middle: 30.5,
+                }, {
+                state: '2',
+                young: 12.56,
+                middle: 45.5,
+                }, {
+                state: '3',
+                young: 32,
+                middle: 87,
+                }];
 
-                const year = referenceDate.getFullYear();
-                const month = (referenceDate.getMonth() + 1).toString().padStart(2, '0');
-                const day = referenceDate.getDate().toString().padStart(2, '0');
-
-                $('#referenceDate').text(`${year}년 ${month}월 ${day}일`);
-            }
+            $('#deptChart').dxChart({
+                dataSource,
+                commonSeriesSettings: {
+                argumentField: 'state',
+                type: 'fullStackedBar',
+                },
+                series: [
+                    { valueField: 'ing', name: '진행중', color: '#696FC7' },
+                    { valueField: 'end', name: '종결' , color: '#F2AEBB' },
+                    // { valueField: 'older', name: '65 and older' },
+                ],
+                color: { },
+                tooltip: {
+                enabled: true,
+                location: 'edge',
+                customizeTooltip(arg) {
+                    return {
+                        text: `${arg.seriesName} : ${arg.valueText}`,
+                    };
+                },
+                },
+            });
 
             setReferenceDate();
 
-            // 요구사항 전체 건수 조회
+            // 카드 요구사항 전체 건수 조회
             $.ajax({
                 url: '/Req/GetAllRequestsCount',
                 type: 'GET',
@@ -252,7 +289,7 @@
                 }
             });
 
-            // 이번주 추가된 요청 건수 조회
+            // 카드 이번주 추가된 요청 건수 조회
             $.ajax({
                 url: '/Req/GetRequestsCountThisWeek',
                 type: 'GET',
@@ -279,6 +316,9 @@
                         if (response.stats.length === 0) {
                             tableBody.append('<tr><td colspan="4">데이터가 없습니다.</td></tr>');
                         } else {
+
+                            var chartData = [];
+
                             response.stats.forEach(function(item) {                                
                                 tableBody.append(
                                     `<tr>
@@ -296,7 +336,19 @@
                                         <td>${item.delayedCount}</td>
                                     </tr>`
                                 );
-                            });
+
+                                // 차트 데이터 업데이트
+                                chartData.push({ state: item.divisionName, ing: item.ingStatus, end: item.endStatus });
+
+                            });                           
+
+                            console.log(chartData);
+                            
+                            var chartInstance = $('#deptChart').dxChart('instance');
+                            if (chartInstance) {
+                                chartInstance.option('dataSource', chartData);
+                            }
+
                         }
                     } else {
                         console.error("사업부서별 요청사항 수 조회 실패:", response.message);
@@ -406,6 +458,49 @@
                     $('#requestsDueThisWeekCount').text('오류');
                 }
             });
+
+            // 탭 전환 시 차트 리렌더링 (차트가 숨겨진 상태에서 렌더링될 때 크기 문제 방지)
+            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (event) {
+                if (event.target.id === 'division-tab') {
+                    var chartInstance = $('#deptChart').dxChart('instance');
+                    if (chartInstance) {
+                        chartInstance.render();
+                    }
+                }
+            });
+
+
+
         });
+
+
+        // 기준일 (가장 최근의 금요일)을 계산하여 표시
+        function setReferenceDate() {
+            const today = new Date();
+            let dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 5 = Friday, 6 = Saturday
+
+            // 금요일(5)을 찾기 위해 날짜 조정
+            // 만약 오늘이 일요일(0)부터 금요일(5)까지라면, 그 주의 금요일로
+            // 만약 오늘이 토요일(6)이라면, 현재 날짜에서 1일 전 (오늘) 금요일로
+            let daysToSubtract = 0;
+            if (dayOfWeek < 5) { // 일(0), 월(1), 화(2), 수(3), 목(4)
+                daysToSubtract = dayOfWeek + 2; // 예를 들어 월요일(1)이면 1+2=3일 빼서 지난 금요일로
+            } else if (dayOfWeek === 6) { // 토요일(6)
+                daysToSubtract = 1; // 1일 빼서 금요일로
+            } else { // 금요일(5)
+                daysToSubtract = 0;
+            }
+            
+            const referenceDate = new Date(today);
+            referenceDate.setDate(today.getDate() - daysToSubtract);
+
+            const year = referenceDate.getFullYear();
+            const month = (referenceDate.getMonth() + 1).toString().padStart(2, '0');
+            const day = referenceDate.getDate().toString().padStart(2, '0');
+
+            $('#referenceDate').text(`${year}년 ${month}월 ${day}일`);
+        }
+
+
     </script>
 }

@@ -1,4 +1,6 @@
 @using CSR.Models
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
 @model List<Menu>
 @{
     var activeMenuIds = ViewData["ActiveMenuIds"] as HashSet<string> ?? new HashSet<string>();    
@@ -29,7 +31,7 @@
         @if (hasChildren)
         {
             <button class="btn btn-toggle align-items-center rounded @(isExpanded ? "" : "collapsed") @(isActive ? "active" : "")" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="@(isExpanded ? "true" : "false")">
-                @menu.MenuName
+                @SharedLocalizer[menu.MenuName]
             </button>
             <div class="collapse @(isExpanded ? "show" : "")" id="@collapseId">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-4">
@@ -40,7 +42,7 @@
         else
         {
             <a href="@menu.GetLink()" class="btn btn-toggle-link align-items-center rounded text-decoration-none @(isActive ? "active" : "")" style="@(isActive ? "font-weight:600; color:navy;" : "")">
-                @menu.MenuName
+                @SharedLocalizer[menu.MenuName]
             </a>
         }
     </li>

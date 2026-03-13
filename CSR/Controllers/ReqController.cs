@@ -59,6 +59,7 @@ namespace CSR.Controllers
             string? deptCd = null,
             string? officeCd = null,
             string? teamCd = null,
+            string? tcode = null,
             string? assignedResponsibilities = null
             ) // This is for title search
         {
@@ -98,6 +99,7 @@ namespace CSR.Controllers
             ViewData["OfficeCd"] = officeCd;
             ViewData["TeamCd"] = teamCd;
             ViewData["AssignedResponsibilities"] = respList;
+            ViewData["Tcode"] = tcode;
 
             ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
             ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
@@ -160,6 +162,7 @@ namespace CSR.Controllers
                 deptCd, 
                 officeCd, 
                 teamCd,
+                tcode,
                 respList);
             return View(pagedResult);
         }
@@ -179,6 +182,7 @@ namespace CSR.Controllers
             string? deptCd = null,
             string? officeCd = null,
             string? teamCd = null,
+            string? tcode = null,
             string? assignedResponsibilities = null
             )
         {
@@ -232,6 +236,7 @@ namespace CSR.Controllers
                 deptCd,
                 officeCd,
                 teamCd,
+                tcode,
                 respList);
 
             using (var workbook = new XLWorkbook())
@@ -366,6 +371,9 @@ namespace CSR.Controllers
         [Authorize]
         public async Task<IActionResult> Create(ReqInfo reqInfo, List<IFormFile> files)
         {
+            ModelState.Remove(nameof(ReqInfo.OFFICECD));
+            ModelState.Remove(nameof(ReqInfo.TEAMCD));
+
             if (ModelState.IsValid)
             {
                 try
@@ -508,11 +516,15 @@ namespace CSR.Controllers
                 return BadRequest();
             }
 
+            ModelState.Remove(nameof(ReqInfo.OFFICECD));
+            ModelState.Remove(nameof(ReqInfo.TEAMCD));
+
             if (ModelState.IsValid)
             {
                 try
                 {
                     var historyReasonValue = "";
+                    reqInfo.PROC_STATUS = "69"; // 수정은 대기상태에서만 진행 가능
                     reqInfo.UPDATE_USERID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";
                     await _reqService.UpdateReqInfoAsync(reqInfo, newFiles, deletedFiles, historyReasonValue);
                     return RedirectToAction(nameof(Details), new { id = reqInfo.REQID });
@@ -788,9 +800,6 @@ namespace CSR.Controllers
             var corCd = HttpContext.Session.GetString("CorCd");
             var deptCd = HttpContext.Session.GetString("DeptCd");
 
-            Console.WriteLine("corCd: " + corCd);
-            Console.WriteLine("deptCd: " + deptCd);
-
             if (string.IsNullOrEmpty(corCd) || string.IsNullOrEmpty(deptCd))
             {
                 _logger.LogWarning("CorCd or DeptCd not found in session for GetDeptTotalRequestsCount.");
@@ -818,8 +827,7 @@ namespace CSR.Controllers
             }
 
             var corCd = HttpContext.Session.GetString("CorCd");
-            Console.WriteLine("corCd: " + corCd);
-
+            
             if (string.IsNullOrEmpty(corCd))
             {
                 _logger.LogWarning("CorCd not found in session for GetCorpTotalRequestsCount.");

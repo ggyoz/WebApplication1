@@ -121,10 +121,8 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><label class="control-label">@SharedLocalizer["Label_ProgressStatus"]</label></td>
-                        <td>
-                            <select asp-for="PROC_STATUS" asp-items="ViewBag.ProcStatusCodes" class="form-select"></select>
-                        </td>
+                        <td><label class="control-label">@SharedLocalizer["Label_ProgressStatus"]</label></td>                        
+                        <td>@(Model.ProcStatusName != null ? Model.ProcStatusName : SharedLocalizer["Status_Waiting"].Value)</td>
                     </tr>
                     <tr>
                         <td style="vertical-align: top;">

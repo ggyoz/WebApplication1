@@ -19,6 +19,7 @@ namespace CSR.Services
         Task<IEnumerable<SelectListItem>> GetNoticeTypeSelectListAsync();        
         Task<IEnumerable<SelectListItem>> GetSelectListByPCodeAsync(int pid);
         Task<Dictionary<string, List<CommCode>>> GetResponsibilitiesAsync();
+        Task<CommCode?> GetLastChildCodeAsync(int parentId);
     }
 
     public class CommCodeService : ICommCodeService
@@ -141,7 +142,7 @@ namespace CSR.Services
 
             foreach (var parent in parents)
             {
-                var children = allCodes.Where(c => c.PARENTID == parent.CODEID).OrderBy(c => c.SORTORDER).ToList();
+                var children = allCodes.Where(c => c.PARENTID == parent.CODEID && c.USEYN == "Y").OrderBy(c => c.SORTORDER).ToList();
                 if (!string.IsNullOrEmpty(parent.CODENM))
                 {
                     responsibilities[parent.CODENM] = children;
@@ -150,5 +151,13 @@ namespace CSR.Services
 
             return responsibilities;
         }
+
+        public async Task<CommCode?> GetLastChildCodeAsync(int parentId){
+
+            var sql = @" SELECT max(SORTORDER) as SORTORDER, MAX(CODE) as CODE FROM TB_COMM_CODE WHERE parentid = :ParentId ";
+            return await _dbConnection.QueryFirstOrDefaultAsync<CommCode>(sql, new { ParentId = parentId });
+
+        }
+
     }
 }

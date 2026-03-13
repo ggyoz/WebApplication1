@@ -95,11 +95,13 @@
                         <th>@SharedLocalizer["Label_Title"]</th>
                         <td colspan="3">
                             <input type="text" name="searchValue" value="@ViewData["SearchValue"]" class="form-control" placeholder="" />
-                        </td>                
+                        </td>
+                        <th>TCODE</th>
+                        <td><input name="Tcode" class="form-control" value="@ViewData["Tcode"]" /><td>                
                     </tr>
                     <tr>
                         <th>@SharedLocalizer["Label_ResponsibleArea"]</th>
-                        <td colspan='9'>
+                        <td colspan='10'>
                         @{
                             var allResponsibilities = ViewBag.AllResponsibilities as Dictionary<string, List<CSR.Models.CommCode>> ?? new Dictionary<string, List<CSR.Models.CommCode>>();
                             var selectedResponsibilities = ViewData["AssignedResponsibilities"] as List<string> ?? new List<string>();
@@ -254,7 +256,7 @@
                 CorCd: '@ViewData["CorCd"]',
                 DeptCd: '@ViewData["DeptCd"]',
                 OfficeCd: '@ViewData["OfficeCd"]',
-                TeamCd: '@ViewData["TeamCd"]'
+                TeamCd: '@ViewData["TeamCd"]'                
             };
             
             if (searchValues.reqTypeCd) {
@@ -277,7 +279,7 @@
             }
             if (searchValues.TeamCd) {
                 $('select[name="TeamCd"]').val(searchValues.TeamCd);
-            }
+            }            
 
             initDateBox('#ReqDateSearch', '#hiddenReqDate', searchValues.reqDate);
             initDateBox('#DueDateSearch', '#hiddenDueDate', searchValues.dueDate);

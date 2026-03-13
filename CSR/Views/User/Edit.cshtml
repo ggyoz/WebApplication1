@@ -131,7 +131,12 @@
                 <tr>
                     <td><label asp-for="UserDiv" class="control-label">@SharedLocalizer["Label_UserDivision"]</label></td>
                     <td>
-                        <input asp-for="UserDiv" class="form-control" />
+                        <select asp-for="UserDiv" class="form-select">
+                            <option value="R1">R1</option>
+                            <option value="R2">R2</option>
+                            <option value="R3">R3</option>
+                            <option value="R4">R4</option>
+                        </select>                        
                         <span asp-validation-for="UserDiv" class="text-danger"></span>
                     </td>
                     <td><label asp-for="UserStat" class="control-label">@SharedLocalizer["Label_UserStat"]</label></td>
@@ -141,7 +146,10 @@
                     </td>
                     <td><label asp-for="UseYn" class="control-label">@SharedLocalizer["Label_InUse"]</label></td>
                     <td>
-                        <input asp-for="UseYn" class="form-control" />
+                        <select asp-for="UseYn" class="form-select">
+                            <option value="Y">Y</option>
+                            <option value="N">N</option>
+                        </select>
                         <span asp-validation-for="UseYn" class="text-danger"></span>
                     </td>
                     <td><label asp-for="PwMissCount" class="control-label">@SharedLocalizer["Label_PasswordFailCount"]</label></td>
@@ -214,11 +222,11 @@
 
     // const today = Date.now();
 
-    // const birthDate = $('#RetireDate').dxDateBox({
-    //     placeholder: '퇴사일 입력',
-    //     inputAttr: { 'aria-label': 'Retire Date' },
-    //     labelMode,
-    // }).dxDateBox('instance');
+    const birthDate = $('#RetireDate').dxDateBox({
+        placeholder: '퇴사일 입력',
+        inputAttr: { 'aria-label': 'Retire Date' },
+        labelMode,
+    }).dxDateBox('instance');
         
     $(function () {     
 

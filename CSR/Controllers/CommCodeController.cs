@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace CSR.Controllers
 {
@@ -40,11 +41,47 @@ namespace CSR.Controllers
         [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> Create(int parentId = 0)
         {
+
             var model = new CommCode
             {
                 PARENTID = parentId,
                 USEYN = "Y"
             };
+
+            if( parentId != 0 ){
+
+                var lastChild = await _commCodeService.GetLastChildCodeAsync(parentId);
+                if(lastChild != null){
+                    
+                    model.SORTORDER = lastChild.SORTORDER + 1;
+                    
+                    if (!string.IsNullOrEmpty(lastChild.CODE))
+                    {
+                        
+                        var match = Regex.Match(lastChild.CODE, @"^(.*?)(\d+)$");    
+                        if (match.Success)
+                        {
+                            string prefix = match.Groups[1].Value;
+                            string numericStr = match.Groups[2].Value;
+    
+                            if (int.TryParse(numericStr, out int lastCodeNum))
+                            {
+                                // 1을 더한 후, PadLeft를 이용해 원래 자릿수 유지 (예: 2 -> "02")
+                                string nextNumericStr = (lastCodeNum + 1).ToString().PadLeft(numericStr.Length, '0');
+                                model.CODE = prefix + nextNumericStr;
+                            }
+                        }
+                        else
+                        {
+                            // 숫자로 끝나지 않는 경우, 참고용으로 그대로 세팅
+                            model.CODE = lastChild.CODE;
+                        }
+                    }
+
+                }
+                
+            }            
+
             ViewBag.AllCodes = await _commCodeService.GetAllCommCodesAsync();
             return View(model);
         }
@@ -56,8 +93,6 @@ namespace CSR.Controllers
         {
 
             commCode.REG_USERID = "Admin";
-
-            Console.WriteLine("ModelState.IsValid ; " + ModelState.IsValid);
 
             if (ModelState.IsValid)
             {
@@ -122,6 +157,8 @@ namespace CSR.Controllers
         {
             var menus = await _commCodeService.GetSelectListByPCodeAsync(systemCodeId);
             return Json(menus);
-        }
+        }        
+
     }
+    
 }

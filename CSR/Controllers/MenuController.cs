@@ -90,7 +90,7 @@ namespace CSR.Controllers
         public async Task<IActionResult> Edit(string id, [Bind("MenuId,MenuName,Url,Controller,Action,Icon,SortOrder,UseYn,ParentId,MenuLevel,CreateDate")] Menu menu)
         {
 
-            Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(menu, Formatting.Indented));
+            // Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(menu, Formatting.Indented));
 
 
             if (id != menu.Id)

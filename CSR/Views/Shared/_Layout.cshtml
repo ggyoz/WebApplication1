@@ -104,13 +104,12 @@
                             }
                             
                             <li class="nav-item">
-                                <a class="nav-link nav-link-custom" href="@MenuService.FindDeepestAndFirstMenu(menu).GetLink()">@menu.MenuName</a>
+                                <a class="nav-link nav-link-custom" href="@MenuService.FindDeepestAndFirstMenu(menu).GetLink()">@SharedLocalizer[menu.MenuName]</a>
                             </li>
                         }
                     </ul>
 
-                    <div class="d-flex">
-                        <!-- 여기에 다국어 설정 추가 -->
+                    <div class="d-flex">                        
                         <form id="setLanguageForm" asp-controller="Home" asp-action="SetLanguage" asp-route-returnUrl="@Context.Request.Path" method="post" class="d-inline-flex me-2">
                             <select name="culture" asp-for="@requestCulture.RequestCulture.UICulture.Name" asp-items="cultureItems"
                                     onchange="this.form.submit();" class="form-select form-select-sm">
@@ -136,7 +135,7 @@
 
     <div id="wrapper" style="background-color:#fafafa;">
         <!-- Sidebar -->
-        <div id="sidebar-wrapper" class="flex-shrink-0 p-3" style="width: 230px;">
+        <div id="sidebar-wrapper" class="flex-shrink-0 p-3" style="width: 10%">
             <ul class="list-unstyled ps-0">
                 @await Html.PartialAsync("_MenuPartial", menuTree)
                 

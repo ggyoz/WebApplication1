@@ -357,7 +357,7 @@
             {
                 <li class="nav-item" role="presentation">
                     <button class="nav-link @(isFirst ? "active" : "")" id="hist-tab-@hist.HISTORYID" data-bs-toggle="tab" data-bs-target="#hist-pane-@hist.HISTORYID" type="button" role="tab" aria-controls="hist-pane-@hist.HISTORYID" aria-selected="@isFirst.ToString().ToLower()">
-                        @(!string.IsNullOrEmpty(hist.HISTORY_REASON) ? SharedLocalizer["CC" + hist.HISTORY_REASON] : SharedLocalizer["Label_HistoryPrefix", hist.HISTORYID])
+                        @(!string.IsNullOrEmpty(hist.HISTORY_REASON) ? SharedLocalizer["CC" + hist.HISTORY_REASON] : SharedLocalizer["Label_HistoryPrefix"])
                     </button>
                 </li>
 
@@ -538,6 +538,14 @@
         white-space: normal; /* 텍스트가 자동으로 줄 바꿈되도록 설정 */
         word-break: break-word; /* 긴 단어도 줄 바꿈되도록 설정 */
         background-color:#ffffff;
+    }
+
+    /* 이미지 넘침 방지 추가 */
+    .content-display img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin-bottom: 10px;
     }
 
     #file-uploader .dx-fileuploader-input-wrapper {

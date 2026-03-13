@@ -2,12 +2,12 @@
 @inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
 
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = SharedLocalizer["Dashboard_Title"];
     var currentUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
 }
 
 <div class="container mt-4">
-    <h3 class="display-6 mb-4">요청 현황</h3>
+    <h3 class="display-6 mb-4">@SharedLocalizer["Dashboard_Title"]</h3>
 
     <div class="row">
         <!-- KPI Cards Section -->
@@ -18,8 +18,8 @@
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"">
                             <div class="d-flex flex-column"> 
-                                <h5 class="card-title mb-0">총 요청 수</h5>
-                                <p class="card-text mb-0">전체 시스템의 요청 현황</p>
+                                <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_TotalRequests"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["Dashboard_TotalRequests_Desc"]</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="r4TotalRequestsCount">0</p>
                         </div>
@@ -31,8 +31,8 @@
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column"> 
-                                <h5 class="card-title mb-0">대기중인 요청</h5>
-                                <p class="card-text mb-0">내가 처리해야 할 대기 요청</p>
+                                <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_PendingRequests"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["Dashboard_PendingRequests_Desc"]</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="r4PendingRequestsCount">0</p>
                         </div>                        
@@ -44,8 +44,8 @@
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
                             <div class="d-flex flex-column"> 
-                                <h5 class="card-title mb-0">진행중인 요청</h5>
-                                <p class="card-text mb-0">내가 처리중인 요청</p>
+                                <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_InProgressRequests"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["Dashboard_InProgressRequests_Desc"]</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="r4InProgressRequestsCount">0</p>
                         </div>
@@ -57,8 +57,8 @@
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
-                                <h5 class="card-title mb-0">기한 초과</h5>
-                                <p class="card-text mb-0">기한을 넘긴 요청</p>
+                                <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_OverdueRequests"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["Dashboard_OverdueRequests_Desc"]</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="r4OverdueRequestsCount">0</p>
                         </div>
@@ -73,8 +73,8 @@
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
-                                <h5 class="card-title mb-0">총 요청 수</h5>
-                                <p class="card-text mb-0">전체 시스템의 요청 현황</p>
+                                <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_TotalRequests"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["Dashboard_TotalRequests_Desc"]</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="r3TotalRequestsCount">0</p>
                         </div>
@@ -87,8 +87,8 @@
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
-                                <h5 class="card-title mb-0">대기중인 요청</h5>
-                                <p class="card-text mb-0">내가 처리해야 할 대기 요청</p>
+                                <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_PendingRequests"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["Dashboard_PendingRequests_Desc"]</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="r3PendingRequestsCount">0</p>
                         </div>
@@ -101,8 +101,8 @@
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
-                                <h5 class="card-title mb-0">진행중인 요청</h5>
-                                <p class="card-text mb-0">내가 처리중인 요청</p>
+                                <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_InProgressRequests"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["Dashboard_InProgressRequests_Desc"]</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="r3InProgressRequestsCount">0</p>
                         </div>
@@ -115,8 +115,8 @@
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
-                                <h5 class="card-title mb-0">기한 초과</h5>
-                                <p class="card-text mb-0">기한을 넘긴 요청</p>
+                                <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_OverdueRequests"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["Dashboard_OverdueRequests_Desc"]</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="r3OverdueRequestsCount">0</p>
                         </div>
@@ -131,20 +131,22 @@
             var userOfficeCd = Context.Session.GetString("OfficeCd");
             var userTeamCd = Context.Session.GetString("TeamCd");
 
-            string scopeTitle = "법인";
+            string scopeTitleKey = "Label_Corporation_Short";
             string scopeIdPrefix = "r2Corp";
 
-            if (!string.IsNullOrEmpty(userTeamCd)) { scopeTitle = "팀"; scopeIdPrefix = "r2Team"; }
-            else if (!string.IsNullOrEmpty(userOfficeCd)) { scopeTitle = "사무실"; scopeIdPrefix = "r2Office"; }
-            else if (!string.IsNullOrEmpty(userDeptCd)) { scopeTitle = "부서"; scopeIdPrefix = "r2Dept"; }
+            if (!string.IsNullOrEmpty(userTeamCd)) { scopeTitleKey = "Label_Team_Short"; scopeIdPrefix = "r2Team"; }
+            else if (!string.IsNullOrEmpty(userOfficeCd)) { scopeTitleKey = "Label_Office_Short"; scopeIdPrefix = "r2Office"; }
+            else if (!string.IsNullOrEmpty(userDeptCd)) { scopeTitleKey = "Label_Department_Short"; scopeIdPrefix = "r2Dept"; }
+            
+            string scopeTitle = SharedLocalizer[scopeTitleKey];
 
             <div class="col-md-3 mb-4">
                 <div class="card blueCard shadow-sm h-100" onclick="goToReqList('','')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
-                                <h5 class="card-title mb-0">@scopeTitle 총 요청</h5>
-                                <p class="card-text mb-0">우리 @(scopeTitle)의 전체 요청 건수</p>
+                                <h5 class="card-title mb-0">@string.Format(SharedLocalizer["Dashboard_TotalRequests_Scope"], scopeTitle)</h5>
+                                <p class="card-text mb-0">@string.Format(SharedLocalizer["Dashboard_TotalRequests_Scope_Desc"], scopeTitle)</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="@(scopeIdPrefix)TotalCount">0</p>
                         </div>
@@ -156,8 +158,8 @@
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
-                                <h5 class="card-title mb-0">진행 중</h5>
-                                <p class="card-text mb-0">현재 진행 중인 요청</p>
+                                <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_InProgress"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["Dashboard_InProgress_Desc"]</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="@(scopeIdPrefix)InProgressCount">0</p>
                         </div>
@@ -169,8 +171,8 @@
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
-                                <h5 class="card-title mb-0">답변 완료</h5>
-                                <p class="card-text mb-0">답변 완료된 요청</p>
+                                <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_Answered"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["Dashboard_Answered_Desc"]</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="@(scopeIdPrefix)AnsweredCount">0</p>
                         </div>
@@ -182,8 +184,8 @@
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
-                                <h5 class="card-title mb-0">기한 초과</h5>
-                                <p class="card-text mb-0">기한을 넘긴 요청</p>
+                                <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_OverdueRequests"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["Dashboard_OverdueRequests_Desc"]</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="@(scopeIdPrefix)OverdueCount">0</p>
                         </div>
@@ -194,12 +196,12 @@
         else if (User.IsInRole("R1")) // Team Member
         {
             <div class="col-md-3 mb-4">
-                <div class="card blueCard shadow-sm h-100" onclick="goToReqList('','')">
+                <div class="card blueCard shadow-sm h-100" onclick="goToReqList('','myReq')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
                             <div class="d-flex flex-column"> 
-                                <h5 class="card-title mb-0">내 요청</h5>
-                                <p class="card-text mb-0">내가 등록한 총 요청 건수</p>
+                                <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_MyRequests"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["Dashboard_MyRequests_Desc"]</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="r1TotalRequestsCount"></p>
                         </div>
@@ -211,8 +213,8 @@
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
                             <div class="d-flex flex-column"> 
-                                <h5 class="card-title mb-0">진행 중</h5>
-                                <p class="card-text mb-0">현재 진행 중인 요청</p>
+                                <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_InProgress"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["Dashboard_InProgress_Desc"]</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="r1InProgressRequestsCount"></p>
                         </div>
@@ -225,8 +227,8 @@
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
                             <div class="d-flex flex-column"> 
-                                <h5 class="card-title mb-0">답변 완료</h5>
-                                <p class="card-text mb-0">답변 완료된 나의 요청</p>
+                                <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_Answered"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["Dashboard_Answered_My"]</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="r1AnsweredRequestsCount"></p>
                         </div>                        
@@ -235,18 +237,32 @@
             </div>
 
             <div class="col-md-3 mb-4">
+                <div class="card redCard shadow-sm h-100" onClick="goToReqList('64', 'delay', true)">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-column">
+                                <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_OverdueRequests"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["Dashboard_OverdueRequests_Desc"]</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r1OverdueRequestsCount">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div class="col-md-3 mb-4">
                 <div class="card greenCard shadow-sm h-100" onclick="goToReqList('68','myReq')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
                             <div class="d-flex flex-column"> 
-                                <h5 class="card-title mb-0">종결</h5>
-                                <p class="card-text mb-0">종결된 나의 요청</p>
+                                <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_Closed"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["Dashboard_Closed_My_Desc"]</p>
                             </div>
                             <p class="card-text display-5 mb-0" id="r1CompletedRequestsCount"></p>
                         </div>                        
                     </div>
                 </div>
-            </div>
+            </div> -->
         }
     </div>
 
@@ -257,7 +273,7 @@
             <div class="col-lg-8 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body m-3">
-                        <h5 class="card-title">전체 요청 현황 분석</h5>
+                        <h5 class="card-title">@SharedLocalizer["Dashboard_Analysis_Total"]</h5>
                         <div id="chart" style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;"></div>
                     </div>
                 </div>
@@ -265,7 +281,7 @@
             <div class="col-lg-4 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body m-3">
-                        <h5 class="card-title">전체 진척 및 지연 건수</h5>
+                        <h5 class="card-title">@SharedLocalizer["Dashboard_Performance_Total"]</h5>
                         <div id="chart_2" style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;"></div>
                     </div>
                 </div>
@@ -276,7 +292,7 @@
             <div class="col-lg-8 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body m-3">
-                        <h5 class="card-title mb-3">법인별 요청 현황</h5>
+                        <h5 class="card-title mb-3">@SharedLocalizer["Dashboard_Analysis_Dept"]</h5>
                          <div id="chartR2" style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;">
                             
                         </div>
@@ -286,7 +302,7 @@
             <div class="col-lg-4 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body m-3">
-                        <h5 class="card-title mb-3">법인별 진척 및 지연 건수</h5>
+                        <h5 class="card-title mb-3">@SharedLocalizer["Dashboard_Performance_Dept"]</h5>
                         <div id="chartR2_2" style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;">
                             
                         </div>
@@ -299,7 +315,7 @@
             <div class="col-lg-8 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body m-3">
-                        <h5 class="card-title mb-3">나의 요청 현황</h5>
+                        <h5 class="card-title mb-3">@SharedLocalizer["Dashboard_Analysis_My"]</h5>
                         <div id="chartR1" style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;"></div>
                     </div>
                 </div>
@@ -307,7 +323,7 @@
             <div class="col-lg-4 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body m-3">
-                        <h5 class="card-title mb-3">나의 진척 및 지연 건수</h5>
+                        <h5 class="card-title mb-3">@SharedLocalizer["Dashboard_Performance_My"]</h5>
                         <div id="chartR1_2" style="height: 250px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center;"></div>
                         <ul class="list-group list-group-flush">
                         </ul>
@@ -323,31 +339,31 @@
                 <div class="card-body m-3">                    
                     <div class="row">
                         <div class="col-md-6">
-                            <h6 class="card-title">내 요청 최근 활동</h6>
+                            <h6 class="card-title">@SharedLocalizer["Dashboard_RecentActivities_My"]</h6>
                         </div>
                         <div class="col-md-6">
-                            <h6 class="card-title">공지사항</h6>
+                            <h6 class="card-title">@SharedLocalizer["Dashboard_Notice"]</h6>
                         </div>
                         <div class="col-md-6">
                             @if (User.IsInRole("R4") || User.IsInRole("R3"))
                             {
                                 <ul class="list-group list-group-flush" id="r3r4RecentActivitiesList">
-                                    <li class="list-group-item">표시할 활동이 없습니다.</li>
+                                    <li class="list-group-item">@SharedLocalizer["Dashboard_NoActivities"]</li>
                                 </ul>
                             }else if (User.IsInRole("R2"))
                             {
                                 <ul class="list-group list-group-flush" id="">
-                                    <li class="list-group-item">표시할 활동이 없습니다.</li>
+                                    <li class="list-group-item">@SharedLocalizer["Dashboard_NoActivities"]</li>
                                 </ul>
                             }else if (User.IsInRole("R1")){
                                 <ul class="list-group list-group-flush" id="myRecentActivitiesList">
-                                    <li class="list-group-item">표시할 활동이 없습니다.</li>
+                                    <li class="list-group-item">@SharedLocalizer["Dashboard_NoActivities"]</li>
                                 </ul>
                             }                            
                         </div>
                         <div class="col-md-6">                            
                             <ul class="list-group list-group-flush" id="recentNoticesList">
-                                <li class="list-group-item">표시할 공지사항이 없습니다.</li>
+                                <li class="list-group-item">@SharedLocalizer["Dashboard_NoNotices"]</li>
                             </ul>
                         </div>
                     </div>
@@ -379,7 +395,7 @@
     const userName = '@Html.Raw(Context.Session.GetString("UserName"))';
     const today = new Date().toLocaleDateString('en-CA');                                                                                                                                                       
 
-    function goToReqList(status, filterType ) {
+    function goToReqList(status, filterType, mydata ) {
         let url = '/Req/Index';
         let params = [];       
 
@@ -387,6 +403,7 @@
         if (filterType === 'my') params.push('ResUserName=' + userName );
         if (filterType === 'myReq') params.push('ReqUserName=' + userName );
         if (filterType === 'delay') params.push('ExpectDate=' + today );
+        if (mydata === true) params.push('ReqUserName=' + userName );
 
         if (params.length > 0) {
             url += '?' + params.join('&');
@@ -398,12 +415,23 @@
 
         $(document).ready(function() {                    
 
+            // JavaScript 전용 다국어 맵
+            const localizedStatuses = {
+                waiting: '@SharedLocalizer["CC69"]',
+                received: '@SharedLocalizer["CC62"]',
+                inProgress: '@SharedLocalizer["CC64"]',
+                closed: '@SharedLocalizer["CC68"]',
+                answered: '@SharedLocalizer["CC65"]',
+                processed: '@SharedLocalizer["CC68"]', // '처리'는 보통 종결 의미
+                delayed: '@SharedLocalizer["지연"]' // '지연'은 일정변경 등과 연관
+            };
+
             // R3, 4
             let dataSource = [
-                { status: '대기', data: 3, }, 
-                { status: '접수', data: 2, },
-                { status: '진행중', data: 3, },                  
-                { status: '종결', data: 6, }];
+                { status: localizedStatuses.waiting, data: 3, }, 
+                { status: localizedStatuses.received, data: 2, },
+                { status: localizedStatuses.inProgress, data: 3, },
+                { status: localizedStatuses.closed, data: 6, }];
 
             const currentUserRole = '@currentUserRole';
             
@@ -508,6 +536,14 @@
                     type: 'bar', 
                     color: '#0068ff',
                     },
+                    commonSeriesSettings: {
+                        label: {
+                        visible : true,
+                            connector: {
+                                visible: true
+                            }
+                        }
+                    },
                     legend: {
                         visible: false,
                     },
@@ -520,6 +556,14 @@
                     valueField: 'data',
                     type: 'bar', 
                     color: '#5bc0de',
+                    },
+                    commonSeriesSettings: {
+                        label: {
+                        visible : true,
+                            connector: {
+                                visible: true
+                            }
+                        }
                     },
                     legend: {
                         visible: false,
@@ -549,17 +593,17 @@
                         var totalCount = data.WAITCOUNT + data.RECEIVEDCOUNT + data.INPROGRESSCOUNT + data.CLOSEDCOUNT + data.ANSWEREDCOUNT;
                         
                         $('#r1TotalRequestsCount').text(totalCount);
-                        $('#r1InProgressRequestsCount').text(data.INPROGRESSCOUNT + data.RECEIVEDCOUNT);
+                        $('#r1InProgressRequestsCount').text(data.INPROGRESSCOUNT + data.RECEIVEDCOUNT + data.ANSWEREDCOUNT);
                         $('#r1CompletedRequestsCount').text(data.CLOSEDCOUNT);
                         $('#r1AnsweredRequestsCount').text(data.ANSWEREDCOUNT);
 
                         // 차트 데이터 업데이트
                         var r1ChartData = [
-                            { status: '대기', data: data.WAITCOUNT },
-                            { status: '접수', data: data.RECEIVEDCOUNT },
-                            { status: '진행중', data: data.INPROGRESSCOUNT },
-                            { status: '답변완료', data: data.ANSWEREDCOUNT },
-                            { status: '종결', data: data.CLOSEDCOUNT }
+                            { status: localizedStatuses.waiting, data: data.WAITCOUNT },
+                            { status: localizedStatuses.received, data: data.RECEIVEDCOUNT },
+                            { status: localizedStatuses.inProgress, data: data.INPROGRESSCOUNT },
+                            { status: localizedStatuses.answered, data: data.ANSWEREDCOUNT },
+                            { status: localizedStatuses.closed, data: data.CLOSEDCOUNT }
                         ];
                         
                         var chartInstance = $('#chartR1').dxChart('instance');
@@ -577,14 +621,16 @@
                     type: 'GET',
                     success: function(data) {                                        
                         var r1ChartData = [
-                            { status: '처리', data: data.completedCount },
-                            { status: '지연', data: data.delayedCount }                            
+                            { status: localizedStatuses.closed, data: data.completedCount }, // 종결
+                            { status: localizedStatuses.delayed, data: data.delayedCount }  // 지연                        
                         ];
                         
                         var chartInstance = $('#chartR1_2').dxChart('instance');
                         if (chartInstance) {
                             chartInstance.option('dataSource', r1ChartData);
                         }
+
+                        $("#r1OverdueRequestsCount").text(data.delayedCount);
                     },
                     error: function(xhr, status, error) {
                         console.error('내 요청 통계 API 오류:', error);
@@ -607,14 +653,14 @@
                         } else {
                             var activitiesList = $('#myRecentActivitiesList');
                             activitiesList.empty();
-                            activitiesList.append('<li class="list-group-item">표시할 요청 활동이 없습니다.</li>');
+                            activitiesList.append('<li class="list-group-item">@SharedLocalizer["Dashboard_NoActivities"]</li>');
                         }
                     },
                     error: function(xhr, status, error) {
                         console.error('내 요청 최근 활동 AJAX 오류:', error);
                         var activitiesList = $('#myRecentActivitiesList');
                         activitiesList.empty();
-                        activitiesList.append('<li class="list-group-item">요청 활동을 불러오는 중 오류가 발생했습니다.</li>');
+                        activitiesList.append('<li class="list-group-item">@SharedLocalizer["Dashboard_Error_LoadingActivities"]</li>');
                     }
                 });
 
@@ -639,15 +685,15 @@
                     success: function(data) {
                         var totalCount = data.WAITCOUNT + data.RECEIVEDCOUNT + data.INPROGRESSCOUNT + data.CLOSEDCOUNT + data.ANSWEREDCOUNT;
                         $(`#${elementPrefix}TotalCount`).text(totalCount);
-                        $(`#${elementPrefix}InProgressCount`).text(data.INPROGRESSCOUNT + data.RECEIVEDCOUNT);
+                        $(`#${elementPrefix}InProgressCount`).text(data.INPROGRESSCOUNT + data.RECEIVEDCOUNT + data.ANSWEREDCOUNT);
                         $(`#${elementPrefix}AnsweredCount`).text(data.ANSWEREDCOUNT);
 
                         var chartData = [
-                            { status: '대기', data: data.WAITCOUNT },
-                            { status: '접수', data: data.RECEIVEDCOUNT },
-                            { status: '진행중', data: data.INPROGRESSCOUNT },
-                            { status: '답변완료', data: data.ANSWEREDCOUNT },
-                            { status: '종결', data: data.CLOSEDCOUNT }
+                            { status: localizedStatuses.waiting, data: data.WAITCOUNT },
+                            { status: localizedStatuses.received, data: data.RECEIVEDCOUNT },
+                            { status: localizedStatuses.inProgress, data: data.INPROGRESSCOUNT },
+                            { status: localizedStatuses.answered, data: data.ANSWEREDCOUNT },
+                            { status: localizedStatuses.closed, data: data.CLOSEDCOUNT }
                         ];
                         
                         var chartInstance = $('#chartR2').dxChart('instance');
@@ -663,8 +709,8 @@
                         $(`#${elementPrefix}OverdueCount`).text(data.delayedCount);
 
                         var perfData = [
-                            { status: '처리', data: data.completedCount },
-                            { status: '지연', data: data.delayedCount }
+                            { status: localizedStatuses.closed, data: data.completedCount },
+                            { status: localizedStatuses.delayed, data: data.delayedCount }
                         ];
 
                         var chartInstance = $('#chartR2_2').dxChart('instance');
@@ -688,11 +734,11 @@
 
                         // 전체 현황 차트 업데이트
                         var allChartData = [
-                            { status: '대기', data: data.WAITCOUNT },
-                            { status: '접수', data: data.RECEIVEDCOUNT },
-                            { status: '진행중', data: data.INPROGRESSCOUNT },
-                            { status: '답변완료', data: data.ANSWEREDCOUNT },
-                            { status: '종결', data: data.CLOSEDCOUNT }
+                            { status: localizedStatuses.waiting, data: data.WAITCOUNT },
+                            { status: localizedStatuses.received, data: data.RECEIVEDCOUNT },
+                            { status: localizedStatuses.inProgress, data: data.INPROGRESSCOUNT },
+                            { status: localizedStatuses.answered, data: data.ANSWEREDCOUNT },
+                            { status: localizedStatuses.closed, data: data.CLOSEDCOUNT }
                         ];
                         
                         var chartInstance = $('#chart').dxChart('instance');
@@ -711,8 +757,8 @@
                     type: 'GET',
                     success: function(data) {
                         var allPerfData = [
-                            { status: '처리', data: data.completedCount },
-                            { status: '지연', data: data.delayedCount }
+                            { status: localizedStatuses.closed, data: data.completedCount },
+                            { status: localizedStatuses.delayed, data: data.delayedCount }
                         ];
                         
                         var chartInstance = $('#chart_2').dxChart('instance');
@@ -798,14 +844,14 @@
                         } else {
                             var activitiesList = $('#r3r4RecentActivitiesList');
                             activitiesList.empty();
-                            activitiesList.append('<li class="list-group-item">표시할 활동이 없습니다.</li>');
+                            activitiesList.append('<li class="list-group-item">@SharedLocalizer["Dashboard_NoActivities"]</li>');
                         }
                     },
                     error: function(xhr, status, error) {
                         console.error('R3/R4 최근 활동 AJAX 오류:', error);
                         var activitiesList = $('#r3r4RecentActivitiesList');
                         activitiesList.empty();
-                        activitiesList.append('<li class="list-group-item">활동을 불러오는 중 오류가 발생했습니다.</li>');
+                        activitiesList.append('<li class="list-group-item">@SharedLocalizer["Dashboard_Error_LoadingActivities"]</li>');
                     }
                 });
 
@@ -827,14 +873,14 @@
                     } else {
                         var noticesList = $('#recentNoticesList');
                         noticesList.empty();
-                        noticesList.append('<li class="list-group-item">표시할 공지사항이 없습니다.</li>');
+                        noticesList.append('<li class="list-group-item">@SharedLocalizer["Dashboard_NoNotices"]</li>');
                     }
                 },
                 error: function(xhr, status, error) {
                     console.error('최신 공지사항 AJAX 오류:', error);
                     var noticesList = $('#recentNoticesList');
                     noticesList.empty();
-                    noticesList.append('<li class="list-group-item">공지사항을 불러오는 중 오류가 발생했습니다.</li>');
+                    noticesList.append('<li class="list-group-item">@SharedLocalizer["Dashboard_Error_LoadingNotices"]</li>');
                 }
             });
         });

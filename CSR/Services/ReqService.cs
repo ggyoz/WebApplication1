@@ -35,6 +35,7 @@ namespace CSR.Services
             string? deptCd,
             string? officeCd,
             string? teamCd,
+            string? tcode,
             List<string>? assignedResponsibilities
             );
 
@@ -53,6 +54,7 @@ namespace CSR.Services
             string? deptCd,
             string? officeCd,
             string? teamCd,
+            string? tcode,
             List<string>? assignedResponsibilities
             );
 
@@ -146,7 +148,6 @@ namespace CSR.Services
         
         public async Task<dynamic> GetMyRequestPerformanceAsync(string corCd, string userId)
         {
-            Console.WriteLine("corCd : " + corCd );
             var sql = @"
                 SELECT 
                     COUNT(*) AS TOTALCOUNT,
@@ -476,7 +477,7 @@ namespace CSR.Services
         {
             var sql = $@"
                 SELECT
-                    D.DEPTNAME AS DivisionName,
+                    D.DEPTNAME AS DivisionName, 
                     SUM(CASE WHEN R.PRIORITYCD = '2' THEN 1 ELSE 0 END) AS VeryHighCount,
                     SUM(CASE WHEN R.PRIORITYCD = '3' THEN 1 ELSE 0 END) AS HighCount,
                     SUM(CASE WHEN R.PRIORITYCD = '4' THEN 1 ELSE 0 END) AS MediumCount,
@@ -490,8 +491,8 @@ namespace CSR.Services
                 FROM TB_REQ_INFO R
                 JOIN TB_DEPT_INFO D ON R.DEPTCD = D.DEPTCD
                 WHERE R.USEYN = 'Y'
-                GROUP BY D.DEPTNAME
-                ORDER BY D.DEPTNAME";            
+                GROUP BY D.DEPTNAME, D.SORTORDER
+                ORDER BY D.SORTORDER ";            
             var result = await _dbConnection.QueryAsync<DivisionRequestStats>(sql);
             return result.ToList();
         }
@@ -703,8 +704,6 @@ namespace CSR.Services
                     }                    
                 }
 
-                Console.WriteLine("newHistoryId : " + newHistoryId);
-
                 // 3. Handle files
                 if (newFiles != null && newFiles.Any())
                 {
@@ -839,11 +838,12 @@ namespace CSR.Services
             string? deptCd,
             string? officeCd,
             string? teamCd,
+            string? tcode,
             List<string>? assignedResponsibilities)
         {
             var (baseQuery, parameters) = BuildReqInfoBaseQuery(
                 reqTypeCd, procStatusCd, priorityCd, reqDate, dueDate, expectDate,
-                regId, reqUserName, resUserName, searchValue, corCd, deptCd, officeCd, teamCd,
+                regId, reqUserName, resUserName, searchValue, corCd, deptCd, officeCd, teamCd, tcode,
                 assignedResponsibilities);
 
             var dataSql = $@"
@@ -881,6 +881,7 @@ namespace CSR.Services
             string? deptCd,
             string? officeCd,
             string? teamCd,
+            string? tcode,
             List<string>? assignedResponsibilities)
         {
             var baseQuery = new System.Text.StringBuilder(@"
@@ -981,10 +982,16 @@ namespace CSR.Services
                 baseQuery.Append(" AND (R.TEAMCD = :TeamCd OR R.TEAMCD in ('ST0101', 'CM0101') ) ");
                 parameters.Add("TeamCd", teamCd);
             }
+
             if (assignedResponsibilities != null && assignedResponsibilities.Any())
             {
                 baseQuery.Append(" AND R.REQMENU IN :AssignedResponsibilities");
                 parameters.Add("AssignedResponsibilities", assignedResponsibilities);
+            }
+
+            if(!string.IsNullOrEmpty(tcode)){
+                baseQuery.Append(" AND R.REQTCODE like :Tcode ");
+                parameters.Add("Tcode", "%" + tcode + "%");
             }
 
             return (baseQuery.ToString(), parameters);
@@ -1007,11 +1014,12 @@ namespace CSR.Services
             string? deptCd,
             string? officeCd,
             string? teamCd,
+            string? tcode,
             List<string>? assignedResponsibilities)
         {
             var (baseQuery, parameters) = BuildReqInfoBaseQuery(
                 reqTypeCd, procStatusCd, priorityCd, reqDate, dueDate, expectDate,
-                regId, reqUserName, resUserName, searchValue, corCd, deptCd, officeCd, teamCd,
+                regId, reqUserName, resUserName, searchValue, corCd, deptCd, officeCd, teamCd, tcode,
                 assignedResponsibilities);
             
             var countSql = "SELECT COUNT(*) " + baseQuery;
@@ -1043,9 +1051,9 @@ namespace CSR.Services
             parameters.Add("EndRow", offset + pageSize);
 
             // --- 쿼리디버깅코드 ---
-            Console.WriteLine("Executing CreateUserAsync Query:");
-            Console.WriteLine(dataSql);
-            Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(assignedResponsibilities, Formatting.Indented));                  
+            // Console.WriteLine("Executing CreateUserAsync Query:");
+            // Console.WriteLine(dataSql);
+            // Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(assignedResponsibilities, Formatting.Indented));                  
 
             var items = await _dbConnection.QueryAsync<ReqInfo>(dataSql, parameters);            
 
@@ -1095,7 +1103,8 @@ namespace CSR.Services
                                  FROM TB_REQ_HIST H 
                                  LEFT JOIN TB_COMM_CODE PS ON H.HISTORY_REASON = PS.CODEID 
                                  LEFT JOIN TB_USER_INFO U ON H.RESUSERID = U.USERID
-                                 WHERE H.REQID = :REQID ORDER BY H.HISTORYID DESC";
+                                 WHERE H.REQID = :REQID AND H.USEYN = 'Y'
+                                 ORDER BY H.HISTORYID DESC ";
                 reqInfo.History = (await _dbConnection.QueryAsync<ReqHist>(histSql, new { REQID = id })).ToList();
             }
 

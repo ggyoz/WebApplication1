@@ -3,8 +3,10 @@ using CSR.Models;
 using CSR.Services;
 using System.Diagnostics;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using FluentValidation.Results;
@@ -13,6 +15,8 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization; // Added for [Authorize]
 using System.Security.Claims; // Added for ClaimTypes.NameIdentifier
+using ClosedXML.Excel;
+using Microsoft.AspNetCore.Http;
 
 
 namespace CSR.Controllers
@@ -131,7 +135,7 @@ namespace CSR.Controllers
                 }
             }
             ViewBag.AssignedResponsibilitiesGrouped = assignedResponsibilitiesGrouped;
-            user.AssignedResponsibilities = new List<string>(); // Clear the old flat list to avoid confusion
+            user.AssignedResponsibilities = new List<string>(); 
 
             return View(user);
         }
@@ -319,7 +323,160 @@ namespace CSR.Controllers
             var users = await _userService.GetUsersForSearchAsync(searchText);
             return Json(users);
         }
+
+        // GET: User/UploadExcel
+        public IActionResult UploadExcel()
+        {
+            return View(new List<User>());
+        }
+
+        // POST: User/UploadExcel
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadExcel(IFormFile file)
+        {
+            var userList = new List<User>();
+
+            if (file != null && file.Length > 0)
+            {
+                try
+                {
+                    // 법인 정보 미리 로드
+                    var allCorps = await _corpService.GetAllCorpsAsync();
+                    var corpDict = allCorps.ToDictionary(c => c.CorNm ?? "", c => c.CorCd ?? "", StringComparer.OrdinalIgnoreCase);
+
+                    // 부서 정보 미리 로드 및 레벨 계산
+                    var allDepts = await _deptService.GetAllDeptsAsync();
+                    var deptById = allDepts.ToDictionary(d => d.DeptId);
+
+                    // 각 부서의 레벨을 계산하는 로컬 함수 (부서=1, 사무실=2, 팀=3...)
+                    int GetDeptLevel(Dept d)
+                    {
+                        int level = 1;
+                        var current = d;
+                        while (current.ParentId != null && deptById.TryGetValue(current.ParentId.Value, out var parent))
+                        {
+                            level++;
+                            current = parent;
+                        }
+                        return level;
+                    }
+
+                    // 레벨별/법인별 딕셔너리 생성
+                    var deptsWithLevel = allDepts.Select(d => new { d.CorCd, d.DeptName, d.DeptCd, Level = GetDeptLevel(d) }).ToList();
+
+                    var level1Lookup = deptsWithLevel.Where(x => x.Level == 1)
+                        .GroupBy(x => x.CorCd).ToDictionary(g => g.Key!, g => g.GroupBy(x => x.DeptName!).ToDictionary(dg => dg.Key, dg => dg.First().DeptCd, StringComparer.OrdinalIgnoreCase));
+                    
+                    var level2Lookup = deptsWithLevel.Where(x => x.Level == 2)
+                        .GroupBy(x => x.CorCd).ToDictionary(g => g.Key!, g => g.GroupBy(x => x.DeptName!).ToDictionary(dg => dg.Key, dg => dg.First().DeptCd, StringComparer.OrdinalIgnoreCase));
+                    
+                    var level3Lookup = deptsWithLevel.Where(x => x.Level >= 3)
+                        .GroupBy(x => x.CorCd).ToDictionary(g => g.Key!, g => g.GroupBy(x => x.DeptName!).ToDictionary(dg => dg.Key, dg => dg.First().DeptCd, StringComparer.OrdinalIgnoreCase));
+
+                    using (var stream = new MemoryStream())
+                    {
+                        await file.CopyToAsync(stream);
+                        using (var workbook = new XLWorkbook(stream))
+                        {
+                            var worksheet = workbook.Worksheet(1);
+                            var rows = worksheet.RangeUsed().RowsUsed().Skip(1); // Skip header
+
+                            foreach (var row in rows)
+                            {
+                                string excelCorNm = row.Cell(6).GetValue<string>().Trim();
+                                string mappedCorCd = corpDict.ContainsKey(excelCorNm) ? corpDict[excelCorNm] : "매핑x";
+                                string userDivNm = row.Cell(10).GetValue<string>();
+                                string userDivVal = "R1";
+                                if( userDivNm == "팀장" || userDivNm == "실장"){
+                                    userDivVal = "R2";
+                                }
+                                // 레벨별 매핑 함수
+                                string GetMappedCd(string corCd, string name, Dictionary<string, Dictionary<string, string>> lookup)
+                                {
+                                    if (string.IsNullOrEmpty(name)) return "";
+                                    string trimmedName = name.Trim();
+                                    if (lookup.TryGetValue(corCd, out var corpMap))
+                                    {
+                                        if (corpMap.TryGetValue(trimmedName, out var cd)) return cd;
+                                    }
+                                    return trimmedName;
+                                }
+
+                                var user = new User
+                                {
+                                    UserId = row.Cell(1).GetValue<string>(),
+                                    UserName = row.Cell(2).GetValue<string>(),
+                                    EmpNo = row.Cell(1).GetValue<string>(),
+                                    TelNo = row.Cell(3).GetValue<string>(),
+                                    MobPhoneNo = row.Cell(4).GetValue<string>(),
+                                    EmailAddr = row.Cell(5).GetValue<string>(),
+                                    CorpName = excelCorNm,
+                                    CorCd = mappedCorCd,
+                                    DeptCd = GetMappedCd(mappedCorCd, row.Cell(7).GetValue<string>(), level1Lookup),
+                                    OfficeCd = GetMappedCd(mappedCorCd, row.Cell(8).GetValue<string>(), level2Lookup),
+                                    TeamCd = GetMappedCd(mappedCorCd, row.Cell(9).GetValue<string>(), level3Lookup),
+                                    UserDiv = userDivVal,
+                                    UseYn = "Y"
+                                };
+                                
+                                if (!string.IsNullOrEmpty(user.UserId))
+                                {
+                                    userList.Add(user);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Excel upload error");
+                    ModelState.AddModelError("", "엑셀 파일을 읽는 중 오류가 발생했습니다: " + ex.Message);
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "파일을 선택해주세요.");
+            }
+
+            return View(userList);
+        }
         
+        // POST: User/SaveExcelData
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveExcelData([FromBody] List<User> users)
+        {
+            if (users == null || !users.Any())
+            {
+                return Json(new { success = false, message = "저장할 데이터가 없습니다." });
+            }
+
+            try
+            {
+                int successCount = 0;
+                string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "System";
+
+                foreach (var user in users)
+                {
+                    if (string.IsNullOrEmpty(user.UserId)) continue;
+
+                    user.RegUserId = currentUserId;
+                    user.UpdateUserId = currentUserId;
+                    
+                    await _userService.UpsertUserAsync(user);
+                    successCount++;
+                }
+
+                return Json(new { success = true, message = $"{successCount}건의 데이터가 성공적으로 저장/업데이트되었습니다." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error saving excel data");
+                return Json(new { success = false, message = "저장 중 오류가 발생했습니다: " + ex.Message });
+            }
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

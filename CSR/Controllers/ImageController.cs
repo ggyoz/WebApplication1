@@ -71,8 +71,7 @@ namespace CSR.Controllers
 
                 // The editor expects a JSON response with the URL of the uploaded image.
                 var imageUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/{imageUploadPath}/{uniqueFileName}";
-                Console.WriteLine("imageUrl : " + imageUrl);
-                Console.WriteLine("Request.PathBase : " + Request.PathBase);
+                
                 return Ok(new { url = imageUrl });
             }
             catch (Exception ex)

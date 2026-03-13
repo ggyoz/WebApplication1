@@ -114,7 +114,7 @@
                         </td>  
                         <td><label class="control-label">@SharedLocalizer["Label_Tcode"]</label></td>
                         <td>
-                            <input asp-for="REQTCODE" type="text" class="form-control" maxlength="10" />
+                            <input asp-for="REQTCODE" type="text" class="form-control" maxlength="16" />
                             <span asp-validation-for="REQTCODE" class="text-danger"></span>
                         </td> 
                     </tr>
@@ -135,10 +135,12 @@
                             <span asp-validation-for="CONTENTS_HTML" class="text-danger"></span>
                             <div class="html-editor"></div>
                             <input type="hidden" asp-for="CONTENTS_HTML" value="
-                            <내용 작성가이드> <br/> 
-                            1. 목적 <br/> 
-                            2. 현재상태 <br/> 
-                            3. 샘플데이터"/>                            
+                            <내용 작성가이드> <br/>                             
+                            1. 작업 메뉴: <br/>
+                            2. 조회 / 검색 조건 : <br/>
+                            3. 요청내용 :  <br/>                             
+                            4. 현상 및 문제점 : <br/> 
+                            5. 샘플데이터 : "/>
                         </td>
                     </tr>                    
                     <tr>

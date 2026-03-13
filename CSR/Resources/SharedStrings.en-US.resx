@@ -106,6 +106,7 @@
   <data name="Label_ManDay" xml:space="preserve"><value>Man Hour</value></data>
   <data name="Label_BXTInquiryNo" xml:space="preserve"><value>BXT Inquiry No</value></data>
   <data name="Label_ActionContentTcode" xml:space="preserve"><value>Action TCODE</value></data>
+  <data name="Label_HistoryPrefix" xml:space="preserve"><value>Edit</value></data>
         <!-- Placeholders -->
   <data name="NoAssignedResponsibilities" xml:space="preserve"><value>No assigned responsibilities.</value></data>
   <data name="Placeholder_Password" xml:space="preserve"><value>Enter only when changing</value></data>
@@ -257,11 +258,68 @@
   <data name="CC83" xml:space="preserve"><value>Re-inquiry</value></data>
   <data name="CC84" xml:space="preserve"><value>Rejected</value></data>
   <data name="CC85" xml:space="preserve"><value>Etc</value></data>
+  <data name="CC101" xml:space="preserve"><value>MES</value></data>
+  <data name="CC102" xml:space="preserve"><value>Request for business trip</value></data>
 
   <!-- MyPage specific -->
-        <data name="MyPageTitle" xml:space="preserve"><value>Edit My Info</value></data>
-              <data name="Placeholder_PasswordChange" xml:space="preserve"><value>Enter new password to change</value></data>
-              <data name="Help_PasswordChange" xml:space="preserve"><value>Leave blank if you don't want to change password.</value></data>
-              <data name="Validation_PasswordMismatch" xml:space="preserve"><value>Passwords do not match.</value></data>
-              <data name="Message_ProfileUpdateSuccess" xml:space="preserve"><value>Your profile has been successfully updated. Please login again.</value></data>
-            </root>
+  <data name="MyPageTitle" xml:space="preserve"><value>Edit My Info</value></data>
+  <data name="Placeholder_PasswordChange" xml:space="preserve"><value>Enter new password to change</value></data>
+  <data name="Help_PasswordChange" xml:space="preserve"><value>Leave blank if you don't want to change password.</value></data>
+  <data name="Validation_PasswordMismatch" xml:space="preserve"><value>Passwords do not match.</value></data>
+  <data name="Message_ProfileUpdateSuccess" xml:space="preserve"><value>Your profile has been successfully updated. Please login again.</value></data>
+  <!-- Dashboard -->
+  <data name="Dashboard_Title" xml:space="preserve"><value>Request Status</value></data>
+  <data name="Dashboard_TotalRequests" xml:space="preserve"><value>Total Requests</value></data>
+  <data name="Dashboard_TotalRequests_Desc" xml:space="preserve"><value>Request status of the entire system</value></data>
+  <data name="Dashboard_PendingRequests" xml:space="preserve"><value>Pending Requests</value></data>
+  <data name="Dashboard_PendingRequests_Desc" xml:space="preserve"><value>Pending requests I need to process</value></data>
+  <data name="Dashboard_InProgressRequests" xml:space="preserve"><value>In-progress Requests</value></data>
+  <data name="Dashboard_InProgressRequests_Desc" xml:space="preserve"><value>Requests I am processing</value></data>
+  <data name="Dashboard_OverdueRequests" xml:space="preserve"><value>Overdue</value></data>
+  <data name="Dashboard_OverdueRequests_Desc" xml:space="preserve"><value>Requests that exceeded the deadline</value></data>
+  <data name="Dashboard_TotalRequests_Scope" xml:space="preserve"><value>{0} Total Requests</value></data>
+  <data name="Dashboard_TotalRequests_Scope_Desc" xml:space="preserve"><value>Total requests of our {0}</value></data>
+  <data name="Dashboard_InProgress" xml:space="preserve"><value>In Progress</value></data>
+  <data name="Dashboard_InProgress_Desc" xml:space="preserve"><value>Currently in-progress requests</value></data>
+  <data name="Dashboard_Answered" xml:space="preserve"><value>Answered</value></data>
+  <data name="Dashboard_Answered_Desc" xml:space="preserve"><value>Answered requests</value></data>
+  <data name="Dashboard_MyRequests" xml:space="preserve"><value>My Requests</value></data>
+  <data name="Dashboard_MyRequests_Desc" xml:space="preserve"><value>Total requests I registered</value></data>
+  <data name="Dashboard_Answered_My" xml:space="preserve"><value>My answered requests</value></data>
+  <data name="Dashboard_Closed" xml:space="preserve"><value>Closed</value></data>
+  <data name="Dashboard_Closed_My_Desc" xml:space="preserve"><value>My closed requests</value></data>
+  <data name="Dashboard_Analysis_Total" xml:space="preserve"><value>Overall Request Status Analysis</value></data>
+  <data name="Dashboard_Performance_Total" xml:space="preserve"><value>Overall Progress and Delay Count</value></data>
+  <data name="Dashboard_Analysis_Dept" xml:space="preserve"><value>Department Request Status</value></data>
+  <data name="Dashboard_Performance_Dept" xml:space="preserve"><value>Department Progress and Delay Count</value></data>
+  <data name="Dashboard_Analysis_My" xml:space="preserve"><value>My Request Status</value></data>
+  <data name="Dashboard_Performance_My" xml:space="preserve"><value>My Progress and Delay Count</value></data>
+  <data name="Dashboard_RecentActivities_My" xml:space="preserve"><value>Recent Activities of My Requests</value></data>
+  <data name="Dashboard_Notice" xml:space="preserve"><value>Notice</value></data>
+  <data name="Dashboard_NoActivities" xml:space="preserve"><value>No activities to display.</value></data>
+  <data name="Dashboard_NoNotices" xml:space="preserve"><value>No notices to display.</value></data>
+  <data name="Dashboard_Error_LoadingActivities" xml:space="preserve"><value>Error occurred while loading request activities.</value></data>
+  <data name="Dashboard_Error_LoadingNotices" xml:space="preserve"><value>Error occurred while loading notices.</value></data>
+  <data name="지연" xml:space="preserve"><value>Delay</value></data>
+  <data name="Label_Corporation_Short" xml:space="preserve"><value>Corp.</value></data>
+  <data name="Label_Department_Short" xml:space="preserve"><value>Dept.</value></data>
+  <data name="Label_Office_Short" xml:space="preserve"><value>Office</value></data>
+  <data name="Label_Team_Short" xml:space="preserve"><value>Team</value></data>
+  <!-- Menus -->
+  <data name="홈" xml:space="preserve"><value>Home</value></data>
+  <data name="시스템 관리" xml:space="preserve"><value>System Management</value></data>
+  <data name="사용자 관리" xml:space="preserve"><value>User Management</value></data>
+  <data name="공통코드 관리" xml:space="preserve"><value>Common Code Management</value></data>
+  <data name="법인 관리" xml:space="preserve"><value>Corporation Management</value></data>
+  <data name="조직도 관리" xml:space="preserve"><value>Business Unit Management</value></data>
+  <data name="사무실 관리" xml:space="preserve"><value>Office Management</value></data>
+  <data name="팀 관리" xml:space="preserve"><value>Team Management</value></data>
+  <data name="메뉴 관리" xml:space="preserve"><value>Menu Management</value></data>
+  <data name="요청 관리" xml:space="preserve"><value>Request Management</value></data>
+  <data name="요청사항" xml:space="preserve"><value>Request List</value></data>
+  <data name="요구사항 등록" xml:space="preserve"><value>Register Requirement</value></data>
+  <data name="공지사항" xml:space="preserve"><value>Notice</value></data>
+  <data name="통계" xml:space="preserve"><value>Statistics</value></data>
+  <data name="처리현황" xml:space="preserve"><value>Processing Status</value></data>
+  <data name="마이페이지" xml:space="preserve"><value>My Page</value></data>
+</root>

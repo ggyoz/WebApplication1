@@ -321,9 +321,32 @@ namespace CSR.Services
             return newPlainTextPassword; // Return the EmpNo as the new password
         }
 
+        public async Task UpsertUserAsync(User user)
+        {
+            var existingUser = await GetUserByIdAsync(user.UserId!);
+            if (existingUser != null)
+            {
+                // 기존 유저는 정보 업데이트 (비밀번호는 엑셀에 없으므로 기존 유지하도록 로직 처리됨)
+                user.RegDate = existingUser.RegDate;
+                user.RegUserId = existingUser.RegUserId;
+                //user.UserPwd = CreatePasswordHash(user.EmpNo);
+                ResetPasswordAsync(user.UserId);
+                await UpdateUserAsync(user);
+            }
+            else
+            {
+                // 신규 유저는 초기 비밀번호를 사번(EmpNo)으로 설정
+                if (string.IsNullOrEmpty(user.UserPwd))
+                {
+                    user.UserPwd = CreatePasswordHash(user.EmpNo);
+                }
+                await CreateUserAsync(user);
+            }
+        }
+
         public async Task DeleteUserAsync(string userId)
         {
-            var sql = "DELETE FROM TB_USER_INFO WHERE USERID = :UserId";
+            var sql = "UPDATE TB_USER_INFO SET USEYN = 'N' WHERE USERID = :UserId";
             await _connection.ExecuteAsync(sql, new { UserId = userId });
         }
 
