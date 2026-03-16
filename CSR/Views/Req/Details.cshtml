@@ -99,7 +99,7 @@
                         {
                             <form asp-action="UpdateExpectDate" asp-route-id="@Model.REQID" method="post" class="d-inline-flex align-items-center">
                                 @Html.AntiForgeryToken()
-                                <div id="ExpectDate"></div>                                
+                                <div id="ExpectDate" style="width:70%"></div>                                
                                 <input type="hidden" name="ExpectDate" id="hiddenExpectDate" value="@Model.EXPECTDATE?.ToString("yyyy-MM-dd")" maxlength="10" />                                
                                 <button type="submit" onclick="return setExpectDate();" class="btn btn-primary btn-sm ms-2">@SharedLocalizer["Button_Change"]</button>
                             </form>
@@ -345,10 +345,13 @@
 
     
 </div>
-
-
 <!-- 히스토리 영역 -->
 <div class="mt-4">
+
+    <div class="justify-content-between">
+        <h1 class="m-3" style="font-weight:500; font-size:110%">History</h1>   
+    <div>
+
     @if (Model.History.Any())
     {
         <ul class="nav nav-tabs" id="historyTab" role="tablist">
@@ -376,14 +379,14 @@
                                 <span class="card-text1"><strong>@SharedLocalizer["Label_ActionTaker"]:</strong> @hist.ResUserName</span>
                                 <span class="card-text1"><strong>@SharedLocalizer["Label_RegistrationDate"]:</strong> @hist.REG_DATE.ToString("yyyy-MM-dd HH:mm")</span>                            
                                 <span class="card-text1"><strong>@SharedLocalizer["Label_RequestDate"]:</strong> @hist.REQDATE.ToString("yyyy-MM-dd")</span>
-                                <span class="card-text1"><strong>@SharedLocalizer["Label_DueDate"]:</strong> @(hist.EXPECTDATE.HasValue ? hist.EXPECTDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"].Value)</span>
+                                <span class="card-text1"><strong>@SharedLocalizer["Label_ExpectedCompletionDate"]:</strong> @(hist.EXPECTDATE.HasValue ? hist.EXPECTDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"].Value)</span>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="content-display">                               
 
                                 @if(!string.IsNullOrEmpty(hist.HISTORY_REASON) && hist.HISTORY_REASON == "74"){                                    
-                                    <p><strong>@SharedLocalizer["CC" + hist.HISTORY_REASON]</strong> : @hist.DUEDATE.Value.ToString("yyyy-MM-dd")</p>   
+                                    <p><strong>@SharedLocalizer["CC" + hist.HISTORY_REASON]</strong> : @hist.EXPECTDATE.Value.ToString("yyyy-MM-dd")</p>   
                                     <hr/>                                 
                                 }else if(!string.IsNullOrEmpty(hist.HISTORY_REASON) && hist.HISTORY_REASON == "72"){                                    
                                     <p><strong>@SharedLocalizer["CC" + hist.HISTORY_REASON]</strong></p>                                    
@@ -391,6 +394,8 @@
                                 }else if(!string.IsNullOrEmpty(hist.HISTORY_REASON) && hist.HISTORY_REASON == "75"){
                                     <p><strong>@SharedLocalizer["CC" + hist.HISTORY_REASON]</strong> : @hist.ResUserName</p>
 
+                                }else if(!string.IsNullOrEmpty(hist.HISTORY_REASON) && hist.HISTORY_REASON == "76"){
+                                    <p><strong>@SharedLocalizer["CC" + hist.HISTORY_REASON]</strong></p>
                                 }else{
                                     @Html.Raw(hist.CONTENTS_HTML)
                                 }

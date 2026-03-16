@@ -195,8 +195,6 @@
                             //var actionName = (userDiv == "R1" || userDiv == "R2") ? "Details" :
                             //                 ((userDiv == "R3" || userDiv == "R4") ? "Answer" : "Details"); 
 
-                            var actionName = "Details";
-
                         }
                         <td>@(item.TITLE.Length > 30 ? item.TITLE.Substring(0, 30) + "..." : item.TITLE)</td>
                         <td>@{
@@ -244,7 +242,20 @@
     </style>
 
     <script>
-        $(function () {            
+
+        const userDiv = '@HttpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Role)?.Value';            
+        const userCorCd = '@Context.Session.GetString("CorCd")';
+        const userDeptCd = '@Context.Session.GetString("DeptCd")'; 
+        const userOfficeCd = '@Context.Session.GetString("OfficeCd")'; 
+        const userTeamCd = '@Context.Session.GetString("TeamCd")'; 
+
+        $(function () {
+
+            if(userDiv != 'R3' && userDiv != 'R4' ){                
+                $('select[name="CorCd"]').val(userCorCd);
+                getDeptCode(userCorCd);
+            }
+
             // Retrieve search values from ViewData
             const searchValues = {
                 reqTypeCd: '@ViewData["ReqTypeCd"]',
@@ -330,80 +341,20 @@
             // 법인 선택 시 메뉴 드롭다운 변경
             $('#CorCd').on('change', function() {
                 var corCd = $(this).val();
-                var deptDropdown = $('#DeptCd');
-
-                deptDropdown.empty();
-                deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectDepartment"])'));
-
-                if (corCd) {
-                    $.ajax({
-                        url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
-                        type: 'GET',
-                        data: { corCd: corCd, deptCd : "" },
-                        success: function(data) {
-                            $.each(data, function(i, item) {
-                                deptDropdown.append($('<option></option>').val(item.value).text(item.text));
-                            });
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("An error occurred while fetching menus: " + error);
-                        }
-                    });
-                }
+                getDeptCode(corCd);
             });
 
             // 법인 선택 시 메뉴 드롭다운 변경
             $('#DeptCd').on('change', function() {
                 var deptCd = $(this).val();
-                var corCd = $('#CorCd').val();
-
-                var deptDropdown = $('#OfficeCd');
-
-                deptDropdown.empty();
-                deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectOffice"])'));
-
-                if (corCd) {
-                    $.ajax({
-                        url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
-                        type: 'GET',
-                        data: { corCd : corCd, deptCd: deptCd },
-                        success: function(data) {
-                            $.each(data, function(i, item) {
-                                deptDropdown.append($('<option></option>').val(item.value).text(item.text));
-                            });
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("An error occurred while fetching menus: " + error);
-                        }
-                    });
-                }
+                getOfficeCode(deptCd);
             });
             
             // 법인 선택 시 메뉴 드롭다운 변경
             $('#OfficeCd').on('change', function() {
                 var deptCd = $(this).val();
-                var corCd = $('#CorCd').val();
-
-                var deptDropdown = $('#TeamCd');
-
-                deptDropdown.empty();
-                deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectTeam"])'));
-
-                if (corCd) {
-                    $.ajax({
-                        url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
-                        type: 'GET',
-                        data: { corCd : corCd, deptCd: deptCd },
-                        success: function(data) {
-                            $.each(data, function(i, item) {
-                                deptDropdown.append($('<option></option>').val(item.value).text(item.text));
-                            });
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("An error occurred while fetching menus: " + error);
-                        }
-                    });
-                }
+                getTeamCode(deptCd);
+                
             });
 
             // 담당영역 그룹별 전체 선택/해제
@@ -443,5 +394,91 @@
             }
 
         }); // End of $(function)
+
+        function getDeptCode(CorCd){
+            var corCd = CorCd;
+            var deptDropdown = $('#DeptCd');
+
+            deptDropdown.empty();
+            deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectDepartment"])'));
+
+            if (corCd) {
+                $.ajax({
+                    url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
+                    type: 'GET',
+                    data: { corCd: corCd, deptCd : "" },
+                    success: function(data) {
+                        $.each(data, function(i, item) {
+                            deptDropdown.append($('<option></option>').val(item.value).text(item.text));
+                        });
+
+                        if( userDiv != "R3" && userDiv != "R4" ){
+                            $('select[name="DeptCd"]').val(userDeptCd);
+                            getOfficeCode(userDeptCd);
+                        }
+                        
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("An error occurred while fetching menus: " + error);
+                    }
+                });
+            }
+        }
+
+        function getOfficeCode(DeptCd){
+            var deptCd = DeptCd;
+            var corCd = $('#CorCd').val();
+            var deptDropdown = $('#OfficeCd');
+
+            deptDropdown.empty();
+            deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectOffice"])'));
+
+            if (corCd) {
+                $.ajax({
+                    url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
+                    type: 'GET',
+                    data: { corCd : corCd, deptCd: deptCd },
+                    success: function(data) {
+                        $.each(data, function(i, item) {
+                            deptDropdown.append($('<option></option>').val(item.value).text(item.text));
+                        });
+
+                        if( userDiv != "R3" && userDiv != "R4" ){
+                            $('select[name="OfficeCd"]').val(userOfficeCd);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("An error occurred while fetching menus: " + error);
+                    }
+                });
+            }
+        }
+
+        function getTeamCode(OfficeCd){
+            var deptCd = OfficeCd;
+            var corCd = $('#CorCd').val();
+            var deptDropdown = $('#TeamCd');
+
+            deptDropdown.empty();
+            deptDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectTeam"])'));
+
+            if (corCd) {
+                $.ajax({
+                    url: '@Url.Action("GetCorpbyDeptCode", "Dept")',
+                    type: 'GET',
+                    data: { corCd : corCd, deptCd: deptCd },
+                    success: function(data) {
+                        $.each(data, function(i, item) {
+                            deptDropdown.append($('<option></option>').val(item.value).text(item.text));
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("An error occurred while fetching menus: " + error);
+                    }
+                });
+            }
+
+        }
+
     </script>
 }

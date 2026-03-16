@@ -13,8 +13,7 @@ namespace CSR.Models
         [Display(Name = "상위요청번호")]
         public int? PARENTID { get; set; }
 
-        [Required(ErrorMessage = "제목을 입력해주세요.")]
-        [StringLength(50)]
+        [Required(ErrorMessage = "제목을 입력해주세요.")]        
         [Display(Name = "제목")]
         public string TITLE { get; set; }
 
