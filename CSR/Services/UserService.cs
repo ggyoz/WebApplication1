@@ -392,7 +392,7 @@ namespace CSR.Services
             var sql = @"
                 SELECT USERID AS UserId, USERNAME AS UserName 
                 FROM TB_USER_INFO 
-                WHERE USEYN = 'Y' AND USER_DIV IN ('R3', 'R4')
+                WHERE USEYN = 'Y' AND USER_DIV IN ('R3', 'R4') and USERID NOT IN ( 'admin', '120006053' )
                 ORDER BY USERNAME";
             return await _connection.QueryAsync<User>(sql);
         }

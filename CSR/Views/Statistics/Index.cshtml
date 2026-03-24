@@ -42,10 +42,7 @@
 
     <!-- KPI 카드 영역 (예시) -->
 
-    
-
     <div class="row mb-4">
-
         <div class="col-md-4 mb-4">
             <div class="card blueCard shadow-sm h-100">
                 <div class="card-body m-3">
@@ -92,13 +89,13 @@
     <!-- 탭 내비게이션 -->
     <ul class="nav nav-tabs mb-4" id="statsTabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="division-tab" data-bs-toggle="tab" data-bs-target="#division-pane" type="button" role="tab" aria-controls="division-pane" aria-selected="true">사업부서별</button>
+            <button class="nav-link active" id="division-tab" data-bs-toggle="tab" data-bs-target="#division-pane" type="button" role="tab" aria-controls="division-pane" aria-selected="true">사업부</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="office-tab" data-bs-toggle="tab" data-bs-target="#office-pane" type="button" role="tab" aria-controls="office-pane" aria-selected="false">사무실별</button>
+            <button class="nav-link" id="office-tab" data-bs-toggle="tab" data-bs-target="#office-pane" type="button" role="tab" aria-controls="office-pane" aria-selected="false">실</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin-pane" type="button" role="tab" aria-controls="admin-pane" aria-selected="false">담당자별</button>
+            <button class="nav-link" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin-pane" type="button" role="tab" aria-controls="admin-pane" aria-selected="false">조치자</button>
         </li>
     </ul>
 
@@ -108,7 +105,7 @@
         <div class="tab-pane fade show active" id="division-pane" role="tabpanel" aria-labelledby="division-tab" tabindex="0">
             <!-- 차트 영역 -->
             <div class="card mb-4">
-                <div class="card-header">사업부서별 요청사항 수</div>
+                <div class="card-header">사업부별 종합 현황</div>
                 <div class="card-body">
                     <div id="deptChart" style="height: 300px; border: 1px dashed #ccc; display: flex; justify-content: center; align-items: center;"></div>
                 </div>
@@ -116,12 +113,25 @@
 
             <!-- 테이블 영역 -->
             <div class="card">
-                <div class="card-header">사업부서별 요청사항 수</div>
+                <div class="card-header">사업부별 상세 현황</div>
                 <div class="card-body">
                     <table class="table table-bordered table-striped">
+                        <colgroup>
+                            <col width="10%" />
+                            <col width="8%" />
+                            <col width="8%" />
+                            <col width="8%" />
+                            <col width="8%" />
+                            <col width="8%" />
+                            <col width="8%" />
+                            <col width="8%" />
+                            <col width="8%" />                            
+                            <col width="8%" />
+                            <col width="8%" />
+                        </colgroup>
                         <thead>
                             <tr>
-                                <th rowspan="2">사업부서</th>
+                                <th rowspan="2">조직</th>
                                 <th colspan="5">요청사항 수 ( 긴급도 별 )</th>
                                 <th colspan="6">진행상태 </th>
                             </tr>
@@ -147,25 +157,38 @@
         <!-- 사무실별 탭 -->
         <div class="tab-pane fade" id="office-pane" role="tabpanel" aria-labelledby="office-tab" tabindex="0">
             <div class="card">
-                <div class="card-header">사무실별 요청사항 수</div>
+                <div class="card-header">실별 상세 현황</div>
                 <div class="card-body">
                     <table class="table table-bordered table-striped">
+                        <colgroup>
+                            <col width="10%" />
+                            <col width="8%" />
+                            <col width="8%" />
+                            <col width="8%" />
+                            <col width="8%" />
+                            <col width="8%" />
+                            <col width="8%" />
+                            <col width="8%" />
+                            <col width="8%" />                            
+                            <col width="8%" />
+                            <col width="8%" />
+                        </colgroup>
                         <thead>
                             <tr class="border">
-                                <th class="border align-middle text-center" rowspan="2">사업부서</th>
-                                <th class="border align-middle" colspan="6">요청사항 수 ( 긴급도 별 )</th>
-                                <th class="border align-middle" colspan="5">진행상태 </th>
+                                <th class="border align-middle text-center" rowspan="2">조직</th>
+                                <th class="border align-middle" colspan="5">요청사항 수 ( 긴급도 별 )</th>
+                                <th class="border align-middle" colspan="6">진행상태 </th>
                             </tr>
                             <tr>
                                 <th>긴급</th>
                                 <th>높음</th>
                                 <th>보통</th>
                                 <th>낮음</th>
-                                <th>집계</th>
+                                <th>계</th>
                                 <th>진행중</th>
                                 <th>종결</th>
                                 <th>완료율</th>
-                                <th>완료예정</th>
+                                <th>금주 완료예정</th>
                                 <th>지연</th>                        
                             </tr>
                         </thead>
@@ -178,13 +201,24 @@
         <!-- 담당자별 탭 -->
         <div class="tab-pane fade" id="admin-pane" role="tabpanel" aria-labelledby="admin-tab" tabindex="0">
             <div class="card">
-                <div class="card-header">담당자별 요청사항 수</div>
+                <div class="card-header">조치자별 상세 현황</div>
                 <div class="card-body">
                     <table class="table table-bordered table-striped">
                         <thead>
+                            <colgroup>
+                                <col width="10%" />
+                                <col width="8%" />
+                                <col width="8%" />
+                                <col width="8%" />
+                                <col width="8%" />
+                                <col width="8%" />
+                                <col width="8%" />
+                                <col width="8%" />
+                                <col width="8%" />
+                            </colgroup>
                             <tr class="border">
-                                <th class="border align-middle text-center" rowspan="2">담당자</th>
-                                <th class="border align-middle" colspan="6">요청사항 수 ( 긴급도 별 )</th>
+                                <th class="border align-middle text-center" rowspan="2">조치자</th>
+                                <th class="border align-middle" colspan="5">요청사항 수 ( 긴급도 )</th>
                                 <th class="border align-middle" colspan="3">진행상태 </th>
                             </tr>
                             <tr>
@@ -192,7 +226,7 @@
                                 <th>높음</th>
                                 <th>보통</th>
                                 <th>낮음</th>                        
-                                <th>집계</th>
+                                <th>계</th>
                                 <th>진행중</th>
                                 <th>종결</th>
                                 <th>완료율</th>
@@ -228,48 +262,71 @@
     </style>
 
 
-    <script>       
+    <script>
 
         $(document).ready(function() {
 
-             let dataSource = [{
-                state: '경영사업본부',
-                young: 5.3,
-                middle: 26,
-                }, {
-                state: '1',
-                young: 6.45,
-                middle: 30.5,
-                }, {
-                state: '2',
-                young: 12.56,
-                middle: 45.5,
-                }, {
-                state: '3',
-                young: 32,
-                middle: 87,
-                }];
+            // 1. 페이지 로드 시 localStorage에서 마지막으로 선택된 탭 ID를 가져옴
+            const activeTabId = localStorage.getItem('statisticsActiveTab');
+            if (activeTabId) {
+                const tabElement = document.getElementById(activeTabId);
+                if (tabElement) {
+                    // Bootstrap 5 탭 인스턴스를 생성하거나 가져와서 보여줌
+                    const tab = new bootstrap.Tab(tabElement);
+                    tab.show();
+                }
+            }
+
+            // 2. 탭 전환 시 localStorage에 현재 탭 ID 저장
+            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (event) {
+                // 현재 선택된 탭의 ID를 저장
+                const currentTabId = event.target.id;
+                localStorage.setItem('statisticsActiveTab', currentTabId);
+    
+                // 기존 차트 리렌더링 로직
+                if (currentTabId === 'division-tab') {
+                    var chartInstance = $('#deptChart').dxChart('instance');
+                    if (chartInstance) {
+                        chartInstance.render();
+                    }
+                }
+            });
+
+             let dataSource = [];
 
             $('#deptChart').dxChart({
                 dataSource,
                 commonSeriesSettings: {
                 argumentField: 'state',
-                type: 'fullStackedBar',
+                type: 'fullStackedBar',                
                 },
+                
                 series: [
                     { valueField: 'ing', name: '진행중', color: '#696FC7' },
                     { valueField: 'end', name: '종결' , color: '#F2AEBB' },
                     // { valueField: 'older', name: '65 and older' },
                 ],
-                color: { },
                 tooltip: {
-                enabled: true,
-                location: 'edge',
-                customizeTooltip(arg) {
-                    return {
-                        text: `${arg.seriesName} : ${arg.valueText}`,
-                    };
-                },
+                    enabled: true,
+                    shared: true,
+                    location: 'edge',
+                    customizeTooltip(arg) {                        
+                        const items = arg.valueText.split('\n');
+                        const color = arg.point.getColor();
+                        $.each(items, (index, item) => {
+                        if (item.indexOf(arg.seriesName) === 0) {
+                            items[index] = $('<span>')
+                            .text(item)
+                            .addClass('active')
+                            .css('color', color)
+                            .prop('outerHTML');
+                        }
+                        });
+                        return { text: items.join('\n') + '\n' + " : " + Math.round( (arg.value / arg.total) * 1000 ) / 10 + "%" };
+                        // return {
+                        //     text: `${arg.seriesName} : ${arg.valueText} `,
+                        // };
+                    },
                 },
             });
 
@@ -326,9 +383,9 @@
                                         <td>${item.veryHighCount}</td>
                                         <td>${item.highCount}</td>
                                         <td>${item.mediumCount}</td>
-                                        <td>${item.lowCount}</td>
-                                        
-                                        <td>${item.totalCount}</td>
+                                        <td>${item.lowCount}</td>                                        
+                                        <td style='border-right:1px solid #dee2e6;'>${item.totalCount}</td>
+
                                         <td>${item.ingStatus}</td>
                                         <td>${item.endStatus}</td>
                                         <td>${item.endPercent}%</td>
@@ -338,11 +395,9 @@
                                 );
 
                                 // 차트 데이터 업데이트
-                                chartData.push({ state: item.divisionName, ing: item.ingStatus, end: item.endStatus });
+                                chartData.push({ state: item.divisionName, ing: item.ingStatus, end: item.endStatus, total: item.totalCount  });
 
-                            });                           
-
-                            console.log(chartData);
+                            });
                             
                             var chartInstance = $('#deptChart').dxChart('instance');
                             if (chartInstance) {
@@ -420,7 +475,7 @@
                             response.stats.forEach(function(item) {
                                 tableBody.append(
                                     `<tr>
-                                        <th>${item.userName}</td>
+                                        <th><a href="/Req/Index?ResUserName=${item.userName}">${item.userName}</a></td>
                                         <td>${item.veryHighCount}</td>
                                         <td>${item.highCount}</td>
                                         <td>${item.mediumCount}</td>
@@ -468,9 +523,6 @@
                     }
                 }
             });
-
-
-
         });
 
 

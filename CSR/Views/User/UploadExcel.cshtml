@@ -73,8 +73,8 @@
                                     <td>@user.UserName</td>
                                     <td>@user.EmpNo</td>
                                     <td>@user.TelNo</td>
-                                    <td>@user.EmailAddr</td>
                                     <td>@user.MobPhoneNo</td>
+                                    <td>@user.EmailAddr</td>
                                     <td>@user.CorpName</td>
                                     <td>@user.CorCd</td>
                                     <td>@user.DeptCd</td>
@@ -115,8 +115,6 @@
                 if (!confirm(userData.length + "건의 데이터를 DB에 반영하시겠습니까?\n이미 존재하는 ID는 정보가 업데이트됩니다.")) {
                     return;
                 }
-
-                console.log(userData);
 
                 const $btn = $(this);
                 const originalHtml = $btn.html();

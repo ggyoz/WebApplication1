@@ -42,6 +42,144 @@ namespace CSR.Controllers
             _authorizationService = authorizationService;
         }
 
+        public async Task<IActionResult> Indexgrid(
+            int pageNumber = 1, 
+            int pageSize = 10, 
+            string? reqTypeCd = null,
+            string? procStatusCd = null,
+            string? priorityCd = null,
+            string? reqDate = null,
+            string? dueDate = null,
+            string? expectDate = null,
+            string? regId = null, // Assuming this is ReqInfo.REQID for search
+            string? reqUserName = null,
+            string? resUserName = null,
+            string? searchValue = null,
+            string? corCd = null,
+            string? deptCd = null,
+            string? officeCd = null,
+            string? teamCd = null,
+            string? tcode = null,
+            string? assignedResponsibilities = null
+            ) // This is for title search
+        {
+
+            // 세션이 없으면 로그인페이지로 튕겨냄
+            var sessionCorCd = HttpContext.Session.GetString("CorCd");
+            var sessionDeptCd = HttpContext.Session.GetString("DeptCd");
+            var sessionOfficeCd = HttpContext.Session.GetString("OfficeCd");
+            var sessionTeamCd = HttpContext.Session.GetString("TeamCd");            
+
+            // 팀원 및 팀장 조회 제한
+            if( !User.IsInRole("R3") && !User.IsInRole("R4") ){
+
+                if ( string.IsNullOrEmpty(sessionDeptCd) )
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+            }
+
+            var respList = string.IsNullOrEmpty(assignedResponsibilities) 
+                ? new List<string>() 
+                : assignedResponsibilities.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            ViewData["ReqTypeCd"] = reqTypeCd;
+            ViewData["ProcStatusCd"] = procStatusCd;
+            ViewData["PriorityCd"] = priorityCd;
+            ViewData["ReqDate"] = reqDate;
+            ViewData["DueDate"] = dueDate;
+            ViewData["ExpectDate"] = expectDate;
+            ViewData["RegId"] = regId;
+            ViewData["ReqUserName"] = reqUserName;
+            ViewData["ResUserName"] = resUserName;
+            ViewData["SearchValue"] = searchValue;
+            ViewData["CorCd"] = corCd;
+            ViewData["DeptCd"] = deptCd;
+            ViewData["OfficeCd"] = officeCd;
+            ViewData["TeamCd"] = teamCd;
+            ViewData["AssignedResponsibilities"] = respList;
+            ViewData["Tcode"] = tcode;
+
+            ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
+            ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
+            ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
+            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61); 
+            ViewBag.AllResponsibilities = await _commCodeService.GetResponsibilitiesAsync();
+
+            // 법인
+            ViewBag.CorCdList = await _corpService.GetSelectListByCorpAsync();
+            ViewBag.DeptCdList = new List<SelectListItem>();
+            ViewBag.OfficeCdList = new List<SelectListItem>();
+            ViewBag.TeamCdList = new List<SelectListItem>();
+
+            if (!string.IsNullOrEmpty(corCd))
+            {
+                ViewBag.DeptCdList = await _deptService.GetSelectListByDeptAsync(corCd, "");
+            }
+
+            if (!string.IsNullOrEmpty(deptCd))
+            {
+                ViewBag.OfficeCdList = await _deptService.GetSelectListByDeptAsync(corCd, deptCd);
+            }
+            
+            if (!string.IsNullOrEmpty(officeCd))
+            {
+                 ViewBag.TeamCdList = await _deptService.GetSelectListByDeptAsync(corCd, officeCd);
+            }
+
+            string defaultDeptStr = sessionDeptCd + ",ST00, CM00";
+            string defaultOfficeStr = sessionOfficeCd + ",ST01, CM01";
+            string defaultTeamStr = sessionTeamCd + ",ST0101, CM0101";
+
+            if( User.IsInRole("R1")) {
+
+                // 검색했을때때
+                if(!string.IsNullOrEmpty(corCd) || !string.IsNullOrEmpty(deptCd) || !string.IsNullOrEmpty(officeCd) || !string.IsNullOrEmpty(teamCd)){
+                    corCd = sessionCorCd;                    
+                    teamCd = sessionTeamCd;
+                }else{
+                    corCd = sessionCorCd;
+                    teamCd = defaultTeamStr;
+                }                
+
+            }else if( User.IsInRole("R2")){
+                corCd = sessionCorCd;
+                deptCd = sessionDeptCd;
+
+                if(!string.IsNullOrEmpty(sessionOfficeCd)){
+                    officeCd = sessionOfficeCd;
+                }
+                if(!string.IsNullOrEmpty(sessionTeamCd)){
+                    teamCd = sessionTeamCd;
+                }
+                
+            }
+
+            
+            
+            var pagedResult = await _reqService.GetReqInfosAsync(
+                pageNumber, 
+                pageSize, 
+                reqTypeCd,
+                procStatusCd,
+                priorityCd,
+                reqDate,
+                dueDate,
+                expectDate,
+                regId,
+                reqUserName,
+                resUserName,
+                searchValue,
+                corCd, 
+                deptCd, 
+                officeCd, 
+                teamCd,
+                tcode,
+                respList);
+            return View(pagedResult);
+        }
+
         public async Task<IActionResult> Index(
             int pageNumber = 1, 
             int pageSize = 10, 
@@ -128,22 +266,35 @@ namespace CSR.Controllers
                  ViewBag.TeamCdList = await _deptService.GetSelectListByDeptAsync(corCd, officeCd);
             }
 
-            if( User.IsInRole("R1")) {
-                corCd = sessionCorCd;
-                teamCd = sessionTeamCd;
-            }else if( User.IsInRole("R2")){                
+            string defaultDeptStr = sessionDeptCd + ",ST00, CM00";
+            string defaultOfficeStr = sessionOfficeCd + ",ST01, CM01";
+            string defaultTeamStr = sessionTeamCd + ",ST0101, CM0101";
 
+            if( User.IsInRole("R1")) {
+
+                // 검색했을때때
+                if(!string.IsNullOrEmpty(corCd) || !string.IsNullOrEmpty(deptCd) || !string.IsNullOrEmpty(officeCd) || !string.IsNullOrEmpty(teamCd)){
+                    corCd = sessionCorCd;                    
+                    teamCd = sessionTeamCd;
+                }else{
+                    corCd = sessionCorCd;
+                    teamCd = defaultTeamStr;
+                }                
+
+            }else if( User.IsInRole("R2")){
                 corCd = sessionCorCd;
                 deptCd = sessionDeptCd;
 
                 if(!string.IsNullOrEmpty(sessionOfficeCd)){
                     officeCd = sessionOfficeCd;
                 }
-
                 if(!string.IsNullOrEmpty(sessionTeamCd)){
                     teamCd = sessionTeamCd;
                 }
+                
             }
+
+            
             
             var pagedResult = await _reqService.GetReqInfosAsync(
                 pageNumber, 
@@ -421,6 +572,14 @@ namespace CSR.Controllers
                 return Forbid();
             }
 
+            var users = await _userService.GetManagerOrHigherUsersForDropDownAsync();
+            ViewBag.UserList = users.Select(u => new SelectListItem
+            {
+                Value = u.UserId,
+                Text = u.UserName,
+                Selected = (u.UserId == reqInfo.RESUSERID)
+            }).ToList();
+
             ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
             ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
             ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
@@ -441,6 +600,24 @@ namespace CSR.Controllers
             {
                 return BadRequest();
             }
+
+            // 답변등록 시 유효성 제외 목록
+            ModelState.Remove(nameof(ReqInfo.TITLE));
+            ModelState.Remove(nameof(ReqInfo.CONTENTS_HTML));
+            ModelState.Remove(nameof(ReqInfo.DUEDATE));            
+            ModelState.Remove(nameof(ReqInfo.REQDATE));
+            ModelState.Remove(nameof(ReqInfo.REQTYPE));
+            ModelState.Remove(nameof(ReqInfo.REQMENU));
+            ModelState.Remove(nameof(ReqInfo.REQMENU_ETC));
+            ModelState.Remove(nameof(ReqInfo.RESUSERID));
+            ModelState.Remove(nameof(ReqInfo.SYSTEMCD));
+            ModelState.Remove(nameof(ReqInfo.REQUSERID));
+            ModelState.Remove(nameof(ReqInfo.PRIORITYCD));
+            ModelState.Remove(nameof(ReqInfo.CORCD));
+            ModelState.Remove(nameof(ReqInfo.DEPTCD));
+            ModelState.Remove(nameof(ReqInfo.OFFICECD));
+            ModelState.Remove(nameof(ReqInfo.TEAMCD));
+            ModelState.Remove(nameof(ReqInfo.REG_USERID));
 
             if (ModelState.IsValid)
             {

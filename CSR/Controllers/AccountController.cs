@@ -93,6 +93,7 @@ namespace CSR.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Session.Clear();
             return RedirectToAction("Login", "Account");
         }
 
@@ -101,6 +102,7 @@ namespace CSR.Controllers
         public async Task<IActionResult> LogoutGet()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Session.Clear();
             return RedirectToAction("Login", "Account");
         }
     }

@@ -36,7 +36,9 @@ namespace CSR.Services
             string? officeCd,
             string? teamCd,
             string? tcode,
-            List<string>? assignedResponsibilities
+            List<string>? assignedResponsibilities,
+            string? sortColumn = "REQID",
+            string? sortOrder = "DESC"
             );
 
         Task<IEnumerable<ReqInfo>> GetAllReqInfosAsync(
@@ -440,7 +442,7 @@ namespace CSR.Services
                     FROM TB_REQ_HIST H
                     INNER JOIN TB_REQ_INFO R ON H.REQID = R.REQID
                     LEFT JOIN TB_COMM_CODE PS ON H.HISTORY_REASON = PS.CODEID 
-                    WHERE R.REQUSERID = :UserId AND H.HISTORY_REASON IS NOT NULL AND R.USEYN = 'Y'
+                    WHERE R.REQUSERID = :UserId AND H.HISTORY_REASON IS NOT NULL AND H.USEYN = 'Y' AND R.USEYN = 'Y'
                     ORDER BY H.REG_DATE DESC
                 ) WHERE ROWNUM <= :Count";
             
@@ -456,7 +458,7 @@ namespace CSR.Services
                     FROM TB_REQ_HIST H
                     INNER JOIN TB_REQ_INFO R ON H.REQID = R.REQID
                     LEFT JOIN TB_COMM_CODE PS ON H.HISTORY_REASON = PS.CODEID 
-                    WHERE H.RESUSERID = :UserId AND H.HISTORY_REASON IS NOT NULL
+                    WHERE H.RESUSERID = :UserId AND H.HISTORY_REASON IS NOT NULL AND H.USEYN = 'Y' AND R.USEYN = 'Y'
                     ORDER BY H.REG_DATE DESC
                 ) WHERE ROWNUM <= :Count";
             
@@ -515,8 +517,8 @@ namespace CSR.Services
                 FROM TB_REQ_INFO R
                 JOIN TB_DEPT_INFO D ON R.OFFICECD = D.DEPTCD
                 WHERE R.USEYN = 'Y'
-                GROUP BY D.DEPTNAME
-                ORDER BY D.DEPTNAME";
+                GROUP BY D.DEPTNAME, D.SORTORDER
+                ORDER BY D.SORTORDER ";       
             
             var result = await _dbConnection.QueryAsync<DivisionRequestStats>(sql);
             return result.ToList();
@@ -537,9 +539,9 @@ namespace CSR.Services
                     CASE WHEN count(R.PRIORITYCD) != 0 THEN TRUNC ( SUM(CASE WHEN R.PROC_STATUS = '68' THEN 1 ELSE 0 END) / count(R.PRIORITYCD) * 100 ) ELSE 0 END AS EndPercent
                 FROM TB_USER_INFO U 
                 LEFT JOIN TB_REQ_INFO R ON R.RESUSERID = U.USERID AND R.USEYN = 'Y'
-                WHERE U.USER_DIV IN ( 'R3', 'R4' ) AND U.USERNAME != 'admin'
-                GROUP BY U.USERNAME
-                ORDER BY U.USERNAME ";
+                WHERE U.USER_DIV IN ( 'R3', 'R4' ) AND U.USERID NOT IN ( 'admin', '120006053')
+                GROUP BY U.USERID, U.USERNAME, U.TEAMCD, U.USER_DIV
+                ORDER BY U.TEAMCD, U.USER_DIV desc, U.USERID ";
             
             var result = await _dbConnection.QueryAsync<DivisionRequestStats>(sql);
             return result.ToList();
@@ -861,7 +863,7 @@ namespace CSR.Services
                     OFI.DEPTNAME as OfficeName,
                     TM.DEPTNAME as TeamName
                 {baseQuery}
-                ORDER BY R.REQID DESC";
+                ORDER BY R.REQDATE DESC, R.REQID DESC ";
 
             return await _dbConnection.QueryAsync<ReqInfo>(dataSql, parameters);
         }
@@ -906,6 +908,7 @@ namespace CSR.Services
                 baseQuery.Append(" AND R.REQTYPE = :ReqTypeCd");
                 parameters.Add("ReqTypeCd", reqTypeCd);
             }
+            
             if (!string.IsNullOrEmpty(procStatusCd))
             {
 
@@ -917,11 +920,13 @@ namespace CSR.Services
                 parameters.Add("ProcStatusCd", procStatusCd);
 
             }
+
             if (!string.IsNullOrEmpty(priorityCd))
             {
                 baseQuery.Append(" AND R.PRIORITYCD = :PriorityCd");
                 parameters.Add("PriorityCd", priorityCd);
             }
+
             if (!string.IsNullOrEmpty(reqDate))
             {
                 baseQuery.Append(" AND TRUNC(R.REQDATE) >= TO_DATE(:ReqDate, 'YYYY-MM-DD')");
@@ -965,22 +970,26 @@ namespace CSR.Services
                 baseQuery.Append(" AND R.CORCD = :CorCd");
                 parameters.Add("CorCd", corCd);
             }
+
             if (!string.IsNullOrEmpty(deptCd))
             {
-                baseQuery.Append(" AND ( R.DEPTCD = :DeptCd OR R.DEPTCD in ('ST00', 'CM00') ) ");
-                //baseQuery.Append(" AND R.DEPTCD = :DeptCd ");
+                //baseQuery.Append(" AND ( R.DEPTCD = :DeptCd OR R.DEPTCD in ('ST00', 'CM00') ) ");
+                baseQuery.Append(" AND R.DEPTCD in :DeptCd ");
                 parameters.Add("DeptCd", deptCd);
             }
+
             if (!string.IsNullOrEmpty(officeCd))
             {
-                baseQuery.Append(" AND (R.OFFICECD = :OfficeCd OR R.OFFICECD in ('ST01', 'CM01') )");
-                //baseQuery.Append(" AND R.OFFICECD = :OfficeCd ");
+                //baseQuery.Append(" AND (R.OFFICECD = :OfficeCd OR R.OFFICECD in ('ST01', 'CM01') )");
+                baseQuery.Append(" AND R.OFFICECD in :OfficeCd ");
                 parameters.Add("OfficeCd", officeCd);
             }
             if (!string.IsNullOrEmpty(teamCd))
             {
-                baseQuery.Append(" AND (R.TEAMCD = :TeamCd OR R.TEAMCD in ('ST0101', 'CM0101') ) ");
-                parameters.Add("TeamCd", teamCd);
+                string[] teams = teamCd.Split(",");
+                //baseQuery.Append(" AND (R.TEAMCD = :TeamCd OR R.TEAMCD in ('ST0101', 'CM0101') ) ");
+                baseQuery.Append(" AND R.TEAMCD in :teamCd ");
+                parameters.Add("TeamCd", teams);
             }
 
             if (assignedResponsibilities != null && assignedResponsibilities.Any())
@@ -1015,7 +1024,9 @@ namespace CSR.Services
             string? officeCd,
             string? teamCd,
             string? tcode,
-            List<string>? assignedResponsibilities)
+            List<string>? assignedResponsibilities,
+            string? sortColumn = "REQID",
+            string? sortOrder = "DESC")
         {
             var (baseQuery, parameters) = BuildReqInfoBaseQuery(
                 reqTypeCd, procStatusCd, priorityCd, reqDate, dueDate, expectDate,
@@ -1024,6 +1035,26 @@ namespace CSR.Services
             
             var countSql = "SELECT COUNT(*) " + baseQuery;
             var totalCount = await _dbConnection.ExecuteScalarAsync<int>(countSql, parameters);
+
+            // Mapping property names to DB columns
+            var sortCol = sortColumn?.ToUpper() switch
+            {
+                "REQID" => "R.REQID",
+                "TITLE" => "R.TITLE",
+                "REQDATENAME" => "R.REQDATE",
+                "REQDATE" => "R.REQDATE",
+                "DUEDATE" => "R.DUEDATE",
+                "EXPECTDATE" => "R.EXPECTDATE",
+                "PROCSTATUSNAME" => "PS.CODENM",
+                "REQTYPENAME" => "RT.CODENM",
+                "REQMENUNAME" => "M.CODENM",
+                "SYSTEMNAME" => "S.CODENM",
+                "REQUSERNAME" => "U_REQ.USERNAME",
+                "RESUSERNAME" => "U_RES.USERNAME",
+                _ => "R.REQID"
+            };
+            
+            var sOrder = sortOrder?.ToUpper() == "ASC" ? "ASC" : "DESC";
 
             var offset = (page - 1) * pageSize;
             var dataSql = $@"
@@ -1043,17 +1074,12 @@ namespace CSR.Services
                             OFI.DEPTNAME as OfficeName,
                             TM.DEPTNAME as TeamName
                         {baseQuery}
-                        ORDER BY R.REQID DESC
+                        ORDER BY {sortCol} {sOrder}
                     ) a WHERE ROWNUM <= :EndRow
                 ) WHERE rnum > :StartRow";
 
             parameters.Add("StartRow", offset);
             parameters.Add("EndRow", offset + pageSize);
-
-            // --- 쿼리디버깅코드 ---
-            // Console.WriteLine("Executing CreateUserAsync Query:");
-            // Console.WriteLine(dataSql);
-            // Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(assignedResponsibilities, Formatting.Indented));                  
 
             var items = await _dbConnection.QueryAsync<ReqInfo>(dataSql, parameters);            
 

@@ -86,9 +86,11 @@ table.table-layout tr:last-of-type {
 }
 
 table.table-layout th {
-    background-color: #ffffff;
+    background-color: #e0e0e0;
+    color:#000000;
     padding: 12px 1px;
     vertical-align: middle;
+    text-align: center;
 }
 
 table.table-striped tr{

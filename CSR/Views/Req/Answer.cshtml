@@ -4,6 +4,8 @@
 @inject IViewLocalizer Localizer
 @inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
 @inject IAuthorizationService AuthorizationService
+@inject IHttpContextAccessor HttpContextAccessor
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = "요구사항 수정";
@@ -79,8 +81,8 @@
                         <td><select asp-for="SYSTEMCD" asp-items="ViewBag.SystemCodes" class="form-select"></select></td>
                         <td><label asp-for="REQMENU" class="control-label"></label></td>
                         <td><select asp-for="REQMENU" id="ReqMenu" asp-items="ViewBag.ReqMenu" class="form-select"></select></td>
-                        <td><label asp-for="RESUSERID" class="control-label"></label></td>                        
-                        <td><select asp-for="RESUSERID" class="form-select"></select></td>
+                        <td><label asp-for="RESUSERID" class="control-label"></label></td>
+                        <td><select asp-for="RESUSERID" class="form-select" asp-items="ViewBag.UserList"></select></td>
                         
                         
                     </tr>
@@ -174,6 +176,11 @@
         #file-uploader .dx-fileuploader-input-wrapper { min-height: 150px; border: 2px dashed #ccc; padding: 20px; background-color: #f8f9fa; }
     </style>
     <script>
+
+        const userDiv = '@HttpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Role)?.Value';
+
+
+
         $(function() {
             initializeHtmlEditor('#content-editor', 'input[name="@Html.NameFor(m => m.CONTENTS_HTML)"]');
             initializeHtmlEditor('#answer-editor', 'input[name="@Html.NameFor(m => m.ANSWER_HTML)"]');
@@ -193,9 +200,6 @@
                 var adminId = @Html.Raw(Json.Serialize(Model.RESUSERID));
                 getReqMenuDropdown(reqMenuValue, systemcd, adminId);
             };
-            
-           
-
 
         // 시스템 선택 시 메뉴 드롭다운 변경
             $('#SYSTEMCD').on('change', function() {
@@ -223,29 +227,29 @@
             });
 
             // 메뉴 선택 시 조치자 드롭다운 변경
-            $('#ReqMenu').on('change', function() {
-                var menuId = $(this).val();
-                var adminDropdown = $('#RESUSERID');
+            // $('#ReqMenu').on('change', function() {
+            //     var menuId = $(this).val();
+            //     var adminDropdown = $('#RESUSERID');
 
-                adminDropdown.empty();
-                adminDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectActionTaker"])'));
+            //     adminDropdown.empty();
+            //     adminDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectActionTaker"])'));
 
-                if (menuId) {
-                    $.ajax({
-                        url: '@Url.Action("GetAdminRel", "Req")',
-                        type: 'GET',
-                        data: { menuId: menuId },
-                        success: function(data) {
-                            $.each(data, function(i, item) {
-                                adminDropdown.append($('<option></option>').val(item.value).text(item.text));
-                            });
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("An error occurred while fetching menus: " + error);
-                        }
-                    });
-                }
-            });
+            //     if (menuId) {
+            //         $.ajax({
+            //             url: '@Url.Action("GetAdminRel", "Req")',
+            //             type: 'GET',
+            //             data: { menuId: menuId },
+            //             success: function(data) {
+            //                 $.each(data, function(i, item) {
+            //                     adminDropdown.append($('<option></option>').val(item.value).text(item.text));
+            //                 });
+            //             },
+            //             error: function(xhr, status, error) {
+            //                 console.error("An error occurred while fetching menus: " + error);
+            //             }
+            //         });
+            //     }
+            // });
         
 
         });
@@ -280,32 +284,32 @@
         }
 
         // 조치자 dropdown function
-        const getadminDropdown = function( adminId, menuId ){
+        // const getadminDropdown = function( adminId, menuId ){
             
-            var adminDropdown = $('#RESUSERID');
+        //     var adminDropdown = $('#RESUSERID');
 
-            adminDropdown.empty();
-            adminDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectActionTaker"])'));
+        //     adminDropdown.empty();
+        //     adminDropdown.append($('<option></option>').val('').text('@Html.Raw(SharedLocalizer["Placeholder_SelectActionTaker"])'));
 
-            if (menuId) {
-                $.ajax({
-                    url: '@Url.Action("GetAdminRel", "Req")',
-                    type: 'GET',
-                    data: { menuId: menuId },
-                    success: function(data) {
-                        $.each(data, function(i, item) {
-                            adminDropdown.append($('<option></option>').val(item.value).text(item.text));
-                        });
+        //     if (menuId) {
+        //         $.ajax({
+        //             url: '@Url.Action("GetAdminRel", "Req")',
+        //             type: 'GET',
+        //             data: { menuId: menuId },
+        //             success: function(data) {
+        //                 $.each(data, function(i, item) {
+        //                     adminDropdown.append($('<option></option>').val(item.value).text(item.text));
+        //                 });
 
-                        adminDropdown.val(adminId);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("An error occurred while fetching menus: " + error);
-                    }
-                });
-            }
+        //                 adminDropdown.val(adminId);
+        //             },
+        //             error: function(xhr, status, error) {
+        //                 console.error("An error occurred while fetching menus: " + error);
+        //             }
+        //         });
+        //     }
 
-        }
+        // }
 
         // 사용자 검색 기능 초기화
         function initializeUserSearch() {
@@ -427,10 +431,44 @@
                 var lastSearch = sessionStorage.getItem('reqLastSearch');
                 if (lastSearch) {
                     e.preventDefault();
+
                     window.location.href = '@Url.Action("Index", "Req")' + lastSearch;
+
+                    // if(userDiv == "R3" || userDiv == "R4"){
+                    //     window.location.href = '@Url.Action("Indexgrid", "Req")' + lastSearch;
+                    // }else{
+                    //     window.location.href = '@Url.Action("Index", "Req")' + lastSearch;
+                    // }
+                    
                 }
             });
         });
+
+
+        function validateForm() {
+            // 1. 제목 필수 체크
+            if (!$('#TITLE').val().trim()) {
+                alert('@Html.Raw(SharedLocalizer["Validation_Required_Title"] ?? "제목을 입력해 주세요.")');
+                $('#TITLE').focus();
+                return false;
+            }
+                    // 2. 시스템 필수 체크
+            if (!$('#SYSTEMCD').val()) {
+                alert('@Html.Raw(SharedLocalizer["Validation_Required_System"] ?? "시스템을 선택해 주세요.")');
+                $('#SYSTEMCD').focus();
+                return false;
+            }
+                    // 3. 처리 상태 필수 체크
+            if (!$('#PROC_STATUS').val()) {
+                alert('@Html.Raw(SharedLocalizer["Validation_Required_Status"] ?? "처리 상태를 선택해 주세요.")');
+                $('#PROC_STATUS').focus();
+                return false;
+            }
+
+            return true;
+
+        }
+
 
     </script>
 }

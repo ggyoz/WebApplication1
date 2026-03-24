@@ -280,5 +280,114 @@ namespace CSR.Controllers.Api
                 return StatusCode(500, new { message = "내부 서버 오류가 발생했습니다." });
             }
         }
+
+        /// <summary>
+        /// DevExtreme DataGrid용 요청 목록을 가져옵니다.
+        /// </summary>
+        [HttpGet("list")]
+        public async Task<IActionResult> GetRequests(
+            [FromQuery] int skip = 0,
+            [FromQuery] int take = 10,
+            [FromQuery] string? reqTypeCd = null,
+            [FromQuery] string? procStatusCd = null,
+            [FromQuery] string? priorityCd = null,
+            [FromQuery] string? reqDate = null,
+            [FromQuery] string? dueDate = null,
+            [FromQuery] string? expectDate = null,
+            [FromQuery] string? regId = null,
+            [FromQuery] string? reqUserName = null,
+            [FromQuery] string? resUserName = null,
+            [FromQuery] string? searchValue = null,
+            [FromQuery] string? corCd = null,
+            [FromQuery] string? deptCd = null,
+            [FromQuery] string? officeCd = null,
+            [FromQuery] string? teamCd = null,
+            [FromQuery] string? tcode = null,
+            [FromQuery] string? assignedResponsibilities = null,
+            [FromQuery] string? sortColumn = "REQID",
+            [FromQuery] string? sortOrder = "DESC")
+        {
+            try
+            {
+                var sessionCorCd = HttpContext.Session.GetString("CorCd");
+                var sessionDeptCd = HttpContext.Session.GetString("DeptCd");
+                var sessionOfficeCd = HttpContext.Session.GetString("OfficeCd");
+                var sessionTeamCd = HttpContext.Session.GetString("TeamCd");
+
+                // 팀원 및 팀장 조회 제한 로직 (ReqController.Index와 동일)
+                if (!User.IsInRole("R3") && !User.IsInRole("R4"))
+                {
+                    if (string.IsNullOrEmpty(sessionDeptCd))
+                    {
+                        return Unauthorized(new { message = "세션 정보가 없습니다." });
+                    }
+                }
+
+                var respList = string.IsNullOrEmpty(assignedResponsibilities)
+                    ? new List<string>()
+                    : assignedResponsibilities.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+                string defaultDeptStr = sessionDeptCd + ",ST00, CM00";
+                string defaultOfficeStr = sessionOfficeCd + ",ST01, CM01";
+                string defaultTeamStr = sessionTeamCd + ",ST0101, CM0101";
+
+                if (User.IsInRole("R1"))
+                {
+                    if (string.IsNullOrEmpty(corCd) && string.IsNullOrEmpty(deptCd) && string.IsNullOrEmpty(officeCd) && string.IsNullOrEmpty(teamCd))
+                    {
+                        corCd = sessionCorCd;
+                        teamCd = defaultTeamStr;
+                    }
+                    else
+                    {
+                        corCd = sessionCorCd;
+                        teamCd = sessionTeamCd;
+                    }
+                }
+                else if (User.IsInRole("R2"))
+                {
+                    corCd = sessionCorCd;
+                    deptCd = sessionDeptCd;
+                    if (!string.IsNullOrEmpty(sessionOfficeCd)) officeCd = sessionOfficeCd;
+                    if (!string.IsNullOrEmpty(sessionTeamCd)) teamCd = sessionTeamCd;
+                }
+
+                int pageNumber = (skip / take) + 1;
+                int pageSize = take;
+
+                var pagedResult = await _reqService.GetReqInfosAsync(
+                    pageNumber,
+                    pageSize,
+                    reqTypeCd,
+                    procStatusCd,
+                    priorityCd,
+                    reqDate,
+                    dueDate,
+                    expectDate,
+                    regId,
+                    reqUserName,
+                    resUserName,
+                    searchValue,
+                    corCd,
+                    deptCd,
+                    officeCd,
+                    teamCd,
+                    tcode,
+                    respList,
+                    sortColumn,
+                    sortOrder);
+
+                return Ok(new { data = pagedResult.Items, totalCount = pagedResult.TotalCount });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "요청 목록 조회 중 오류 발생");
+                return StatusCode(500, new { message = "내부 서버 오류가 발생했습니다." });
+            }
+        }
+
+        
+
+
     }
 }

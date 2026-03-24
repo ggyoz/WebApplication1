@@ -41,9 +41,11 @@
         }
         else
         {
+
             <a href="@menu.GetLink()" class="btn btn-toggle-link align-items-center rounded text-decoration-none @(isActive ? "active" : "")" style="@(isActive ? "font-weight:600; color:navy;" : "")">
                 @SharedLocalizer[menu.MenuName]
             </a>
+            
         }
     </li>
 }

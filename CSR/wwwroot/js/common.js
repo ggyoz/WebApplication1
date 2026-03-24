@@ -45,13 +45,18 @@ function initializeHtmlEditor(editorSelector, inputSelector, previewSelector) {
         toolbar: {
             items: [
                 'undo', 'redo', 'separator',
-                'bold', 'italic', 'separator',
+                'bold', 'separator',
                 {
-                    name: 'header',
-                    acceptedValues: [false, 1, 2, 3, 4, 5],
-                    options: { inputAttr: { 'aria-label': 'Header' } },
-                },
-                'separator',
+                    name: 'size',
+                    acceptedValues: ['8pt', '10pt', '12pt', '14pt', '18pt', '24pt', '36pt'],
+                }, 'separator',
+                'alignLeft', 'alignCenter', 'alignRight', 'alignJustify', 'separator',
+                'color', 'background', 'separator',
+                // {
+                //     name: 'header',
+                //     acceptedValues: [false, 1, 2, 3, 4, 5],
+                //     options: { inputAttr: { 'aria-label': 'Header' } },
+                // },                
                 'orderedList', 'bulletList', 'separator',
                 'link', 'image', // 링크 및 이미지 추가 기능
             ],
