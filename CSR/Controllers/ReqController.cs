@@ -1137,6 +1137,10 @@ namespace CSR.Controllers
             try
             {
                 var stats = await _reqService.GetRequestsCountByDivisionAndPriorityAsync();
+                
+                // --- 쿼리디버깅코드 ---                                
+                Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(stats, Formatting.Indented));
+
                 return Json(new { success = true, stats = stats });
             }
             catch (Exception ex)

@@ -494,15 +494,15 @@ namespace CSR.Services
                     SUM(CASE WHEN R.PROC_STATUS != '68' THEN 1 ELSE 0 END) AS IngStatus,
                     SUM(CASE WHEN R.PROC_STATUS != '68' AND R.PROC_STATUS != '65' AND R.EXPECTDATE < TRUNC(SYSDATE) AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS DelayedCount, 
                     SUM(CASE WHEN R.PROC_STATUS = '65'  AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS AnsweredCount,
-                    SUM(CASE WHEN R.PROC_STATUS != '68' AND R.PROC_STATUS != '65' 
-                    AND R.EXPECTDATE < (TRUNC(SYSDATE) - CASE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) WHEN 6 THEN 0 WHEN 7 THEN 1 ELSE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) + 1 END + 7) 
-                    AND R.EXPECTDATE >= (TRUNC(SYSDATE) - CASE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) WHEN 6 THEN 0 WHEN 7 THEN 1 ELSE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) + 1 END) AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS ScheduledCount,                    
+                    SUM(CASE WHEN R.EXPECTDATE < (TRUNC(SYSDATE) - CASE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) WHEN 6 THEN 0 WHEN 7 THEN 1 ELSE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) + 1 END + 7) 
+                        AND R.EXPECTDATE >= (TRUNC(SYSDATE) - CASE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) WHEN 6 THEN 0 WHEN 7 THEN 1 ELSE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) + 1 END) AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS ScheduledCount,
                     trunc( SUM(CASE WHEN R.PROC_STATUS = '68' THEN 1 ELSE 0 END) / count(R.PRIORITYCD) * 100) AS EndPercent                
                 FROM TB_REQ_INFO R
                 JOIN TB_DEPT_INFO D ON R.DEPTCD = D.DEPTCD
                 WHERE R.USEYN = 'Y'
                 GROUP BY D.DEPTNAME, D.SORTORDER
-                ORDER BY D.SORTORDER ";            
+                ORDER BY D.SORTORDER ";
+
             var result = await _dbConnection.QueryAsync<DivisionRequestStats>(sql);
             return result.ToList();
         }
@@ -519,8 +519,10 @@ namespace CSR.Services
                     count(R.PRIORITYCD) AS TotalCount,
                     SUM(CASE WHEN R.PROC_STATUS = '68' THEN 1 ELSE 0 END) AS EndStatus,
                     SUM(CASE WHEN R.PROC_STATUS != '68' THEN 1 ELSE 0 END) AS IngStatus,
-                    SUM(CASE WHEN R.PROC_STATUS != '68' AND R.EXPECTDATE < TRUNC(SYSDATE) AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS DelayedCount,
-                    SUM(CASE WHEN R.PROC_STATUS != '68' AND R.EXPECTDATE >= TRUNC(SYSDATE) AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS ScheduledCount,
+                    SUM(CASE WHEN R.PROC_STATUS != '68' AND R.EXPECTDATE < TRUNC(SYSDATE) AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS DelayedCount,                    
+                    SUM(CASE WHEN R.PROC_STATUS = '65'  AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS AnsweredCount,
+                    SUM(CASE WHEN R.EXPECTDATE < (TRUNC(SYSDATE) - CASE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) WHEN 6 THEN 0 WHEN 7 THEN 1 ELSE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) + 1 END + 7) 
+                        AND R.EXPECTDATE >= (TRUNC(SYSDATE) - CASE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) WHEN 6 THEN 0 WHEN 7 THEN 1 ELSE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) + 1 END) AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS ScheduledCount,
                     trunc( SUM(CASE WHEN R.PROC_STATUS = '68' THEN 1 ELSE 0 END) / count(R.PRIORITYCD) * 100) AS EndPercent
                 FROM TB_REQ_INFO R
                 JOIN TB_DEPT_INFO D ON R.OFFICECD = D.DEPTCD
@@ -1057,10 +1059,6 @@ namespace CSR.Services
                 baseQuery.Append(" AND R.REQTCODE like :Tcode ");
                 parameters.Add("Tcode", "%" + tcode + "%");
             }
-
-            // --- 쿼리디버깅코드 ---            
-            Console.WriteLine("Executing CreateUserAsync Query:");
-            Console.WriteLine(baseQuery);
 
             return (baseQuery.ToString(), parameters);
         }

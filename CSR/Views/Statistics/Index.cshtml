@@ -147,12 +147,13 @@
                             <col width="8%" />                            
                             <col width="8%" />
                             <col width="8%" />
+                            <col width="8%" />
                         </colgroup>
                         <thead>
                             <tr>
                                 <th rowspan="2">조직</th>
                                 <th colspan="5">요청사항 수 ( 긴급도 별 )</th>
-                                <th colspan="5">진행상태 </th>
+                                <th colspan="6">진행상태 </th>
                             </tr>
                             <tr>
                                 <th>긴급</th>
@@ -164,6 +165,7 @@
                                 <th>종결</th>
                                 <th>완료율</th>
                                 <th>금주 완료예정</th>
+                                <th>현업검증</th>
                                 <th>지연</th>
                             </tr>                    
                         </thead>
@@ -392,7 +394,7 @@
                 type: 'GET',
                 dataType: 'json',
                 success: function(response) {
-                    if (response.success && response.stats) {
+                    if (response.success && response.stats) {                        
                         let tableBody = $('#divisionStatsTableBody');
                         tableBody.empty(); // 기존 플레이스홀더 데이터 제거
 
@@ -401,41 +403,118 @@
                         } else {
 
                             var chartData = [];
-                            var totalVeryHightCount = 0;
-                            var totalHightCount = 0;
-                            var totalMediumCount = 0;
-                            var totalLowCount = 0;
 
-                            var totalIngStatus = 0;
-                            var totalEndStatus = 0;
+                            // 합게 계산
+                            const totals = response.stats.reduce((acc, item) => {
+                                    acc.veryHigh += item.veryHighCount;
+                                    acc.high += item.highCount;
+                                    acc.medium += item.mediumCount;
+                                    acc.low += item.lowCount;
+                                    acc.total += item.totalCount;
+                                    acc.ing += item.ingStatus;
+                                    acc.end += item.endStatus;
+                                    acc.scheduled += item.scheduledCount;
+                                    acc.answered += item.answeredCount;
+                                    acc.delayed += item.delayedCount;
+                                    return acc;
+                                }, { veryHigh: 0, high: 0, medium: 0, low: 0, total: 0, ing: 0, end: 0, scheduled: 0, answered: 0, delayed: 0 });
 
-                            response.stats.forEach(function(item) {                                
-                                tableBody.append(
-                                    `<tr>
-                                        <th>${item.divisionName}</td>
-                                        <td>${item.veryHighCount}</td>
-                                        <td>${item.highCount}</td>
-                                        <td>${item.mediumCount}</td>
-                                        <td>${item.lowCount}</td>                                        
-                                        <td style='border-right:1px solid #dee2e6;'>${item.totalCount}</td>
+                                // 2. 행 생성을 위한 헬퍼 함수
+                            const createRow = (label, data, isHeader = false) => {
+                                const tag = isHeader ? 'strong' : 'span';
+                                const thTag = isHeader ? 'th' : 'th'; // 합계 행도 첫 칸은 th 권장
+                        
+                                return `<tr>
+                                    <th>${label}</th>
+                                    <td><${tag}>${data.veryHighCount ?? data.veryHigh}</${tag}></td>
+                                    <td><${tag}>${data.highCount ?? data.high}</${tag}></td>
+                                    <td><${tag}>${data.mediumCount ?? data.medium}</${tag}></td>
+                                    <td><${tag}>${data.lowCount ?? data.low}</${tag}></td>
+                                    <td style='border-right:1px solid #dee2e6;'><${tag}>${data.totalCount ?? data.total}</${tag}></td>
+                                    <td><${tag}>${data.ingStatus ?? data.ing}</${tag}></td>
+                                    <td><${tag}>${data.endStatus ?? data.end}</${tag}></td>
+                                    <td>${data.endPercent !== undefined ? data.endPercent + '%' : '-'}</td>
+                                    <td><${tag}>${data.scheduledCount ?? data.scheduled}</${tag}></td>
+                                    <td><${tag}>${data.answeredCount ?? data.answered}</${tag}></td>
+                                    <td><${tag}>${data.delayedCount ?? data.delayed}</${tag}></td>
+                                </tr>`;
+                            };                            
+                            
+                            //var totalVeryHightCount = 0;
+                            //var totalHightCount = 0;
+                            //var totalMediumCount = 0;
+                            //var totalLowCount = 0;
+                            //var totalAnsweredCount = 0;
+                            //var totalCount = 0;
+                            //var totalScheduledCount = 0;
+                            //var totalAnsweredCount = 0;
+                            //var totalDelayedCount = 0;
+                            //var totalIngStatus = 0;
+                            //var totalEndStatus = 0;
 
-                                        <td>${item.ingStatus}</td>
-                                        <td>${item.endStatus}</td>
-                                        <td>${item.endPercent}%</td>
-                                        <td>${item.scheduledCount}</td>
-                                        <td>${item.delayedCount}</td>
-                                    </tr>`
-                                );
+                            response.stats.forEach((item) => {
+                                tableBody.append(createRow(item.divisionName, item));
 
-                                totalIngStatus += item.ingStatus;
-                                totalEndStatus += item.endStatus;
+                                //tableBody.append(
+                                //    `<tr>
+                                //        <th>${item.divisionName}</td>
+                                //        <td>${item.veryHighCount}</td>
+                                //        <td>${item.highCount}</td>
+                                //        <td>${item.mediumCount}</td>
+                                //        <td>${item.lowCount}</td>                                        
+                                //        <td style='border-right:1px solid #dee2e6;'>${item.totalCount}</td>
+                                //
+                                //        <td>${item.ingStatus}</td>
+                                //        <td>${item.endStatus}</td>
+                                //        <td>${item.endPercent}%</td>
+                                //        <td>${item.scheduledCount}</td>
+                                //        <td>${item.answeredCount}</td>
+                                //        <td>${item.delayedCount}</td>
+                                //    </tr>`            
+                                //);
 
+                                //totalVeryHightCount += item.veryHighCount;
+                                //totalHightCount += item.highCount;
+                                //totalMediumCount += item.mediumCount;
+                                //totalLowCount += item.lowCount;
+                                //totalCount += item.totalCount;
+                                //totalScheduledCount += item.scheduledCount;
+                                //totalAnsweredCount += item.answeredCount;
+                                //totalIngStatus += item.ingStatus;
+                                //totalEndStatus += item.endStatus;
+                                //totalDelayedCount += item.delayedCount;
+                                
                                 // 차트 데이터 업데이트
-                                chartData.push({ state: item.divisionName, ing: item.ingStatus, end: item.endStatus, total: item.totalCount  });
+                                //chartData.push({ state: item.divisionName, ing: item.ingStatus, end: item.endStatus, total: item.totalCount });
+                                chartData.push({ state: item.divisionName, ing: item.ingStatus, end: item.endStatus, total: item.totalCount });
 
                             });
+
+                            // 4. 합계 행 추가
+                            tableBody.append(createRow('<strong>합계</strong>', totals, true));
+
+                            //tableBody.append(
+                            //        `<tr>
+                            //            <th><strong>합계</strong></td>
+                            //            <td><strong>${totalVeryHightCount}</strong></td>
+                            //            <td><strong>${totalHightCount}</strong></td>
+                            //            <td><strong>${totalMediumCount}</strong></td>
+                            //            <td><strong>${totalLowCount}</strong></td>                                        
+                            //            <td style='border-right:1px solid #dee2e6;'><strong>${totalCount}</strong></td>
+                            //
+                            //            <td><strong>${totalIngStatus}</strong></td>
+                            //            <td><strong>${totalEndStatus}</strong></td>
+                            //            <td><strong>-</strong></td>
+                            //            <td><strong>${totalScheduledCount}</strong></td>
+                            //            <td><strong>${totalAnsweredCount}</strong></td>
+                            //            <td><strong>${totalDelayedCount}</strong></td>
+                            //        </tr>`
+                            //    );
+                            //
                             
-                            var totalpercent = Math.round( (totalEndStatus / ( totalIngStatus + totalEndStatus ) * 1000) ) / 10;
+                            // 
+                            //var totalpercent = Math.round( (totalEndStatus / ( totalIngStatus + totalEndStatus ) * 1000) ) / 10;
+                            var totalpercent = Math.round( (totals.end / ( totals.ing + totals.end ) * 1000) ) / 10;
                             $('#requestsTotalPercent').text(totalpercent + "%");
                             
                             var chartInstance = $('#deptChart').dxChart('instance');
