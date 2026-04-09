@@ -86,7 +86,7 @@
   <data name="Label_RequestDate" xml:space="preserve"><value>요청일</value></data>
   <data name="Label_DueDate" xml:space="preserve"><value>완료요청일</value></data>
   <data name="Label_ExpectedCompletionDate" xml:space="preserve"><value>완료예정일</value></data>
-  <data name="Label_ProgressStatus" xml:space="preserve"><value>진행상태</value></data>
+  <data name="Label_ProgressStatus" xml:space="preserve"><value>상세진행상태</value></data>
   <data name="Label_Urgency" xml:space="preserve"><value>긴급도</value></data>
   <data name="Label_RequestNo" xml:space="preserve"><value>요청번호</value></data>
   <data name="Label_Requester" xml:space="preserve"><value>요청자</value></data>
@@ -108,6 +108,8 @@
   <data name="Label_InquiryContent" xml:space="preserve"><value>문의내용</value></data>
   <data name="Label_RequestMenu" xml:space="preserve"><value>요청메뉴</value></data>
   <data name="Label_HistoryPrefix" xml:space="preserve"><value>수정</value></data>
+  <data name="종결여부" xml:space="preserve"><value>종결여부</value></data>
+
   <!-- Placeholders -->
   <data name="NoAssignedResponsibilities" xml:space="preserve"><value>할당된 담당영역이 없습니다.</value></data>
   <data name="Placeholder_Password" xml:space="preserve"><value>변경할 경우에만 입력</value></data>
@@ -262,8 +264,18 @@
   <data name="CC83" xml:space="preserve"><value>재문의</value></data>
   <data name="CC84" xml:space="preserve"><value>반려</value></data>
   <data name="CC85" xml:space="preserve"><value>기타</value></data>
-  <data name="CC101" xml:space="preserve"><value>MES</value></data>
+  
   <data name="CC102" xml:space="preserve"><value>출장요청</value></data>
+  <data name="CC103" xml:space="preserve"><value>네트워크</value></data>
+  <data name="CC104" xml:space="preserve"><value>파일서버(PlugDisk)</value></data>
+  <data name="CC105" xml:space="preserve"><value>PC정비</value></data>
+  <data name="CC106" xml:space="preserve"><value>백신</value></data>
+  <data name="CC107" xml:space="preserve"><value>보안</value></data>
+  <data name="CC108" xml:space="preserve"><value>넷클라이언트</value></data>
+  <data name="CC121" xml:space="preserve"><value>기능개선</value></data>
+  <data name="CC122" xml:space="preserve"><value>교육요청</value></data>
+  <data name="CC123" xml:space="preserve"><value>원인분석</value></data>
+  <data name="CC124" xml:space="preserve"><value>프로세스개선</value></data>
 
   <!-- MyPage specific -->
   <data name="MyPageTitle" xml:space="preserve"><value>내 정보 수정</value></data>
@@ -274,7 +286,7 @@
   <!-- Dashboard -->
   <data name="Dashboard_Title" xml:space="preserve"><value>요청 현황</value></data>
   <data name="Dashboard_TotalRequests" xml:space="preserve"><value>총 요청 수</value></data>
-  <data name="Dashboard_TotalRequests_Desc" xml:space="preserve"><value>전체 시스템의 요청 현황</value></data>
+  <data name="Dashboard_TotalRequests_Desc" xml:space="preserve"><value>전체 요청 현황</value></data>
   <data name="Dashboard_PendingRequests" xml:space="preserve"><value>대기중인 요청</value></data>
   <data name="Dashboard_PendingRequests_Desc" xml:space="preserve"><value>내가 처리해야 할 대기 요청</value></data>
   <data name="Dashboard_InProgressRequests" xml:space="preserve"><value>진행중인 요청</value></data>

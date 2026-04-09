@@ -6,7 +6,6 @@
 @inject IStringLocalizer<CSR.SharedStrings> SharedLocalizer
 @inject IAuthorizationService AuthorizationService
 @inject IHttpContextAccessor HttpContextAccessor
-@using System.Security.Claims
 
 @{
     ViewData["Title"] = SharedLocalizer["Title_ReqDetails"];
@@ -22,7 +21,7 @@
     </div>
 
     <div class="text-end">
-        <a asp-action="Answer" asp-route-id="@Model.REQID" class="btn btn-outline-secondary">@SharedLocalizer["Button_Edit"]</a>        
+        <a asp-action="Answer" asp-route-id="@Model.REQID" class="btn btn-outline-secondary">@SharedLocalizer["Button_Edit"]</a>
         <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
     </div>
 </div>
@@ -66,7 +65,7 @@
 
                 <tr>
                     <th><label>@SharedLocalizer["Label_RequestType"]</label></th>
-                    <td>@Model.ReqTypeName</td>
+                    <td>@SharedLocalizer["CC" + Model.REQTYPE] </td>
                     <th><label>@SharedLocalizer["Label_SystemCode"]</label></th>
                     <td>@Model.SystemName</td>                    
                     <th><label>@SharedLocalizer["Label_RequestMenu"]</label></th>
@@ -113,7 +112,7 @@
                         }
                     </td>
                     <th><label>@SharedLocalizer["Label_ProgressStatus"]</label></th>
-                    <td>@(Model.ProcStatusName != null ? Model.ProcStatusName : SharedLocalizer["Status_Waiting"].Value)</td>
+                    <td>@(Model.ProcStatusName != null ? SharedLocalizer["CC" + Model.PROC_STATUS] : SharedLocalizer["Status_Waiting"].Value)</td>
                 </tr>
                 <tr>
                     <th><label>@SharedLocalizer["Label_Urgency"]</label></th>
@@ -186,11 +185,16 @@
     
     @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded && !nonFormStatus.Contains(Model.PROC_STATUS) ){
     
-    // 관리자 권한 & 대기상태가 아닌경우
+    // 관리자 권한이고 대기상태가 아닌경우
     <form id="req-form" asp-action="SubmitAnswer" asp-route-id="@Model.REQID" enctype="multipart/form-data">
         <input type="hidden" asp-for="REQID" />
         <input type="hidden" asp-for="PROC_STATUS" />
         <div asp-validation-summary="All" class="text-danger"></div>
+
+        <div class="button-area text-end mt-5 m-3">
+            <button type="submit" class="btn btn-primary">@SharedLocalizer["Button_RegisterAnswer"]</button>
+            <button type="button" value="임시저장" class="btn btn-secondary" onclick="saveDraft()" >@SharedLocalizer["Button_SaveDraft"]</button>
+        </div>
 
         <table class="table-layout" width="100%">
             <colgroup>
@@ -228,7 +232,7 @@
                 <td><input asp-for="BXTID" type="text" class="form-control" maxlength="10" maxlength="10" />
                     <span asp-validation-for="BXTID" class="text-danger"></span></td>
                 <td><label>@SharedLocalizer["Label_Tcode"]</label></td>
-                <td><input asp-for="RESTCODE" type="text" class="form-control" maxlength="10" />
+                <td><input asp-for="RESTCODE" type="text" class="form-control" maxlength="20" />
                     <span asp-validation-for="RESTCODE" class="text-danger"></span></td>                
             </tr>
             <tr>
@@ -262,7 +266,7 @@
                         </ul>
                     }
                     <div>                        
-                        <div id="file-uploader"></div>                        
+                        <div id="file-uploader"></div>
                     </div>
                 </td>
             </tr>
@@ -350,121 +354,124 @@
 <!-- 히스토리 영역 -->
 <div class="mt-4">
 
-    <div class="justify-content-between">
-        <h1 class="m-3" style="font-weight:500; font-size:110%">History</h1>   
-    <div>
+    <div class="justify-content-between border-bottom mb-3" role="button" data-bs-toggle="collapse" data-bs-target="#historyCollapse" aria-expanded="false" style="cursor: pointer;">
+        <h1 class="m-3" style="font-weight:500; font-size:110%">History <span style="font-size: 0.8em;">▽</span></h1>   
+    </div>
 
-    @if (Model.History.Any())
-    {
-        <ul class="nav nav-tabs" id="historyTab" role="tablist">
-            @{ var isFirst = true; }
-            @foreach (var hist in Model.History)
-            {
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link @(isFirst ? "active" : "")" id="hist-tab-@hist.HISTORYID" data-bs-toggle="tab" data-bs-target="#hist-pane-@hist.HISTORYID" type="button" role="tab" aria-controls="hist-pane-@hist.HISTORYID" aria-selected="@isFirst.ToString().ToLower()">
-                        @(!string.IsNullOrEmpty(hist.HISTORY_REASON) ? SharedLocalizer["CC" + hist.HISTORY_REASON] : SharedLocalizer["Label_HistoryPrefix"])
-                    </button>
-                </li>
+    <div class="collapse" id="historyCollapse">
+        @if (Model.History.Any())
+        {
+            <ul class="nav nav-tabs" id="historyTab" role="tablist">
+                @{ var isFirst = true; }
+                @foreach (var hist in Model.History)
+                {
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link @(isFirst ? "active" : "")" id="hist-tab-@hist.HISTORYID" data-bs-toggle="tab" data-bs-target="#hist-pane-@hist.HISTORYID" type="button" role="tab" aria-controls="hist-pane-@hist.HISTORYID" aria-selected="@isFirst.ToString().ToLower()">
+                            @(!string.IsNullOrEmpty(hist.HISTORY_REASON) ? SharedLocalizer["CC" + hist.HISTORY_REASON] : SharedLocalizer["Label_HistoryPrefix"])
+                        </button>
+                    </li>
 
-                isFirst = false;
-                
-            }
-        </ul>
-        <div class="tab-content" id="historyTabContent">
-            @{ isFirst = true; }
-            @foreach (var hist in Model.History)
-            {
-                <div class="tab-pane fade @(isFirst ? "show active" : "") p-3" id="hist-pane-@hist.HISTORYID" role="tabpanel" aria-labelledby="hist-tab-@hist.HISTORYID">
-                    <div class="card mb-2">
-                        <div class="card-header">
-                            <div class="justify-content-between mb-1">
-                                <span class="card-text1"><strong>@SharedLocalizer["Label_ActionTaker"]:</strong> @hist.ResUserName</span>
-                                <span class="card-text1"><strong>@SharedLocalizer["Label_RegistrationDate"]:</strong> @hist.REG_DATE.ToString("yyyy-MM-dd HH:mm")</span>                            
-                                <span class="card-text1"><strong>@SharedLocalizer["Label_RequestDate"]:</strong> @hist.REQDATE.ToString("yyyy-MM-dd")</span>
-                                <span class="card-text1"><strong>@SharedLocalizer["Label_ExpectedCompletionDate"]:</strong> @(hist.EXPECTDATE.HasValue ? hist.EXPECTDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"].Value)</span>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="content-display">                               
+                    isFirst = false;
 
-                                @if(!string.IsNullOrEmpty(hist.HISTORY_REASON) && hist.HISTORY_REASON == "74"){                                    
-                                    <p><strong>@SharedLocalizer["CC" + hist.HISTORY_REASON]</strong> : @hist.EXPECTDATE.Value.ToString("yyyy-MM-dd")</p>   
-                                    <hr/>                                 
-                                }else if(!string.IsNullOrEmpty(hist.HISTORY_REASON) && hist.HISTORY_REASON == "72"){                                    
-                                    <p><strong>@SharedLocalizer["CC" + hist.HISTORY_REASON]</strong></p>                                    
-                                    <hr/>
-                                }else if(!string.IsNullOrEmpty(hist.HISTORY_REASON) && hist.HISTORY_REASON == "75"){
-                                    <p><strong>@SharedLocalizer["CC" + hist.HISTORY_REASON]</strong> : @hist.ResUserName</p>
-
-                                }else if(!string.IsNullOrEmpty(hist.HISTORY_REASON) && hist.HISTORY_REASON == "76"){
-                                    <p><strong>@SharedLocalizer["CC" + hist.HISTORY_REASON]</strong></p>
-                                }else{
-                                    @Html.Raw(hist.CONTENTS_HTML)
-                                }
-
-                            </div>
-                        </div>
-                    </div>                    
-
-                    @if(hist.ANSWER_HTML != null && ( hist.HISTORY_REASON == "73" || hist.HISTORY_REASON == "76") ){
-
-                        <div class="card mb-2 border" style="border-style:soild;border-width:1px;">
-                            <div class="card-header">
-                                <div class="justify-content-between mb-1">                                    
-                                    <span class="card-text1"><strong>@SharedLocalizer["Label_ActionTaker"]:</strong> @hist.ResUserName</span>
-                                    <span class="card-text1"><strong>@SharedLocalizer["Label_RegistrationDate"]:</strong> @hist.REG_DATE.ToString("yyyy-MM-dd HH:mm")</span>
-                                    <span class="card-text1"><strong>@SharedLocalizer["Label_RequestDate"]:</strong> @hist.REQDATE.ToString("yyyy-MM-dd")</span>
-                                    <span class="card-text1"><strong>@SharedLocalizer["Label_DueDate"]:</strong> @(hist.DUEDATE.HasValue ? hist.DUEDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"].Value)</span>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="content-display">
-                                <p><strong>답변내용</strong></p>
-                                <hr/>
-                                    @Html.Raw(hist.ANSWER_HTML)
-                                </div>
-                            </div>
-                        </div>
-
-                    }
-
-                    @if(hist.NOTE_HTML != null && ( hist.HISTORY_REASON == "73" || hist.HISTORY_REASON == "76") && (await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded  ){
-
-                        <div class="card">
+                }
+            </ul>
+            <div class="tab-content" id="historyTabContent">
+                @{ isFirst = true; }
+                @foreach (var hist in Model.History)
+                {
+                    <div class="tab-pane fade @(isFirst ? "show active" : "") p-3" id="hist-pane-@hist.HISTORYID" role="tabpanel" aria-labelledby="hist-tab-@hist.HISTORYID">
+                        <div class="card mb-2">
                             <div class="card-header">
                                 <div class="justify-content-between mb-1">
                                     <span class="card-text1"><strong>@SharedLocalizer["Label_ActionTaker"]:</strong> @hist.ResUserName</span>
-                                    <span class="card-text1"><strong>@SharedLocalizer["Label_RegistrationDate"]:</strong> @hist.REG_DATE.ToString("yyyy-MM-dd HH:mm")</span>                                
+                                    <span class="card-text1"><strong>@SharedLocalizer["Label_RegistrationDate"]:</strong> @hist.REG_DATE.ToString("yyyy-MM-dd HH:mm")</span>                            
                                     <span class="card-text1"><strong>@SharedLocalizer["Label_RequestDate"]:</strong> @hist.REQDATE.ToString("yyyy-MM-dd")</span>
-                                    <span class="card-text1"><strong>@SharedLocalizer["Label_DueDate"]:</strong> @(hist.DUEDATE.HasValue ? hist.DUEDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"].Value)</span>
+                                    <span class="card-text1"><strong>@SharedLocalizer["Label_ExpectedCompletionDate"]:</strong> @(hist.EXPECTDATE.HasValue ? hist.EXPECTDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"].Value)</span>
                                 </div>
                             </div>
                             <div class="card-body">
-                                <div class="content-display">
-                                    <p><strong>조치내역</strong></p>
-                                    <hr/>
-                                    @Html.Raw(hist.NOTE_HTML)
+                                <div class="content-display">                               
+
+                                    @if(!string.IsNullOrEmpty(hist.HISTORY_REASON) && hist.HISTORY_REASON == "74"){                                    
+                                        <p><strong>@SharedLocalizer["CC" + hist.HISTORY_REASON]</strong> : @hist.EXPECTDATE.Value.ToString("yyyy-MM-dd")</p>   
+                                        <hr/>                                 
+                                    }else if(!string.IsNullOrEmpty(hist.HISTORY_REASON) && hist.HISTORY_REASON == "72"){                                    
+                                        <p><strong>@SharedLocalizer["CC" + hist.HISTORY_REASON]</strong></p>                                    
+                                        <hr/>
+                                    }else if(!string.IsNullOrEmpty(hist.HISTORY_REASON) && hist.HISTORY_REASON == "75"){
+                                        <p><strong>@SharedLocalizer["CC" + hist.HISTORY_REASON]</strong> : @hist.ResUserName</p>
+
+                                    }else if(!string.IsNullOrEmpty(hist.HISTORY_REASON) && hist.HISTORY_REASON == "76"){
+                                        <p><strong>@SharedLocalizer["CC" + hist.HISTORY_REASON]</strong></p>
+                                    }else{
+                                        @Html.Raw(hist.CONTENTS_HTML)
+                                    }
+
                                 </div>
-                            </div>                        
-                        </div>
+                            </div>
+                        </div>                    
 
-                    }                    
+                        @if(hist.ANSWER_HTML != null && ( hist.HISTORY_REASON == "73" || hist.HISTORY_REASON == "76") ){
 
-                </div>
+                            <div class="card mb-2 border" style="border-style:soild;border-width:1px;">
+                                <div class="card-header">
+                                    <div class="justify-content-between mb-1">                                    
+                                        <span class="card-text1"><strong>@SharedLocalizer["Label_ActionTaker"]:</strong> @hist.ResUserName</span>
+                                        <span class="card-text1"><strong>@SharedLocalizer["Label_RegistrationDate"]:</strong> @hist.REG_DATE.ToString("yyyy-MM-dd HH:mm")</span>
+                                        <span class="card-text1"><strong>@SharedLocalizer["Label_RequestDate"]:</strong> @hist.REQDATE.ToString("yyyy-MM-dd")</span>
+                                        <span class="card-text1"><strong>@SharedLocalizer["Label_DueDate"]:</strong> @(hist.DUEDATE.HasValue ? hist.DUEDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"].Value)</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="content-display">
+                                    <p><strong>답변내용</strong></p>
+                                    <hr/>
+                                        @Html.Raw(hist.ANSWER_HTML)
+                                    </div>
+                                </div>
+                            </div>
 
-                isFirst = false;
-                
-            }
-            
-        </div>
-    }
-    else
-    {
-        <p>@SharedLocalizer["Message_NoHistory"]</p>
-    }
+                        }
+
+                        @if(hist.NOTE_HTML != null && ( hist.HISTORY_REASON == "73" || hist.HISTORY_REASON == "76") && (await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded  ){
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="justify-content-between mb-1">
+                                        <span class="card-text1"><strong>@SharedLocalizer["Label_ActionTaker"]:</strong> @hist.ResUserName</span>
+                                        <span class="card-text1"><strong>@SharedLocalizer["Label_RegistrationDate"]:</strong> @hist.REG_DATE.ToString("yyyy-MM-dd HH:mm")</span>                                
+                                        <span class="card-text1"><strong>@SharedLocalizer["Label_RequestDate"]:</strong> @hist.REQDATE.ToString("yyyy-MM-dd")</span>
+                                        <span class="card-text1"><strong>@SharedLocalizer["Label_DueDate"]:</strong> @(hist.DUEDATE.HasValue ? hist.DUEDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"].Value)</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="content-display">
+                                        <p><strong>조치내역</strong></p>
+                                        <hr/>
+                                        @Html.Raw(hist.NOTE_HTML)
+                                    </div>
+                                </div>                        
+                            </div>
+
+                        }                    
+
+                    </div>
+
+                    isFirst = false;
+
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="p-3">
+                <p>@SharedLocalizer["Message_NoHistory"]</p>
+            </div>
+        }
+    </div>
 </div>
 <!-- 히스토리 영역 -->
-
 <!-- 버튼 영역 -->
 <div class="d-flex justify-content-between align-items-center mt-5">
     <div>
@@ -601,7 +608,7 @@
             files.forEach(file => {
                 if (file.name.length > maxLength) {
                     // 경고 메시지 표시
-                    DevExpress.ui.notify(`@SharedLocalizer["Validation_FileNameTooLong", 100]`, "error", 2000);
+                    DevExpress.ui.notify(`@Html.Raw(SharedLocalizer["Validation_FileNameTooLong", 100])`, "error", 2000);
                     // 필요 시 컴포넌트 값 초기화
                     e.component.reset();
                 }
@@ -638,7 +645,7 @@
         requestDate.setHours(0, 0, 0, 0);
         selectedExpectDate.setHours(0, 0, 0, 0);
 
-        if (selectedExpectDate <= requestDate) {
+        if (selectedExpectDate < requestDate) {
             expectDateErrorSpan.text('@Html.Raw(SharedLocalizer["Validation_ExpectDateAfterRequestDate_Part1"])' + requestDateStr + '@Html.Raw(SharedLocalizer["Validation_ExpectDateAfterRequestDate_Part2"])');
             return false;
         }
@@ -667,6 +674,41 @@
         $('.content-display img').on('click', function(othis){
             popupImage(othis.target.src);
         });
+
+        $('#req-form').on('submit', function (e) {
+            // "답변등록" 동작일 때만 유효성 검사 (임시저장은 제외)            
+            if (this.action.includes('SubmitAnswer')) {
+                const dfcltcd = $('#DFCLTCD').val();
+                const imptcd = $('#IMPTCD').val();
+                const manDay = $('#MAN_DAY').val();
+    
+                if (!dfcltcd) {
+                    alert('@Html.Raw(SharedLocalizer["Placeholder_SelectDifficulty"])');
+                    //DevExpress.ui.notify('@Html.Raw(SharedLocalizer["Placeholder_SelectDifficulty"])', "error", 2000);
+                    $('#DFCLTCD').focus();
+                    e.preventDefault();
+                    return false;
+                }
+    
+                if (!imptcd) {
+                    DevExpress.ui.notify('@Html.Raw(SharedLocalizer["Placeholder_SelectImportance"])', "error", 2000);
+                    $('#IMPTCD').focus();
+                    e.preventDefault();
+                    return false;
+                }
+    
+                if (!manDay || manDay <= 0) {
+                    // 공수 입력값이 없거나 0 이하인 경우
+                    DevExpress.ui.notify('@Html.Raw(SharedLocalizer["Label_ManDay"]) @Html.Raw(SharedLocalizer["Validation_Required"])', "error", 2000);
+                    $('#MAN_DAY').focus();
+                    e.preventDefault();
+                    return false;
+                }
+            }
+            return true;
+        });
+
+
     });
 
 </script>

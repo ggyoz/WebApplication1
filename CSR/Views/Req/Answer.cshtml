@@ -76,25 +76,45 @@
                     </tr>
                     <tr>
                         <td><label asp-for="REQTYPE" class="control-label"></label></td>
-                        <td><select asp-for="REQTYPE" asp-items="ViewBag.ReqTypes" class="form-select"></select></td>
+                        <td><select asp-for="REQTYPE" asp-items="ViewBag.ReqTypes" class="form-select">
+                                <option value="">@SharedLocalizer["Placeholder_SelectRequestType"]</option>
+                            </select>
+                        </td>
                         <td><label asp-for="SYSTEMCD" class="control-label"></label></td>
-                        <td><select asp-for="SYSTEMCD" asp-items="ViewBag.SystemCodes" class="form-select"></select></td>
+                        <td><select asp-for="SYSTEMCD" asp-items="ViewBag.SystemCodes" class="form-select">
+                                <option value="">@SharedLocalizer["Placeholder_SelectSystem"]</option>
+                            </select>
+                        </td>
                         <td><label asp-for="REQMENU" class="control-label"></label></td>
                         <td><select asp-for="REQMENU" id="ReqMenu" asp-items="ViewBag.ReqMenu" class="form-select"></select></td>
                         <td><label asp-for="RESUSERID" class="control-label"></label></td>
-                        <td><select asp-for="RESUSERID" class="form-select" asp-items="ViewBag.UserList"></select></td>
+                        <td><select asp-for="RESUSERID" class="form-select" asp-items="ViewBag.UserList">\
+                                <option value="">@SharedLocalizer["조치자 선택"]</option>
+                            </select></td>
                         
                         
                     </tr>
                     <tr>
                         <td><label asp-for="PRIORITYCD" class="control-label"></label></td>
-                        <td><select asp-for="PRIORITYCD" asp-items="ViewBag.PriorityCodes" class="form-select"></select>
+                        <td><select asp-for="PRIORITYCD" asp-items="ViewBag.PriorityCodes" class="form-select">
+                                <option value="">@SharedLocalizer["Placeholder_SelectUrgency"]</option>
+                            </select>
+                        </td>
                         <td><label asp-for="IMPTCD" class="control-label"></label></td>
-                        <td><select asp-for="IMPTCD" asp-items="ViewBag.ImportantCodes" class="form-select"></select>
+                        <td><select asp-for="IMPTCD" asp-items="ViewBag.ImportantCodes" class="form-select">                                
+                                <option value="">@SharedLocalizer["Placeholder_SelectImportance"]</option>
+                            </select></td>   
                         <td><label asp-for="DFCLTCD" class="control-label"></label></td>
-                        <td><select asp-for="DFCLTCD" asp-items="ViewBag.difficultCodes" class="form-select"></select>
-                        </td><td><label asp-for="PROC_STATUS" class="control-label"></label></td>
-                        <td><select asp-for="PROC_STATUS" asp-items="ViewBag.ProcStatusCodes" class="form-select"></select></td>                        
+                        <td><select asp-for="DFCLTCD" asp-items="ViewBag.difficultCodes" class="form-select">
+                                <option value="">@SharedLocalizer["Placeholder_SelectDifficulty"]</option>
+                                
+                            </select>
+                        </td>
+                        <td><label asp-for="PROC_STATUS" class="control-label"></label></td>
+                        <td><select asp-for="PROC_STATUS" asp-items="ViewBag.ProcStatusCodes" class="form-select">
+                                <option value="">@SharedLocalizer["진행상태 선택"]</option>
+                            </select>
+                        </td>
                     </tr>
                     <tr>
                         <td><label asp-for="REQTCODE" class="control-label"></label></td>

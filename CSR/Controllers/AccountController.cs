@@ -58,8 +58,8 @@ namespace CSR.Controllers
 
                     var authProperties = new AuthenticationProperties
                     {
-                        IsPersistent = model.RememberMe,
-                        ExpiresUtc = model.RememberMe ? DateTimeOffset.UtcNow.AddDays(7) : null
+                        IsPersistent = true, // 무조건 영구 쿠키로 생성하여 브라우저 재시작 시에도 유지
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddDays(1) // 1일 유지
                     };
 
                     await HttpContext.SignInAsync(

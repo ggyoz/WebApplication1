@@ -304,8 +304,12 @@ namespace CSR.Controllers.Api
             [FromQuery] string? teamCd = null,
             [FromQuery] string? tcode = null,
             [FromQuery] string? assignedResponsibilities = null,
+            [FromQuery] string? terminateYn = null,
+            [FromQuery] string? importanceCd = null,
+            [FromQuery] string? filter = null,
             [FromQuery] string? sortColumn = "REQID",
-            [FromQuery] string? sortOrder = "DESC")
+            [FromQuery] string? sortOrder = "DESC"
+            )
         {
             try
             {
@@ -374,6 +378,9 @@ namespace CSR.Controllers.Api
                     teamCd,
                     tcode,
                     respList,
+                    terminateYn,
+                    importanceCd,
+                    filter,
                     sortColumn,
                     sortOrder);
 

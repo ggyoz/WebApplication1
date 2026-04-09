@@ -7,13 +7,12 @@
 }
 
 <div class="container mt-4">
-    <h3 class="display-6 mb-4">@SharedLocalizer["Dashboard_Title"]</h3>
+    <h3 class="display-4 mb-4">@SharedLocalizer["Dashboard_Title"]</h3>
 
     <div class="row">
         <!-- KPI Cards Section -->
-        @if (User.IsInRole("R4")) // Admin
-        {
-            <div class="col-md-3 mb-4">
+        @if (User.IsInRole("R4")) {
+            <div class="col-md-2 mb-4" style="width:20%">
                 <div class="card blueCard shadow-sm h-100" onClick="goToReqList('', '')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"">
@@ -26,7 +25,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-4">
+            <div class="col-md-2 mb-4" style="width:20%">
                 <div class="card yellowCard shadow-sm h-100" onClick="goToReqList('69', 'my')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
@@ -39,7 +38,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-4">
+            <div class="col-md-2 mb-4" style="width:20%">
                 <div class="card greenCard shadow-sm h-100" onClick="goToReqList('64', 'my')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
@@ -52,8 +51,23 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="card redCard shadow-sm h-100" onClick="goToReqList('64', 'delay')">
+
+            <div class="col-md-3 mb-4" style="width:20%">
+                <div class="card blueCard shadow-sm h-100" onClick="goToReqList('65', '')">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-column">
+                                <h5 class="card-title mb-0">@SharedLocalizer["현업검증"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["답변 완료된 요청"]</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r4OverAnsweredRequestsCount">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-4" style="width:20%">
+                <div class="card redCard shadow-sm h-100" onClick="goToReqList('69,62,64', 'delay')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
@@ -83,7 +97,7 @@
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="card yellowCard shadow-sm h-100" onClick="goToReqList('69')">
+                <div class="card yellowCard shadow-sm h-100" onClick="goToReqList('69', 'my')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
@@ -97,7 +111,7 @@
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="card greenCard shadow-sm h-100" onClick="goToReqList('64', 'my')">
+                <div class="card greenCard shadow-sm h-100" onClick="goToReqList('62,64,65', 'my')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
@@ -106,12 +120,11 @@
                             </div>
                             <p class="card-text display-5 mb-0" id="r3InProgressRequestsCount">0</p>
                         </div>
-
                     </div>
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="card redCard shadow-sm h-100" onClick="goToReqList('64', 'delay')">
+                <div class="card redCard shadow-sm h-100" onClick="goToReqList('', 'delay')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
@@ -154,7 +167,7 @@
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="card yellowCard shadow-sm h-100" onclick="goToReqList('64','')">
+                <div class="card yellowCard shadow-sm h-100" onclick="goToReqList('62,64,65','')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
@@ -180,7 +193,7 @@
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="card redCard shadow-sm h-100" onClick="goToReqList('64', 'delay')">
+                <div class="card redCard shadow-sm h-100" onClick="goToReqList('', 'delay')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
@@ -209,7 +222,7 @@
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="card yellowCard shadow-sm h-100" onclick="goToReqList('64','myReq')">
+                <div class="card yellowCard shadow-sm h-100" onclick="goToReqList('62,64,65','myReq')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
                             <div class="d-flex flex-column"> 
@@ -237,7 +250,7 @@
             </div>
 
             <div class="col-md-3 mb-4">
-                <div class="card redCard shadow-sm h-100" onClick="goToReqList('64', 'delay', true)">
+                <div class="card redCard shadow-sm h-100" onClick="goToReqList('', 'delay', true)">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
@@ -250,7 +263,7 @@
                 </div>
             </div>
 
-            <!-- <div class="col-md-3 mb-4">
+            @* <div class="col-md-3 mb-4">
                 <div class="card greenCard shadow-sm h-100" onclick="goToReqList('68','myReq')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
@@ -262,7 +275,7 @@
                         </div>                        
                     </div>
                 </div>
-            </div> -->
+            </div> *@
         }
     </div>
 
@@ -371,11 +384,12 @@
             </div>
         </div>
     </div>
+    
 </div>
 
 <style>
 
-    /* 차트 placeholder 스타일 */
+/* 차트 placeholder 스타일 */
     .chart-placeholder {
         height: 250px;
         background-color: #f8f9fa;
@@ -395,22 +409,7 @@
     const userName = '@Html.Raw(Context.Session.GetString("UserName"))';
     const today = new Date().toLocaleDateString('en-CA');                                                                                                                                                       
 
-    function goToReqList(status, filterType, mydata ) {
-        let url = '/Req/Index';
-        let params = [];       
-
-        if (status) params.push('ProcStatusCd=' + status);
-        if (filterType === 'my') params.push('ResUserName=' + userName );
-        if (filterType === 'myReq') params.push('ReqUserName=' + userName );
-        if (filterType === 'delay') params.push('ExpectDate=' + today );
-        if (mydata === true) params.push('ReqUserName=' + userName );
-
-        if (params.length > 0) {
-            url += '?' + params.join('&');
-        }
-
-        location.href = url;
-    }
+    
 
 
         $(document).ready(function() {                    
@@ -728,6 +727,7 @@
                         var totalCount = data.WAITCOUNT + data.RECEIVEDCOUNT + data.INPROGRESSCOUNT + data.CLOSEDCOUNT + data.ANSWEREDCOUNT;
                         if (currentUserRole === 'R4') {
                             $('#r4TotalRequestsCount').text(totalCount);
+                            $('#r4OverAnsweredRequestsCount').text(data.ANSWEREDCOUNT);
                         } else {
                             $('#r3TotalRequestsCount').text(totalCount);
                         }

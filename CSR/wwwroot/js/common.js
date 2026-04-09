@@ -123,9 +123,11 @@ const formatDate = (date) => {
 
 function initDateBox(selector, hiddenSelector, value){
     const dateBox = $(selector).dxDateBox({        
-        placeholder: '날짜 선택',
-        type: 'date',
+        placeholder: 'Select Date',
         displayFormat: 'yyyy-MM-dd',
+        showClearButton: true,
+        useMaskBehavior: true,
+        type: 'date',
         inputAttr: { 'aria-label': hiddenSelector.slice(1) },
         labelMode,
         value: value ? new Date(value) : null,
@@ -143,3 +145,61 @@ function initDateBox(selector, hiddenSelector, value){
         $(hiddenSelector).val(formatDate(new Date(value)));
     }
 };
+
+
+function goToReqList(status = "", filterType, mydata ) {
+    let url = '/Req/Index';
+    let params = [];
+
+    if(status != ""){
+        params.push("terminateYn=N");
+    }        
+
+    if (status) params.push('ProcStatusCd=' + status);
+
+    if (filterType === 'my') params.push('ResUserName=' + userName );
+
+    if (filterType === 'myReq') params.push('ReqUserName=' + userName );    
+
+    if (filterType === 'delay') {
+        params.push("terminateYn=N");
+        params.push('ExpectDate=' + today );
+    }
+
+    if(filterType === 'thisweek') params.push('ReqDate=' + getReferenceDate());
+
+    if (mydata === true) params.push('ReqUserName=' + userName );
+
+    if (params.length > 0) {
+        url += '?' + params.join('&');
+    }
+
+    location.href = url;
+};
+
+// 기준일 (가장 최근의 금요일)을 계산하여 표시
+function getReferenceDate() {
+    const today = new Date();
+    let dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 5 = Friday, 6 = Saturday
+
+    // 금요일(5)을 찾기 위해 날짜 조정
+    // 만약 오늘이 일요일(0)부터 금요일(5)까지라면, 그 주의 금요일로
+    // 만약 오늘이 토요일(6)이라면, 현재 날짜에서 1일 전 (오늘) 금요일로
+    let daysToSubtract = 0;
+    if (dayOfWeek < 5) { // 일(0), 월(1), 화(2), 수(3), 목(4)
+        daysToSubtract = dayOfWeek + 2; // 예를 들어 월요일(1)이면 1+2=3일 빼서 지난 금요일로
+    } else if (dayOfWeek === 6) { // 토요일(6)
+        daysToSubtract = 1; // 1일 빼서 금요일로
+    } else { // 금요일(5)
+        daysToSubtract = 0;
+    }
+    
+    const referenceDate = new Date(today);
+    referenceDate.setDate(today.getDate() - daysToSubtract);
+
+    const year = referenceDate.getFullYear();
+    const month = (referenceDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = referenceDate.getDate().toString().padStart(2, '0');
+
+    return `${year}-${month}-${day}`;    
+}

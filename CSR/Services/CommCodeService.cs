@@ -18,6 +18,7 @@ namespace CSR.Services
         Task<List<CommCode>> GetAllCommCodesAsync();
         Task<IEnumerable<SelectListItem>> GetNoticeTypeSelectListAsync();        
         Task<IEnumerable<SelectListItem>> GetSelectListByPCodeAsync(int pid);
+        Task<IEnumerable<SelectListItem>> GetSelectListByPCodeAllAsync(int pid);
         Task<Dictionary<string, List<CommCode>>> GetResponsibilitiesAsync();
         Task<CommCode?> GetLastChildCodeAsync(int parentId);
     }
@@ -122,14 +123,34 @@ namespace CSR.Services
         public async Task<IEnumerable<SelectListItem>> GetSelectListByPCodeAsync(int pid)
         {
             var allCodes = await GetAllCommCodesAsync();
-            var items = allCodes.Where(c => c.PARENTID == pid && c.USEYN == "Y")
-                                .OrderBy(c => c.SORTORDER)
-                                .Select(c => new SelectListItem
-                                {
-                                    Value = c.CODEID.ToString(),
-                                    Text = c.CODENM
-                                });
-            return items;
+            var query = allCodes.Where(c => c.PARENTID == pid && c.USEYN == "Y");
+
+            // 제외할 진행상태 목록 
+            var excludeIds = new[] { 66, 68, 63, 67, 83, 82 };
+
+            if( pid == 61){
+                query = query.Where(c => !excludeIds.Contains(c.CODEID) );
+            }
+
+            return query.OrderBy(c => c.SORTORDER)
+                        .Select(c => new SelectListItem
+                        {
+                            Value = c.CODEID.ToString(),
+                            Text = c.CODENM
+                        });            
+        }
+
+        public async Task<IEnumerable<SelectListItem>> GetSelectListByPCodeAllAsync(int pid)
+        {
+            var allCodes = await GetAllCommCodesAsync();
+            var query = allCodes.Where(c => c.PARENTID == pid && c.USEYN == "Y");
+
+            return query.OrderBy(c => c.SORTORDER)
+                        .Select(c => new SelectListItem
+                        {
+                            Value = c.CODEID.ToString(),
+                            Text = c.CODENM
+                        });            
         }
         
         public async Task<Dictionary<string, List<CommCode>>> GetResponsibilitiesAsync()

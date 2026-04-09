@@ -37,8 +37,11 @@ namespace CSR.Services
             string? teamCd,
             string? tcode,
             List<string>? assignedResponsibilities,
+            string? terminateYn,
+            string? importanceCd,
+            string? filter = null,
             string? sortColumn = "REQID",
-            string? sortOrder = "DESC"
+            string? sortOrder = "DESC"            
             );
 
         Task<IEnumerable<ReqInfo>> GetAllReqInfosAsync(
@@ -56,8 +59,10 @@ namespace CSR.Services
             string? deptCd,
             string? officeCd,
             string? teamCd,
-            string? tcode,
-            List<string>? assignedResponsibilities
+            string? tcode,            
+            List<string>? assignedResponsibilities,
+            string? terminateYn = null,
+            string? importanceCd = null
             );
 
         Task<ReqInfo?> GetReqInfoByIdAsync(int id);
@@ -355,7 +360,7 @@ namespace CSR.Services
                 SELECT 
                     COUNT(*) AS TOTALCOUNT,
                     COUNT(CASE WHEN PROC_STATUS = '68' THEN 1 END) AS COMPLETEDCOUNT,
-                    COUNT(CASE WHEN PROC_STATUS != '68' AND EXPECTDATE < TRUNC(SYSDATE) AND EXPECTDATE IS NOT NULL THEN 1 END) AS DELAYEDCOUNT
+                    COUNT(CASE WHEN PROC_STATUS != '68' AND PROC_STATUS != '65' AND EXPECTDATE < TRUNC(SYSDATE) AND EXPECTDATE IS NOT NULL THEN 1 END) AS DELAYEDCOUNT
                 FROM TB_REQ_INFO
                 WHERE USEYN = 'Y'";
 
@@ -418,7 +423,7 @@ namespace CSR.Services
         public async Task<int> GetMyOverdueRequestsCountAsync(string userId)
         {
             // Status codes for 'Completed', 'Closed', 'Canceled'
-            var completedStatuses = new[] { "63", "68", "82" }; 
+            var completedStatuses = new[] { "63", "68", "65", "82" }; 
             var sql = @" SELECT COUNT(*) FROM TB_REQ_INFO 
                          WHERE EXPECTDATE < TRUNC(SYSDATE)
                          AND PROC_STATUS NOT IN :CompletedStatuses
@@ -469,8 +474,8 @@ namespace CSR.Services
         {
             var sql = @"
                 SELECT COUNT(*) FROM TB_REQ_INFO
-                WHERE REG_DATE >= (TRUNC(SYSDATE) - CASE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) WHEN 6 THEN 0 WHEN 7 THEN 1 ELSE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) + 1 END)
-                AND REG_DATE < (TRUNC(SYSDATE) - CASE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) WHEN 6 THEN 0 WHEN 7 THEN 1 ELSE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) + 1 END + 7)
+                WHERE REQDATE >= (TRUNC(SYSDATE) - CASE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) WHEN 6 THEN 0 WHEN 7 THEN 1 ELSE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) + 1 END)
+                AND REQDATE < (TRUNC(SYSDATE) - CASE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) WHEN 6 THEN 0 WHEN 7 THEN 1 ELSE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) + 1 END + 7)
                 AND USEYN = 'Y'";
             return await _dbConnection.ExecuteScalarAsync<int>(sql);
         }
@@ -487,8 +492,11 @@ namespace CSR.Services
                     count(R.PRIORITYCD) AS TotalCount,
                     SUM(CASE WHEN R.PROC_STATUS = '68' THEN 1 ELSE 0 END) AS EndStatus,
                     SUM(CASE WHEN R.PROC_STATUS != '68' THEN 1 ELSE 0 END) AS IngStatus,
-                    SUM(CASE WHEN R.PROC_STATUS != '68' AND R.EXPECTDATE < TRUNC(SYSDATE) AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS DelayedCount,
-                    SUM(CASE WHEN R.PROC_STATUS != '68' AND R.EXPECTDATE >= TRUNC(SYSDATE) AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS ScheduledCount,                    
+                    SUM(CASE WHEN R.PROC_STATUS != '68' AND R.PROC_STATUS != '65' AND R.EXPECTDATE < TRUNC(SYSDATE) AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS DelayedCount, 
+                    SUM(CASE WHEN R.PROC_STATUS = '65'  AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS AnsweredCount,
+                    SUM(CASE WHEN R.PROC_STATUS != '68' AND R.PROC_STATUS != '65' 
+                    AND R.EXPECTDATE < (TRUNC(SYSDATE) - CASE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) WHEN 6 THEN 0 WHEN 7 THEN 1 ELSE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) + 1 END + 7) 
+                    AND R.EXPECTDATE >= (TRUNC(SYSDATE) - CASE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) WHEN 6 THEN 0 WHEN 7 THEN 1 ELSE TO_NUMBER(TO_CHAR(SYSDATE, 'D')) + 1 END) AND R.EXPECTDATE IS NOT NULL THEN 1 ELSE 0 END) AS ScheduledCount,                    
                     trunc( SUM(CASE WHEN R.PROC_STATUS = '68' THEN 1 ELSE 0 END) / count(R.PRIORITYCD) * 100) AS EndPercent                
                 FROM TB_REQ_INFO R
                 JOIN TB_DEPT_INFO D ON R.DEPTCD = D.DEPTCD
@@ -636,7 +644,7 @@ namespace CSR.Services
             try
             {
                 // 1. Call SP_REQ_UPDATE stored procedure
-                reqInfo.UPDATE_DATE = DateTime.Now; // Update date is handled by SYSDATE in the procedure
+                reqInfo.UPDATE_DATE = DateTime.Now; // Update date is handled by SYSDATE in the procedure                
 
                 var parameters = new OracleDynamicParameters();
                 parameters.BindByName = true;
@@ -841,12 +849,18 @@ namespace CSR.Services
             string? officeCd,
             string? teamCd,
             string? tcode,
-            List<string>? assignedResponsibilities)
+            List<string>? assignedResponsibilities,
+            string? terminateYn = null,
+            string? importanceCd = null
+            )
         {
+
+            Console.WriteLine("terminateYn : " + terminateYn);
+
             var (baseQuery, parameters) = BuildReqInfoBaseQuery(
                 reqTypeCd, procStatusCd, priorityCd, reqDate, dueDate, expectDate,
                 regId, reqUserName, resUserName, searchValue, corCd, deptCd, officeCd, teamCd, tcode,
-                assignedResponsibilities);
+                assignedResponsibilities, importanceCd, terminateYn);
 
             var dataSql = $@"
                 SELECT 
@@ -883,8 +897,11 @@ namespace CSR.Services
             string? deptCd,
             string? officeCd,
             string? teamCd,
-            string? tcode,
-            List<string>? assignedResponsibilities)
+            string? tcode,            
+            List<string>? assignedResponsibilities,
+            string? importanceCd = null,
+            string? terminateYn = null,
+            string? filter = null)
         {
             var baseQuery = new System.Text.StringBuilder(@"
                 FROM TB_REQ_INFO R
@@ -893,7 +910,7 @@ namespace CSR.Services
                 LEFT JOIN TB_COMM_CODE S ON R.SYSTEMCD = S.CODEID AND S.PARENTID = 19
                 LEFT JOIN TB_COMM_CODE RT ON R.REQTYPE = RT.CODEID AND RT.PARENTID = 13
                 LEFT JOIN TB_COMM_CODE P ON R.PRIORITYCD = P.CODEID AND P.PARENTID = 1
-                LEFT JOIN TB_COMM_CODE PS ON R.PROC_STATUS = PS.CODEID AND PS.PARENTID = 61
+                LEFT JOIN TB_COMM_CODE PS ON R.PROC_STATUS = PS.CODEID AND PS.PARENTID = 61                
                 LEFT JOIN TB_COMM_CODE M ON R.REQMENU  = M.CODEID 
                 LEFT JOIN TB_COR_INFO CO ON R.CORCD = CO.CORCD
                 LEFT JOIN TB_DEPT_INFO D ON R.DEPTCD = D.DEPTCD
@@ -903,45 +920,76 @@ namespace CSR.Services
             
             var parameters = new DynamicParameters();
 
+            if(!string.IsNullOrEmpty(filter)){
+
+                
+               
+            }
+
+            //중요도
+            if(!string.IsNullOrEmpty(importanceCd)){
+                baseQuery.Append(" AND R.IMPTCD = :importanceCd ");
+                parameters.Add("importanceCd", importanceCd);
+            }
+            
+            //요청유형
             if (!string.IsNullOrEmpty(reqTypeCd))
             {
                 baseQuery.Append(" AND R.REQTYPE = :ReqTypeCd");
                 parameters.Add("ReqTypeCd", reqTypeCd);
             }
-            
+
+            // 종결여부
+            if( !string.IsNullOrEmpty(terminateYn)){
+                if(terminateYn == "Y"){ // 종결
+                    baseQuery.Append(" AND R.PROC_STATUS = '68' ");
+                }else{
+                    baseQuery.Append(" AND R.PROC_STATUS != '68' ");
+                }
+            }
+
+            //상세진행상태
             if (!string.IsNullOrEmpty(procStatusCd))
             {
 
-                if( procStatusCd == "64"){
-                    baseQuery.Append(" AND R.PROC_STATUS not in ('69', '68', '63') ");
-                }else{
-                    baseQuery.Append(" AND R.PROC_STATUS = :ProcStatusCd");
-                }
-                parameters.Add("ProcStatusCd", procStatusCd);
+                string[] procStatusCds = procStatusCd.Split(",");
+                Console.WriteLine("procStatusCds :" + procStatusCds[0]);
+                Console.WriteLine("procStatusCd :" + procStatusCd[0]);
+
+                // if( procStatusCd == "64"){
+                //     baseQuery.Append(" AND R.PROC_STATUS not in ('69', '68', '63') ");
+                // }else{
+                //     baseQuery.Append(" AND R.PROC_STATUS = :ProcStatusCd");
+                // }
+                baseQuery.Append(" AND R.PROC_STATUS in :procStatusCds");
+                parameters.Add("procStatusCds", procStatusCds);
 
             }
-
+            // 긴급도
             if (!string.IsNullOrEmpty(priorityCd))
             {
                 baseQuery.Append(" AND R.PRIORITYCD = :PriorityCd");
                 parameters.Add("PriorityCd", priorityCd);
             }
-
+            //등록일
             if (!string.IsNullOrEmpty(reqDate))
             {
                 baseQuery.Append(" AND TRUNC(R.REQDATE) >= TO_DATE(:ReqDate, 'YYYY-MM-DD')");
                 parameters.Add("ReqDate", reqDate);
             }
+            //완료요청일
             if (!string.IsNullOrEmpty(dueDate))
             {
                 baseQuery.Append(" AND TRUNC(R.DUEDATE) <= TO_DATE(:DueDate, 'YYYY-MM-DD')");
                 parameters.Add("DueDate", dueDate);
             }
+            //완료예정일
             if (!string.IsNullOrEmpty(expectDate))
             {
                 baseQuery.Append(" AND TRUNC(R.EXPECTDATE) < TO_DATE(:ExpectDate, 'YYYY-MM-DD')");
                 parameters.Add("ExpectDate", expectDate);
             }
+            //요청번호
             if (!string.IsNullOrEmpty(regId))
             {
                 if (int.TryParse(regId, out int parsedRegId))
@@ -950,21 +998,25 @@ namespace CSR.Services
                     parameters.Add("RegId", parsedRegId);
                 }
             }
+            //요청자자
             if (!string.IsNullOrEmpty(reqUserName))
             {
                 baseQuery.Append(" AND U_REQ.USERNAME LIKE :ReqUserName");
                 parameters.Add("ReqUserName", "%" + reqUserName + "%");
             }
+            //조치자자
             if (!string.IsNullOrEmpty(resUserName))
             {
                 baseQuery.Append(" AND U_RES.USERNAME LIKE :ResUserName");
                 parameters.Add("ResUserName", "%" + resUserName + "%");
             }
+            // 제목
             if (!string.IsNullOrEmpty(searchValue))
             {
                 baseQuery.Append(" AND R.TITLE LIKE :SearchValue");
                 parameters.Add("SearchValue", "%" + searchValue + "%");
             }
+            
             if (!string.IsNullOrEmpty(corCd))
             {
                 baseQuery.Append(" AND R.CORCD = :CorCd");
@@ -973,17 +1025,20 @@ namespace CSR.Services
 
             if (!string.IsNullOrEmpty(deptCd))
             {
+                string[] teams = deptCd.Split(",");
                 //baseQuery.Append(" AND ( R.DEPTCD = :DeptCd OR R.DEPTCD in ('ST00', 'CM00') ) ");
                 baseQuery.Append(" AND R.DEPTCD in :DeptCd ");
-                parameters.Add("DeptCd", deptCd);
+                parameters.Add("DeptCd", teams);
             }
 
             if (!string.IsNullOrEmpty(officeCd))
             {
+                string[] teams = officeCd.Split(",");
                 //baseQuery.Append(" AND (R.OFFICECD = :OfficeCd OR R.OFFICECD in ('ST01', 'CM01') )");
                 baseQuery.Append(" AND R.OFFICECD in :OfficeCd ");
-                parameters.Add("OfficeCd", officeCd);
+                parameters.Add("OfficeCd", teams);
             }
+
             if (!string.IsNullOrEmpty(teamCd))
             {
                 string[] teams = teamCd.Split(",");
@@ -1002,6 +1057,10 @@ namespace CSR.Services
                 baseQuery.Append(" AND R.REQTCODE like :Tcode ");
                 parameters.Add("Tcode", "%" + tcode + "%");
             }
+
+            // --- 쿼리디버깅코드 ---            
+            Console.WriteLine("Executing CreateUserAsync Query:");
+            Console.WriteLine(baseQuery);
 
             return (baseQuery.ToString(), parameters);
         }
@@ -1025,13 +1084,17 @@ namespace CSR.Services
             string? teamCd,
             string? tcode,
             List<string>? assignedResponsibilities,
+            string? terminateYn = null,
+            string? importanceCd = null,
+            string? filter = null,
             string? sortColumn = "REQID",
-            string? sortOrder = "DESC")
+            string? sortOrder = "DESC"
+            )
         {
             var (baseQuery, parameters) = BuildReqInfoBaseQuery(
                 reqTypeCd, procStatusCd, priorityCd, reqDate, dueDate, expectDate,
                 regId, reqUserName, resUserName, searchValue, corCd, deptCd, officeCd, teamCd, tcode,
-                assignedResponsibilities);
+                assignedResponsibilities, importanceCd, terminateYn);
             
             var countSql = "SELECT COUNT(*) " + baseQuery;
             var totalCount = await _dbConnection.ExecuteScalarAsync<int>(countSql, parameters);

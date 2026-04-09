@@ -13,7 +13,7 @@
 
 <partial name="_PageTitlePartial" />
 
-<div class="card search-area">
+<!-- <div class="card search-area">
     <form asp-action="Index" method="get">
         <div class="card-body">
             <table class="table table-bordered">
@@ -146,7 +146,156 @@
             </div>
         </div>
     </form>
+</div> -->
+
+<div class="card search-area">
+    <form asp-action="Index" method="get">
+        <div class="card-body">
+            <!-- 상단 검색 영역 (항상 노출) -->
+            <div class="row g-3">
+
+                <div class="col-12 col-md-4 col-xl-2">
+                    <label class="form-label fw-bold">@SharedLocalizer["Label_RequestNo"]</label>
+                    <input name="RegId" class="form-control" value="@ViewData["RegId"]" maxLength="10" />
+                </div>
+                <div class="col-12 col-md-8 col-xl-4">
+                    <label class="form-label fw-bold">@SharedLocalizer["Label_Title"]</label>
+                    <input type="text" name="searchValue" value="@ViewData["SearchValue"]" class="form-control" maxLength="50"/>
+                </div>
+                <div class="col-12 col-md-4 col-xl-2">
+                    <label class="form-label fw-bold">TCODE</label>
+                    <input name="Tcode" class="form-control" value="@ViewData["Tcode"]" maxLength="15" />
+                </div>
+                <div class="col-12 col-md-4 col-xl-2">
+                    <label class="form-label fw-bold">@SharedLocalizer["Label_Requester"]</label>
+                    <input name="ReqUserName" class="form-control" value="@ViewData["ReqUserName"]" maxLength="10" />
+                </div>
+                <div class="col-12 col-md-4 col-xl-2">
+                    <label class="form-label fw-bold">@SharedLocalizer["Label_ActionTaker"]</label>
+                    <input name="ResUserName" class="form-control" value="@ViewData["ResUserName"]" maxLength="10" />
+                </div>                
+            </div>
+
+            <!-- 하단 상세 검색 영역 (접기/펴기) -->
+            <div class="collapse mt-3 hide" id="searchCollapse">
+                <div class="row g-3">
+                    
+                    <div class="col-12 col-md-4 col-xl-2">
+                        <label class="form-label fw-bold">@SharedLocalizer["Label_RequestDate"]</label>
+                        <div id="ReqDateSearch"></div><input type="hidden" name="ReqDate" id="hiddenReqDate" />
+                    </div>
+                    <div class="col-12 col-md-4 col-xl-2">
+                        <label class="form-label fw-bold">@SharedLocalizer["Label_DueDate"]</label>
+                        <div id="DueDateSearch"></div><input type="hidden" name="DueDate" id="hiddenDueDate" />
+                    </div>
+                    <div class="col-12 col-md-4 col-xl-2">
+                        <label class="form-label fw-bold">@SharedLocalizer["Label_ExpectedCompletionDate"]</label>
+                        <div id="ExpectDateSearch"></div><input type="hidden" name="ExpectDate" id="hiddenExpectDate" />
+                    </div>
+                    <div class="col-12 col-md-4 col-xl-2">
+                        <label class="form-label fw-bold">@SharedLocalizer["Label_RequestType"]</label>
+                        <select asp-items="ViewBag.ReqTypes" class="form-select" name="ReqTypeCd">
+                            <option value="">@SharedLocalizer["Placeholder_SelectRequestType"]</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-4 col-xl-2">
+                        <label class="form-label fw-bold">@SharedLocalizer["종결여부"]</label>
+                        <select class="form-select" name="terminateYn">
+                            <option value="">선택</option>
+                            <option value="N">진행중</option>
+                            <option value="Y">종결</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-4 col-xl-2">
+                        <label class="form-label fw-bold">@SharedLocalizer["Label_ProgressStatus"]</label>
+                        <select asp-items="ViewBag.ProcStatusCodes" class="form-select" name="ProcStatusCd">
+                            <option value="">@SharedLocalizer["Placeholder_SelectProgressStatus"]</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-4 col-xl-2">
+                        <label class="form-label fw-bold">@SharedLocalizer["Label_Corporation"]</label>
+                        <select id="CorCd" asp-items="ViewBag.CorCdList" class="form-select" name="CorCd">
+                            <option value="">@SharedLocalizer["Placeholder_SelectCorporation"]</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-4 col-xl-2">
+                        <label class="form-label fw-bold">@SharedLocalizer["Label_Department"]</label>
+                        <select id="DeptCd" class="form-select" name="DeptCd">
+                            <option value="">@SharedLocalizer["Placeholder_SelectDepartment"]</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-4 col-xl-2">
+                        <label class="form-label fw-bold">@SharedLocalizer["Label_Office"]</label>
+                        <select id="OfficeCd" class="form-select" name="OfficeCd">
+                            <option value="">@SharedLocalizer["Placeholder_SelectOffice"]</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-4 col-xl-2">
+                        <label class="form-label fw-bold">@SharedLocalizer["Label_Team"]</label>
+                        <select id="TeamCd" class="form-select" name="TeamCd">
+                            <option value="">@SharedLocalizer["Placeholder_SelectTeam"]</option>
+                        </select>
+                    </div>
+
+                    
+                    <div class="col-12 col-md-4 col-xl-2">
+                        <label class="form-label fw-bold">@SharedLocalizer["Label_Urgency"]</label>
+                        <select asp-items="ViewBag.PriorityCodes" class="form-select" name="PriorityCd">
+                            <option value="">@SharedLocalizer["Placeholder_SelectUrgency"]</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-4 col-xl-2">
+                        <label class="form-label fw-bold">@SharedLocalizer["Label_Importance"]</label>
+                        <select asp-items="ViewBag.ImportanceCodes" class="form-select" name="ImportanceCd">
+                            <option value="">@SharedLocalizer["Placeholder_SelectImportance"]</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 mt-3">
+                        <label class="form-label fw-bold">@SharedLocalizer["Label_ResponsibleArea"]</label>
+                        <div class="border rounded p-3 bg-light">
+                            @{
+                                var allResponsibilities = ViewBag.AllResponsibilities as Dictionary<string, List<CSR.Models.CommCode>> ?? new Dictionary<string, List<CSR.Models.CommCode>>();
+                                var selectedResponsibilities = ViewData["AssignedResponsibilities"] as List<string> ?? new List<string>();
+                            }
+                            <input type="hidden" name="AssignedResponsibilities" id="hiddenAssignedResponsibilities" value="@string.Join(",", selectedResponsibilities)" />
+                            @foreach (var group in allResponsibilities)
+                            {
+                                <div class="mb-3 resp-group-container">
+                                    <div class="form-check">
+                                        <input class="form-check-input select-all-group" type="checkbox" id="group_@group.Key.GetHashCode()">
+                                        <label class="form-check-label fw-bold" for="group_@group.Key.GetHashCode()">@group.Key</label>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-3 ms-4 mt-1">
+                                        @foreach (var responsibility in group.Value)
+                                        {
+                                            <div class="form-check">
+                                                <input class="form-check-input resp-checkbox" type="checkbox" value="@responsibility.CODEID" id="resp_@responsibility.CODEID"
+                                                    @(selectedResponsibilities.Contains(responsibility.CODEID.ToString()) ? "checked" : "") />
+                                                <label class="form-check-label" for="resp_@responsibility.CODEID">@SharedLocalizer[responsibility.CODENM]</label>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center mt-3">
+                <div class="flex-grow-1 text-center">
+                    <button type="button" class="btn btn-light" id="toggleSearchArea">
+                        <i class="bi bi-chevron-bar-up" id="collapseIcon"></i>
+                    </button>
+                </div>
+                <button type="submit" class="btn btn-primary search-btn px-3">@SharedLocalizer["Label_Search"]</button>
+            </div>
+        </div>
+    </form>
 </div>
+
 
 <div class="d-flex justify-content-between"> 
     <div class="text-start">
@@ -227,9 +376,9 @@
             initDateBox('#ExpectDateSearch', '#hiddenExpectDate', searchValues.expectDate);
             
             // DevExtreme DataGrid 초기화
-            var grid = $("#SearchDataGrid").dxDataGrid({
+            var grid = $("#SearchDataGrid").dxDataGrid({                
                 dataSource: new DevExpress.data.CustomStore({
-                    key: "reqid",
+                    key: "reqid",                    
                     load: function(loadOptions) {
                         var d = $.Deferred();
                         var params = {};
@@ -247,6 +396,11 @@
                         // Search Filters
                         $.extend(params, getSearchParams());
 
+                        // 이 부분이 있어야 서버로 필터 조건이 전달됩니다!
+                        if (loadOptions.filter) {
+                            params.filter = JSON.stringify(loadOptions.filter);
+                        }
+
                         $.ajax({
                             url: '/api/ReqApi/list',
                             data: params,
@@ -260,7 +414,11 @@
                         return d.promise();
                     }
                 }),
-                remoteOperations: true,
+                remoteOperations: {
+                    paging: true,
+                    sorting: true,
+                    filtering: true // 필터링은 서버에 맡기지 않고 클라이언트 메모리에서 수행
+                },
                 stateStoring: {
                     enabled: true,
                     type: "localStorage",
@@ -273,6 +431,13 @@
                     showPageSizeSelector: true,
                     allowedPageSizes: [10, 20, 50],
                     showInfo: true
+                },
+                filterRow: {
+                    visible: true,
+                    //applyFilter: 'auto',
+                },
+                headerFilter: {
+                    visible: true,
                 },
                 columns: [
                     { dataField: "reqid", caption: '@Html.Raw(SharedLocalizer["TableHeader_RequestNo"])', width: 80, alignment: "center" },
@@ -306,7 +471,17 @@
                         caption: '@Html.Raw(SharedLocalizer["TableHeader_RequestDate"])', 
                         dataType: "date", 
                         format: "yyyy-MM-dd",
-                        alignment: "center"
+                        alignment: "center",
+                        // 사용할 필터 연산자들 정의 (between이 날짜 검색에 매우 유용함)
+                        filterOperations: ["=", "<", ">", "between"],
+                        // 기본 선택될 연산자 (필요 시)
+                        selectedFilterOperation: "between",
+                        headerFilter: {
+                            visible: true, // 헤더 필터(깔대기 모양) 활성화
+                            // 헤더 필터 내에서 그룹화 방식 설정 (년/월 단위 등)
+                            groupInterval: "month" 
+                        }
+                        
                     },
                     { dataField: "resUserName", caption: '@Html.Raw(SharedLocalizer["TableHeader_ActionTaker"])', alignment: "center", width: 100 },
                     { 

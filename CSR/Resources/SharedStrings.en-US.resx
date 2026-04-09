@@ -107,6 +107,8 @@
   <data name="Label_BXTInquiryNo" xml:space="preserve"><value>BXT Inquiry No</value></data>
   <data name="Label_ActionContentTcode" xml:space="preserve"><value>Action TCODE</value></data>
   <data name="Label_HistoryPrefix" xml:space="preserve"><value>Edit</value></data>
+  <data name="종결여부" xml:space="preserve"><value>Completion Status</value></data>
+
         <!-- Placeholders -->
   <data name="NoAssignedResponsibilities" xml:space="preserve"><value>No assigned responsibilities.</value></data>
   <data name="Placeholder_Password" xml:space="preserve"><value>Enter only when changing</value></data>
@@ -258,8 +260,18 @@
   <data name="CC83" xml:space="preserve"><value>Re-inquiry</value></data>
   <data name="CC84" xml:space="preserve"><value>Rejected</value></data>
   <data name="CC85" xml:space="preserve"><value>Etc</value></data>
-  <data name="CC101" xml:space="preserve"><value>MES</value></data>
+  <data name="CC101" xml:space="preserve"><value>POP</value></data>
   <data name="CC102" xml:space="preserve"><value>Request for business trip</value></data>
+  <data name="CC103" xml:space="preserve"><value>Network</value></data>
+  <data name="CC104" xml:space="preserve"><value>File Server (PlugDisk)</value></data>
+  <data name="CC105" xml:space="preserve"><value>PC Maintenance</value></data>
+  <data name="CC106" xml:space="preserve"><value>Antivirus</value></data>
+  <data name="CC107" xml:space="preserve"><value>Security</value></data>
+  <data name="CC108" xml:space="preserve"><value>NetClient</value></data>
+  <data name="CC121" xml:space="preserve"><value>Functional Improvement</value></data>  
+  <data name="CC122" xml:space="preserve"><value>Request for Training</value></data>
+  <data name="CC123" xml:space="preserve"><value>Cause analysis</value></data>
+  <data name="CC124" xml:space="preserve"><value>Process Improvement</value></data>
 
   <!-- MyPage specific -->
   <data name="MyPageTitle" xml:space="preserve"><value>Edit My Info</value></data>

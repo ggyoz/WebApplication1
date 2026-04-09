@@ -199,12 +199,12 @@
                 allowCanceling: true,
                 maxFileSize: 4000000, // 4mb
                 onValueChanged: function (e) {                    
-                    const maxLength = 100; // 최대 허용 길이
+                    const maxLength = 250; // 최대 허용 길이
                     const files = e.value;                
                     files.forEach(file => {
                         if (file.name.length > maxLength) {
                             // 경고 메시지 표시
-                            DevExpress.ui.notify(`@SharedLocalizer["Validation_FileNameTooLong", 100]`, "error", 2000);
+                            DevExpress.ui.notify(`@Html.Raw(SharedLocalizer["Validation_FileNameTooLong", 250])`, "error", 2000);
                             // 필요 시 컴포넌트 값 초기화
                             e.component.reset();
                         }

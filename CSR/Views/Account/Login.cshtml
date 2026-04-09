@@ -116,7 +116,7 @@
             @Html.AntiForgeryToken()
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-floating mb-3">
-                <input asp-for="UserId" class="form-control" placeholder="@SharedLocalizer["Label_UserId"]" maxlength="9" />
+                <input asp-for="UserId" class="form-control" placeholder="@SharedLocalizer["Label_UserId"]" maxlength="10" />
                 <label asp-for="UserId">@SharedLocalizer["Label_UserId"]</label>
                 <span asp-validation-for="UserId" class="text-danger"></span>
             </div>

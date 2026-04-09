@@ -1,0 +1,77 @@
+@model CSR.Models.ReqInfo
+@{
+    Layout = "_EmailLayout";
+}
+
+<p>안녕하세요</p>
+<p>귀하가 조치자로 지정된 새로운 ITSM 요청이 등록되었습니다.</p>
+
+<table style="width: 40%; border-collapse: collapse; border: 1px solid #dee2e6; margin: 20px auto; table-layout: fixed;">
+    <tr>
+        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 12px; width: 30%; font-weight: 600; text-align: center;">요청번호</th>
+        <td style="border: 1px solid #dee2e6; padding: 12px; text-align: left;">@Model.REQID</td>
+    </tr>
+    <tr>
+        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 12px; font-weight: 600; text-align: center;">요청제목</th>
+        <td style="border: 1px solid #dee2e6; padding: 12px; text-align: left; font-weight: bold; color: #333;">@Model.TITLE</td>
+    </tr>
+    <tr>
+        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 12px; font-weight: 600; text-align: center;">요청자</th>
+        <td style="border: 1px solid #dee2e6; padding: 12px; text-align: left;">@Model.ReqUserName (@Model.CorpName / @Model.DeptName)</td>
+    </tr>
+    <tr>
+        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 12px; font-weight: 600; text-align: center;">요청구분</th>
+        <td style="border: 1px solid #dee2e6; padding: 12px; text-align: left;">@Model.ReqTypeName</td>
+    </tr>
+    <tr>
+        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 12px; font-weight: 600; text-align: center;">대상시스템</th>
+        <td style="border: 1px solid #dee2e6; padding: 12px; text-align: left;">@Model.SystemName</td>
+    </tr>
+    <tr>
+        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 12px; font-weight: 600; text-align: center;">긴급도</th>
+        <td style="border: 1px solid #dee2e6; padding: 12px; text-align: left;">
+            @if (Model.PRIORITYCD == "2") // 긴급
+            {
+                <span style="color: #dc3545; font-weight: bold;">@Model.PriorityName</span>
+            }
+            else if (Model.PRIORITYCD == "3") // 높음
+            {
+                <span style="color: #fd7e14; font-weight: bold;">@Model.PriorityName</span>
+            }
+            else
+            {
+                <span>@Model.PriorityName</span>
+            }
+        </td>
+    </tr>
+    <tr>
+        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 12px; font-weight: 600; text-align: center;">등록일</th>
+        <td style="border: 1px solid #dee2e6; padding: 12px; text-align: left;">@Model.REQDATE.ToString("yyyy-MM-dd")</td>
+    </tr>
+    <tr>
+        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 12px; font-weight: 600; text-align: center;">완료요청일</th>
+        <td style="border: 1px solid #dee2e6; padding: 12px; text-align: left; color: #0d6efd; font-weight: bold;">@Model.DUEDATE?.ToString("yyyy-MM-dd")</td>
+    </tr>
+    <tr>
+        <td colspan="2" style="text-align: center;">
+            <a href="http://itsm.mobasesystem.com/Req/Details/@Model.REQID" 
+                style="display: inline-block; padding: 12px 24px; margin-top: 10px; margin-bottom: 10px;  background-color: #0d6efd; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 500;">
+                요청사항 바로가기
+            </a>
+        </td>
+    </tr>
+</table>
+
+@* <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-left: 4px solid #0d6efd; border-radius: 4px;">
+    <strong>요청 내용:</strong><br />
+    <div style="margin-top: 10px; max-height: 200px; overflow-y: auto; background-color: #ffffff; padding: 10px; border: 1px solid #eee;">
+        @Html.Raw(Model.CONTENTS_HTML)
+    </div>
+</div> *@
+
+@* <p style="text-align: center; margin-top: 30px;">
+    <a href="http://itsm.mobasesystem.com/Req/Details/@Model.REQID" 
+       style="display: inline-block; padding: 12px 24px; background-color: #0d6efd; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 500;">
+       요청 상세 보기 및 접수
+    </a>
+</p> *@

@@ -14,9 +14,18 @@
             <input type="hidden" asp-for="CODEID" />
 
             <div class="mb-3">
-                <label asp-for="PARENTID" class="form-label"></label>
-                <input asp-for="PARENTID" class="form-control" />
-                <span asp-validation-for="PARENTID" class="text-danger"></span>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label asp-for="PARENTID" class="form-label"></label>
+                        <input asp-for="PARENTID" class="form-control" readonly="true" />
+                        <span asp-validation-for="PARENTID" class="text-danger"></span>
+                    </div>                    
+                    <div class="col-md-6">
+                        <label asp-for="CODEID" class="form-label"></label>
+                        <input asp-for="CODEID" class="form-control" readonly="true" />
+                    </div>
+                        
+                </div>
             </div>
 
             <div class="mb-3">

@@ -30,7 +30,10 @@ namespace CSR.Controllers
         private readonly CorpService _corpService;
         private readonly DeptService _deptService;
 
-        public ReqController(IReqService reqService, ICommCodeService commCodeService, UserService userService, IAdminRelService adminRelService, CorpService corpService, ILogger<ReqController> logger, DeptService deptService, IAuthorizationService authorizationService)
+        private readonly IEmailService _emailService;
+        private readonly IRazorViewToStringRenderer _renderer;
+
+        public ReqController(IReqService reqService, ICommCodeService commCodeService, UserService userService, IAdminRelService adminRelService, CorpService corpService, ILogger<ReqController> logger, DeptService deptService, IAuthorizationService authorizationService, IEmailService emailService, IRazorViewToStringRenderer renderer)
         {
             _reqService = reqService;
             _commCodeService = commCodeService;
@@ -40,11 +43,13 @@ namespace CSR.Controllers
             _logger = logger;
             _deptService = deptService;
             _authorizationService = authorizationService;
+            _emailService = emailService;
+            _renderer = renderer;
         }
 
         public async Task<IActionResult> Indexgrid(
             int pageNumber = 1, 
-            int pageSize = 10, 
+            int pageSize = 15, 
             string? reqTypeCd = null,
             string? procStatusCd = null,
             string? priorityCd = null,
@@ -60,9 +65,11 @@ namespace CSR.Controllers
             string? officeCd = null,
             string? teamCd = null,
             string? tcode = null,
-            string? assignedResponsibilities = null
-            ) // This is for title search
-        {
+            string? assignedResponsibilities = null,
+            string? terminateYn = null,
+            string? importanceCd = null,
+            string? filter = null
+            ){
 
             // 세션이 없으면 로그인페이지로 튕겨냄
             var sessionCorCd = HttpContext.Session.GetString("CorCd");
@@ -72,12 +79,9 @@ namespace CSR.Controllers
 
             // 팀원 및 팀장 조회 제한
             if( !User.IsInRole("R3") && !User.IsInRole("R4") ){
-
-                if ( string.IsNullOrEmpty(sessionDeptCd) )
-                {
+                if ( string.IsNullOrEmpty(sessionDeptCd) ){
                     return RedirectToAction("Login", "Account");
                 }
-
             }
 
             var respList = string.IsNullOrEmpty(assignedResponsibilities) 
@@ -100,12 +104,15 @@ namespace CSR.Controllers
             ViewData["TeamCd"] = teamCd;
             ViewData["AssignedResponsibilities"] = respList;
             ViewData["Tcode"] = tcode;
+            ViewData["TerminateYn"] = terminateYn;
+            ViewData["ImportanceCd"] = importanceCd;
 
             ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
             ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
             ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
-            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61); 
+            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61); // 진행상태
             ViewBag.AllResponsibilities = await _commCodeService.GetResponsibilitiesAsync();
+            ViewBag.ImportanceCodes = await _commCodeService.GetSelectListByPCodeAsync(78);  // 중요도
 
             // 법인
             ViewBag.CorCdList = await _corpService.GetSelectListByCorpAsync();
@@ -128,35 +135,33 @@ namespace CSR.Controllers
                  ViewBag.TeamCdList = await _deptService.GetSelectListByDeptAsync(corCd, officeCd);
             }
 
-            string defaultDeptStr = sessionDeptCd + ",ST00, CM00";
-            string defaultOfficeStr = sessionOfficeCd + ",ST01, CM01";
-            string defaultTeamStr = sessionTeamCd + ",ST0101, CM0101";
+            string defaultDeptStr = sessionDeptCd + ",ST00,CM00";
+            string defaultOfficeStr = sessionOfficeCd + ",ST01,CM01";
+            string defaultTeamStr = sessionTeamCd + ",ST0101,CM0101";
 
             if( User.IsInRole("R1")) {
-
+                corCd = sessionCorCd;
                 // 검색했을때때
-                if(!string.IsNullOrEmpty(corCd) || !string.IsNullOrEmpty(deptCd) || !string.IsNullOrEmpty(officeCd) || !string.IsNullOrEmpty(teamCd)){
-                    corCd = sessionCorCd;                    
+                if(!string.IsNullOrEmpty(deptCd) || !string.IsNullOrEmpty(officeCd) || !string.IsNullOrEmpty(teamCd)){                                    
                     teamCd = sessionTeamCd;
-                }else{
-                    corCd = sessionCorCd;
+                }else{                    
                     teamCd = defaultTeamStr;
                 }                
 
             }else if( User.IsInRole("R2")){
-                corCd = sessionCorCd;
-                deptCd = sessionDeptCd;
-
-                if(!string.IsNullOrEmpty(sessionOfficeCd)){
-                    officeCd = sessionOfficeCd;
-                }
-                if(!string.IsNullOrEmpty(sessionTeamCd)){
-                    teamCd = sessionTeamCd;
-                }
-                
+                //deptCd = sessionDeptCd;
+                corCd = sessionCorCd;                
+                //검색값이 있으면
+                if(!string.IsNullOrEmpty(deptCd) || !string.IsNullOrEmpty(officeCd) || !string.IsNullOrEmpty(teamCd)){
+                    
+                }else{
+                    if(string.IsNullOrEmpty(sessionOfficeCd)){
+                        deptCd = defaultDeptStr;
+                    }else if(string.IsNullOrEmpty(sessionTeamCd)){
+                        officeCd = sessionOfficeCd;
+                    }
+                }                
             }
-
-            
             
             var pagedResult = await _reqService.GetReqInfosAsync(
                 pageNumber, 
@@ -176,13 +181,17 @@ namespace CSR.Controllers
                 officeCd, 
                 teamCd,
                 tcode,
-                respList);
+                respList,
+                terminateYn,
+                importanceCd,
+                filter
+                );
             return View(pagedResult);
         }
 
         public async Task<IActionResult> Index(
             int pageNumber = 1, 
-            int pageSize = 10, 
+            int pageSize = 15, 
             string? reqTypeCd = null,
             string? procStatusCd = null,
             string? priorityCd = null,
@@ -198,9 +207,11 @@ namespace CSR.Controllers
             string? officeCd = null,
             string? teamCd = null,
             string? tcode = null,
-            string? assignedResponsibilities = null
-            ) // This is for title search
-        {
+            string? assignedResponsibilities = null,
+            string? terminateYn = null,
+            string? importanceCd = null,
+            string? filter = null
+            ){
 
             // 세션이 없으면 로그인페이지로 튕겨냄
             var sessionCorCd = HttpContext.Session.GetString("CorCd");
@@ -210,12 +221,9 @@ namespace CSR.Controllers
 
             // 팀원 및 팀장 조회 제한
             if( !User.IsInRole("R3") && !User.IsInRole("R4") ){
-
-                if ( string.IsNullOrEmpty(sessionDeptCd) )
-                {
+                if ( string.IsNullOrEmpty(sessionDeptCd) ){
                     return RedirectToAction("Login", "Account");
                 }
-
             }
 
             var respList = string.IsNullOrEmpty(assignedResponsibilities) 
@@ -238,12 +246,15 @@ namespace CSR.Controllers
             ViewData["TeamCd"] = teamCd;
             ViewData["AssignedResponsibilities"] = respList;
             ViewData["Tcode"] = tcode;
+            ViewData["TerminateYn"] = terminateYn;
+            ViewData["ImportanceCd"] = importanceCd;
 
             ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
             ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
             ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
-            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61); 
+            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61); // 진행상태
             ViewBag.AllResponsibilities = await _commCodeService.GetResponsibilitiesAsync();
+            ViewBag.ImportanceCodes = await _commCodeService.GetSelectListByPCodeAsync(78);  // 중요도
 
             // 법인
             ViewBag.CorCdList = await _corpService.GetSelectListByCorpAsync();
@@ -266,35 +277,33 @@ namespace CSR.Controllers
                  ViewBag.TeamCdList = await _deptService.GetSelectListByDeptAsync(corCd, officeCd);
             }
 
-            string defaultDeptStr = sessionDeptCd + ",ST00, CM00";
-            string defaultOfficeStr = sessionOfficeCd + ",ST01, CM01";
-            string defaultTeamStr = sessionTeamCd + ",ST0101, CM0101";
+            string defaultDeptStr = sessionDeptCd + ",ST00,CM00";
+            string defaultOfficeStr = sessionOfficeCd + ",ST01,CM01";
+            string defaultTeamStr = sessionTeamCd + ",ST0101,CM0101";
 
             if( User.IsInRole("R1")) {
-
+                corCd = sessionCorCd;
                 // 검색했을때때
-                if(!string.IsNullOrEmpty(corCd) || !string.IsNullOrEmpty(deptCd) || !string.IsNullOrEmpty(officeCd) || !string.IsNullOrEmpty(teamCd)){
-                    corCd = sessionCorCd;                    
+                if(!string.IsNullOrEmpty(deptCd) || !string.IsNullOrEmpty(officeCd) || !string.IsNullOrEmpty(teamCd)){                                    
                     teamCd = sessionTeamCd;
-                }else{
-                    corCd = sessionCorCd;
+                }else{                    
                     teamCd = defaultTeamStr;
                 }                
 
             }else if( User.IsInRole("R2")){
-                corCd = sessionCorCd;
-                deptCd = sessionDeptCd;
-
-                if(!string.IsNullOrEmpty(sessionOfficeCd)){
-                    officeCd = sessionOfficeCd;
-                }
-                if(!string.IsNullOrEmpty(sessionTeamCd)){
-                    teamCd = sessionTeamCd;
-                }
-                
+                //deptCd = sessionDeptCd;
+                corCd = sessionCorCd;                
+                //검색값이 있으면
+                if(!string.IsNullOrEmpty(deptCd) || !string.IsNullOrEmpty(officeCd) || !string.IsNullOrEmpty(teamCd)){
+                    
+                }else{
+                    if(string.IsNullOrEmpty(sessionOfficeCd)){
+                        deptCd = defaultDeptStr;
+                    }else if(string.IsNullOrEmpty(sessionTeamCd)){
+                        officeCd = sessionOfficeCd;
+                    }
+                }                
             }
-
-            
             
             var pagedResult = await _reqService.GetReqInfosAsync(
                 pageNumber, 
@@ -314,8 +323,13 @@ namespace CSR.Controllers
                 officeCd, 
                 teamCd,
                 tcode,
-                respList);
+                respList,
+                terminateYn,
+                importanceCd,
+                filter                
+                );
             return View(pagedResult);
+
         }
 
         public async Task<IActionResult> ExportToExcel(
@@ -334,9 +348,13 @@ namespace CSR.Controllers
             string? officeCd = null,
             string? teamCd = null,
             string? tcode = null,
-            string? assignedResponsibilities = null
+            string? assignedResponsibilities = null,
+            string? terminateYn = null,
+            string? importanceCd = null
             )
         {
+
+            Console.WriteLine("terminateYn : " + terminateYn);
             // 세션이 없으면 로그인페이지로 튕겨냄
             var sessionCorCd = HttpContext.Session.GetString("CorCd");
             var sessionTeamCd = HttpContext.Session.GetString("TeamCd");
@@ -345,27 +363,38 @@ namespace CSR.Controllers
 
             if (!User.IsInRole("R3") && !User.IsInRole("R4"))
             {
-                if (string.IsNullOrEmpty(sessionOfficeCd))
+                if (string.IsNullOrEmpty(sessionDeptCd))
                 {
                     return RedirectToAction("Login", "Account");
                 }
             }
 
+            string defaultDeptStr = sessionDeptCd + ",ST00,CM00";
+            string defaultOfficeStr = sessionOfficeCd + ",ST01,CM01";
+            string defaultTeamStr = sessionTeamCd + ",ST0101,CM0101";
+
             if( User.IsInRole("R1")) {
                 corCd = sessionCorCd;
-                teamCd = sessionTeamCd;
-            }else if( User.IsInRole("R2")){                
-
-                corCd = sessionCorCd;
-                deptCd = sessionDeptCd;
-
-                if(!string.IsNullOrEmpty(sessionOfficeCd)){
-                    officeCd = sessionOfficeCd;
-                }
-
-                if(!string.IsNullOrEmpty(sessionTeamCd)){
+                // 검색했을때때
+                if(!string.IsNullOrEmpty(deptCd) || !string.IsNullOrEmpty(officeCd) || !string.IsNullOrEmpty(teamCd)){                                    
                     teamCd = sessionTeamCd;
-                }
+                }else{                    
+                    teamCd = defaultTeamStr;
+                }                
+
+            }else if( User.IsInRole("R2")){
+                //deptCd = sessionDeptCd;
+                corCd = sessionCorCd;                
+                //검색값이 있으면
+                if(!string.IsNullOrEmpty(deptCd) || !string.IsNullOrEmpty(officeCd) || !string.IsNullOrEmpty(teamCd)){
+                    
+                }else{
+                    if(string.IsNullOrEmpty(sessionOfficeCd)){
+                        deptCd = defaultDeptStr;
+                    }else if(string.IsNullOrEmpty(sessionTeamCd)){
+                        officeCd = sessionOfficeCd;
+                    }
+                }                
             }
 
             var respList = string.IsNullOrEmpty(assignedResponsibilities) 
@@ -388,7 +417,9 @@ namespace CSR.Controllers
                 officeCd,
                 teamCd,
                 tcode,
-                respList);
+                respList,
+                terminateYn,
+                importanceCd);
 
             using (var workbook = new XLWorkbook())
             {
@@ -529,8 +560,32 @@ namespace CSR.Controllers
             {
                 try
                 {
-                    reqInfo.REG_USERID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";                    
-                    await _reqService.CreateReqInfoAsync(reqInfo, files);
+                    reqInfo.REG_USERID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "admin";
+                    int newReqId = await _reqService.CreateReqInfoAsync(reqInfo, files);
+
+                    // 조치자에게 알림 메일 발송
+                    try
+                    {
+                        var fullReqInfo = await _reqService.GetReqInfoByIdAsync(newReqId);
+                        if (fullReqInfo != null && !string.IsNullOrEmpty(fullReqInfo.RESUSERID))
+                        {
+                            var processor = await _userService.GetUserByIdAsync(fullReqInfo.RESUSERID);
+                            if (processor != null && !string.IsNullOrEmpty(processor.EmailAddr))
+                            {
+                                string emailBody = await _renderer.RenderViewToStringAsync("EmailTemplates/RequestToProcessor", fullReqInfo);
+                                string subject = $"[ITSM] 새로운 요청사항이 등록되었습니다 - {fullReqInfo.TITLE}";
+                                await _emailService.SendEmailAsync(processor.EmailAddr, subject, emailBody);
+                                
+                                _logger.LogInformation("Notification email sent to processor {UserId} for Request {ReqId}", fullReqInfo.RESUSERID, newReqId);
+                            }
+                        }
+                    }
+                    catch (Exception mailEx)
+                    {
+                        // 메일 발송 실패가 요청 생성 실패로 이어지지 않도록 로그만 기록
+                        _logger.LogError(mailEx, "Error sending notification email for new request {ReqId}", newReqId);
+                    }
+
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
@@ -583,7 +638,7 @@ namespace CSR.Controllers
             ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
             ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
             ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
-            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61);
+            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAllAsync(61);
             ViewBag.ImportantCodes = await _commCodeService.GetSelectListByPCodeAsync(78);
             ViewBag.difficultCodes = await _commCodeService.GetSelectListByPCodeAsync(7);
 
@@ -602,18 +657,7 @@ namespace CSR.Controllers
             }
 
             // 답변등록 시 유효성 제외 목록
-            ModelState.Remove(nameof(ReqInfo.TITLE));
-            ModelState.Remove(nameof(ReqInfo.CONTENTS_HTML));
-            ModelState.Remove(nameof(ReqInfo.DUEDATE));            
-            ModelState.Remove(nameof(ReqInfo.REQDATE));
-            ModelState.Remove(nameof(ReqInfo.REQTYPE));
-            ModelState.Remove(nameof(ReqInfo.REQMENU));
-            ModelState.Remove(nameof(ReqInfo.REQMENU_ETC));
-            ModelState.Remove(nameof(ReqInfo.RESUSERID));
-            ModelState.Remove(nameof(ReqInfo.SYSTEMCD));
-            ModelState.Remove(nameof(ReqInfo.REQUSERID));
-            ModelState.Remove(nameof(ReqInfo.PRIORITYCD));
-            ModelState.Remove(nameof(ReqInfo.CORCD));
+            ModelState.Remove(nameof(ReqInfo.REQMENU_ETC));            
             ModelState.Remove(nameof(ReqInfo.DEPTCD));
             ModelState.Remove(nameof(ReqInfo.OFFICECD));
             ModelState.Remove(nameof(ReqInfo.TEAMCD));
@@ -623,6 +667,7 @@ namespace CSR.Controllers
             {
                 try
                 {
+                    reqInfo.UPDATE_USERID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "admin";
                     await _reqService.UpdateReqInfoAsync(reqInfo, newFiles, deletedFiles, "NonHistory");
                     return RedirectToAction(nameof(Details), new { id = reqInfo.REQID });
                 }
@@ -637,7 +682,7 @@ namespace CSR.Controllers
             ViewBag.SystemCodes = await _commCodeService.GetSelectListByPCodeAsync(19);
             ViewBag.ReqTypes = await _commCodeService.GetSelectListByPCodeAsync(13);
             ViewBag.PriorityCodes = await _commCodeService.GetSelectListByPCodeAsync(1);
-            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAsync(61);
+            ViewBag.ProcStatusCodes = await _commCodeService.GetSelectListByPCodeAllAsync(61);
             ViewBag.ImportantCodes = await _commCodeService.GetSelectListByPCodeAsync(78);
             ViewBag.difficultCodes = await _commCodeService.GetSelectListByPCodeAsync(7);
 

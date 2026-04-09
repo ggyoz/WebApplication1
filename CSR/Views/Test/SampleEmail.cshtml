@@ -1,0 +1,30 @@
+@model CSR.Models.ReqInfo
+@{
+    Layout = "_EmailLayout";
+}
+
+<h2 style="color: #0d6efd; margin-top: 0;">안녕하세요, @Model.RegUserName 님!</h2>
+<p>귀하께서 등록하신 ITSM 요청건에 대한 현재 진행 상태를 알려드립니다.</p>
+
+<table class="table">
+    <tr>
+        <th>요청번호</th>
+        <td>@Model.REQID</td>
+    </tr>
+    <tr>
+        <th>요청제목</th>
+        <td>@Model.TITLE</td>
+    </tr>
+    <tr>
+        <th>요청구분</th>
+        <td>@Model.ReqTypeName</td>
+    </tr>
+    <tr>
+        <th>현재상태</th>
+        <td style="color: #dc3545; font-weight: bold;">@Model.ProcStatusName</td>
+    </tr>
+</table>
+
+<p>자세한 내용은 시스템에 접속하여 확인하실 수 있습니다.</p>
+
+<a href="http://itsm.mobasesystem.com/Req/Details/@Model.REQID" class="btn">요청 상세 보기</a>

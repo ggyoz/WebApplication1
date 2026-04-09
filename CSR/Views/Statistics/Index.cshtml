@@ -2,7 +2,7 @@
     ViewData["Title"] = "통계 대시보드"; // 브라우저 탭 제목
 }
 
-<div class="container mt-4">
+<div class="container mt-4" style="max-width:1500px;">
     <h3 class="display-6 mb-4">처리현황</h3>
     <p class="text-muted text-end mb-3">기준일: <span id="referenceDate"></span></p>
 
@@ -43,10 +43,10 @@
     <!-- KPI 카드 영역 (예시) -->
 
     <div class="row mb-4">
-        <div class="col-md-4 mb-4">
-            <div class="card blueCard shadow-sm h-100">
+        <div class="col-md-3 mb-4">
+            <div class="card blueCard shadow-sm h-100" onClick="goToReqList('', '')">
                 <div class="card-body m-3">
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center" >
                         <div class="d-flex flex-column"> 
                             <h5 class="card-title mb-0">요구사항 전체 건수</h5>
                             <p class="card-text mb-0"></p>
@@ -57,8 +57,8 @@
             </div>
         </div>
 
-        <div class="col-md-4 mb-4">
-            <div class="card greenCard shadow-sm h-100">
+        <div class="col-md-3 mb-4">
+            <div class="card greenCard shadow-sm h-100" onClick="goToReqList('', 'thisweek')">
                 <div class="card-body m-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="d-flex flex-column"> 
@@ -71,7 +71,7 @@
             </div>
         </div>
 
-        <div class="col-md-4 mb-4">
+        <div class="col-md-3 mb-4">
             <div class="card yellowCard shadow-sm h-100">
                 <div class="card-body m-3">
                     <div class="d-flex justify-content-between align-items-center">
@@ -80,6 +80,20 @@
                             <p class="card-text mb-0"></p>
                         </div>
                         <p class="card-text display-5 mb-0" id="requestsDueThisWeekCount"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card yellowCard shadow-sm h-100">
+                <div class="card-body m-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex flex-column"> 
+                            <h5 class="card-title mb-0">전체 진행률</h5>
+                            <p class="card-text mb-0"></p>
+                        </div>
+                        <p class="card-text display-5 mb-0" id="requestsTotalPercent"></p>
                     </div>
                 </div>
             </div>
@@ -113,9 +127,14 @@
 
             <!-- 테이블 영역 -->
             <div class="card">
-                <div class="card-header">사업부별 상세 현황</div>
+                <div class="card-header d-flex justify-content-between align-items-center">     
+                    <span>사업부별 상세 현황</span>                                             
+                    <button class="btn btn-sm btn-outline-success" onclick="downloadDivisionExcel()">
+                        <i class="bi bi-file-earmark-excel"></i> Excel 다운로드
+                    </button>
+                    </div>
                 <div class="card-body">
-                    <table class="table table-bordered table-striped">
+                    <table class="table table-bordered table-striped" id="divisionStatsTable"> 
                         <colgroup>
                             <col width="10%" />
                             <col width="8%" />
@@ -133,7 +152,7 @@
                             <tr>
                                 <th rowspan="2">조직</th>
                                 <th colspan="5">요청사항 수 ( 긴급도 별 )</th>
-                                <th colspan="6">진행상태 </th>
+                                <th colspan="5">진행상태 </th>
                             </tr>
                             <tr>
                                 <th>긴급</th>
@@ -177,7 +196,7 @@
                             <tr class="border">
                                 <th class="border align-middle text-center" rowspan="2">조직</th>
                                 <th class="border align-middle" colspan="5">요청사항 수 ( 긴급도 별 )</th>
-                                <th class="border align-middle" colspan="6">진행상태 </th>
+                                <th class="border align-middle" colspan="5">진행상태 </th>
                             </tr>
                             <tr>
                                 <th>긴급</th>
@@ -204,7 +223,6 @@
                 <div class="card-header">조치자별 상세 현황</div>
                 <div class="card-body">
                     <table class="table table-bordered table-striped">
-                        <thead>
                             <colgroup>
                                 <col width="10%" />
                                 <col width="8%" />
@@ -216,6 +234,7 @@
                                 <col width="8%" />
                                 <col width="8%" />
                             </colgroup>
+                        <thead>                            
                             <tr class="border">
                                 <th class="border align-middle text-center" rowspan="2">조치자</th>
                                 <th class="border align-middle" colspan="5">요청사항 수 ( 긴급도 )</th>
@@ -258,11 +277,18 @@
             vertical-align : middle;
             text-align: center;
         }
-
     </style>
 
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
+
+        function downloadDivisionExcel() {
+            const table = document.getElementById('divisionStatsTable');
+            const wb = XLSX.utils.table_to_book(table, { sheet: "사업부별 상세 현황", raw: true });
+            const fileName = `사업부별_상세_현황_${new Date().toISOString().slice(0, 10)}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        }
 
         $(document).ready(function() {
 
@@ -375,6 +401,13 @@
                         } else {
 
                             var chartData = [];
+                            var totalVeryHightCount = 0;
+                            var totalHightCount = 0;
+                            var totalMediumCount = 0;
+                            var totalLowCount = 0;
+
+                            var totalIngStatus = 0;
+                            var totalEndStatus = 0;
 
                             response.stats.forEach(function(item) {                                
                                 tableBody.append(
@@ -394,10 +427,16 @@
                                     </tr>`
                                 );
 
+                                totalIngStatus += item.ingStatus;
+                                totalEndStatus += item.endStatus;
+
                                 // 차트 데이터 업데이트
                                 chartData.push({ state: item.divisionName, ing: item.ingStatus, end: item.endStatus, total: item.totalCount  });
 
                             });
+                            
+                            var totalpercent = Math.round( (totalEndStatus / ( totalIngStatus + totalEndStatus ) * 1000) ) / 10;
+                            $('#requestsTotalPercent').text(totalpercent + "%");
                             
                             var chartInstance = $('#deptChart').dxChart('instance');
                             if (chartInstance) {
@@ -436,9 +475,9 @@
                                         <td>${item.veryHighCount}</td>
                                         <td>${item.highCount}</td>
                                         <td>${item.mediumCount}</td>
-                                        <td>${item.lowCount}</td>
-                                        
-                                        <td>${item.totalCount}</td>
+                                        <td>${item.lowCount}</td>                                        
+                                        <td style='border-right:1px solid #dee2e6;'>${item.totalCount}</td>
+
                                         <td>${item.ingStatus}</td>
                                         <td>${item.endStatus}</td>
                                         <td>${item.endPercent}%</td>
@@ -479,9 +518,8 @@
                                         <td>${item.veryHighCount}</td>
                                         <td>${item.highCount}</td>
                                         <td>${item.mediumCount}</td>
-                                        <td>${item.lowCount}</td>
-                                        
-                                        <td>${item.totalCount}</td>
+                                        <td>${item.lowCount}</td>                                        
+                                        <td style='border-right:1px solid #dee2e6;'>${item.totalCount}</td>
                                         <td>${item.ingStatus}</td>
                                         <td>${item.endStatus}</td>
                                         <td>${item.endPercent}%</td>
@@ -550,7 +588,7 @@
             const month = (referenceDate.getMonth() + 1).toString().padStart(2, '0');
             const day = referenceDate.getDate().toString().padStart(2, '0');
 
-            $('#referenceDate').text(`${year}년 ${month}월 ${day}일`);
+            $('#referenceDate').text(`${year}-${month}-${day}`);
         }
 
 

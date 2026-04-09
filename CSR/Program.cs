@@ -8,11 +8,13 @@ using System;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using CSR.Data;
+using CSR.Models;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 using CSR.Authorization;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,7 +32,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/Account/Login";
         options.LogoutPath = "/Account/Logout";
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(120);
+        options.ExpireTimeSpan = TimeSpan.FromDays(1);
         options.SlidingExpiration = true;
     });
 
@@ -59,6 +61,10 @@ builder.Services.AddControllersWithViews(options =>
 })
     .AddViewLocalization()                                              // 뷰에서 다국어를 지원하도록 설정
     .AddDataAnnotationsLocalization();                                  // 데이터 유효성 검사 메시지에서 다국어를 지원하도록 설정
+
+// // 데이터 보호 서비스 추가 (애플리케이션 재시작 시 로그인 유지)
+// builder.Services.AddDataProtection()
+//     .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "Keys")));
 
 // FluentValidation 등록
 // builder.Services.AddFluentValidationAutoValidation();                // 비동기 검증을 위해 자동 유효성 검사는 비활성화
@@ -165,9 +171,13 @@ builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpContextAccessor>().H
 
 // 세션 서비스 등록
 builder.Services.AddDistributedMemoryCache();
+
+// Email 설정 등록
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(120);
+    options.IdleTimeout = TimeSpan.FromDays(1);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });

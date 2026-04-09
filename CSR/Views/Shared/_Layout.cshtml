@@ -119,10 +119,10 @@
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <span class="navbar-text me-2">@Context.Session.GetString("UserName") 님</span>
-                            <form asp-controller="Account" asp-action="Logout" method="post">
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-outline-secondary">@SharedLocalizer["Button_Logout"]</button>
-                            </form>
+                            
+                            @Html.AntiForgeryToken()
+                            <button type="button" onclick="handleLogout()" class="btn btn-outline-secondary">@SharedLocalizer["Button_Logout"]</button>
+                            
                         }
                         else
                         {
@@ -136,7 +136,7 @@
 
     <div id="wrapper" style="background-color:#fafafa;">
         <!-- Sidebar -->
-        <div id="sidebar-wrapper" class="flex-shrink-0 p-3" style="width: 10%">
+        <div id="sidebar-wrapper" class="flex-shrink-0 p-3 d-none d-lg-block" style="width: 10%">
             <ul class="list-unstyled ps-0">
                 @await Html.PartialAsync("_MenuPartial", menuTree)
                 
@@ -235,9 +235,38 @@
 
             toast.show();
         }
+
+
+        async function handleLogout() {
+            if (!confirm("로그아웃 하시겠습니까?")) return;
+    
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    
+            try {
+                const response = await fetch('@Url.Action("Logout", "Account")', {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': token, // 헤더에 토큰 포함
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                });
+    
+                if (response.ok) {
+                    window.location.href = '@Url.Action("Index", "Home")';
+                } else {
+                    alert("로그아웃 중 오류가 발생했습니다.");
+                    console.error("Logout error:", error);
+                    alert("네트워크 오류가 발생했습니다.");
+                }
+            }catch (error) {
+                console.error("Logout error:", error);
+                alert("네트워크 오류가 발생했습니다.");
+            }   
+        }
+
     </script>
 
-    @if (User.Identity?.IsAuthenticated == true)
+    <!-- @if (User.Identity?.IsAuthenticated == true)
     {
         <script>
             (function () {
@@ -316,7 +345,7 @@
                 startInactivityTimer();
             })();
         </script>
-    }
+    } -->
 
 </body>
 </html>

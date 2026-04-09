@@ -185,7 +185,7 @@ namespace CSR.Services
             var sql = $@"
                     SELECT {SelectColumns}
                     FROM TB_USER_INFO
-                    WHERE USERID = :UserId";
+                    WHERE USERID = :UserId AND USEYN = 'Y' ";
 
             var user = await _connection.QueryFirstOrDefaultAsync<User>(sql, new { UserId = userId });
             return user;
@@ -330,7 +330,7 @@ namespace CSR.Services
                 user.RegDate = existingUser.RegDate;
                 user.RegUserId = existingUser.RegUserId;
                 //user.UserPwd = CreatePasswordHash(user.EmpNo);
-                ResetPasswordAsync(user.UserId);
+                await ResetPasswordAsync(user.UserId);
                 await UpdateUserAsync(user);
             }
             else
