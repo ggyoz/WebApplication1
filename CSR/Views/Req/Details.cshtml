@@ -15,151 +15,157 @@
 }
 
 @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded){
-<div class="d-flex justify-content-between"> 
-    <div class="text-start">
-        <partial name="_PageTitlePartial" />
-    </div>
+    <div class="d-flex justify-content-between"> 
+        <div class="text-start">
+            <partial name="_PageTitlePartial" />
+        </div>
 
-    <div class="text-end">
-        <a asp-action="Answer" asp-route-id="@Model.REQID" class="btn btn-outline-secondary">@SharedLocalizer["Button_Edit"]</a>
-        <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
+        <div class="text-end">
+            <a asp-action="Answer" asp-route-id="@Model.REQID" class="btn btn-outline-secondary">@SharedLocalizer["Button_Edit"]</a>
+            <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
+        </div>
     </div>
-</div>
 }else{
-<partial name="_PageTitlePartial" />
+    <partial name="_PageTitlePartial" />
 }
 
-<div>
-    <span class="badge bg-secondary ms-3 me-3"><label style="font-size:110%">@SharedLocalizer["Label_No"] @Model.REQID</label></span>
-    <label style="font-weight:500; font-size:110%">@Model.TITLE</label>
-    <hr />
-    <div class="row">
-        <div class="col-md-12">
-            <table class="table-layout Details" style="width:100%">
-                <colgroup>
-                    <col width="8%"></col>
-                    <col width="10%"></col>
-                    <col width="8%"></col>
-                    <col width="20%"></col>
-                    <col width="8%"></col>
-                    <col width="20%"></col>
-                    <col width="8%"></col>
-                    <col width="20%"></col>
-                </colgroup>
+<div class="d-flex align-items-center mb-3">
+    <span class="badge bg-secondary px-3 py-2 me-3" style="font-size: 1rem; border-radius: 4px;">
+        @SharedLocalizer["Label_No"] @Model.REQID
+    </span>
+    <h4 class="mb-0" style="font-weight: 700; font-size:130%; color: #333;">@Model.TITLE</h4>    
+</div>
 
-                <tr>
-                    <th><label>@SharedLocalizer["Label_Requester"]</label></th>
-                    <td>@Model.ReqUserName</td>
-                    <th><label>@SharedLocalizer["Label_Affiliation"]</label></th>
-                    <td>@{
-                            var orgParts = new[] { Model.CorpName, Model.DeptName, Model.OfficeName, Model.TeamName };
-                            var organization = string.Join(" / ", orgParts.Where(p => !string.IsNullOrEmpty(p)));
-                        }
-                        @organization
-                    </td>
-                    <th><label>@SharedLocalizer["Label_Email"]</label></th>
-                    <td>@Model.ReqUserEmail</td>
-                    <th><label>@SharedLocalizer["Label_Contact"]</label></th>
-                    <td>@Model.ReqUserTel</td>                    
-                </tr>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <table class="table-layout Details" style="width:100%">
+            <colgroup>
+                <col width="8%"></col>
+                <col width="10%"></col>
+                <col width="8%"></col>
+                <col width="20%"></col>
+                <col width="8%"></col>                    
+                <col width="20%"></col>
+                <col width="8%"></col>
+                <col width="20%"></col>
+            </colgroup>
 
-                <tr>
-                    <th><label>@SharedLocalizer["Label_RequestType"]</label></th>
-                    <td>@SharedLocalizer["CC" + Model.REQTYPE] </td>
-                    <th><label>@SharedLocalizer["Label_SystemCode"]</label></th>
-                    <td>@Model.SystemName</td>                    
-                    <th><label>@SharedLocalizer["Label_RequestMenu"]</label></th>
-                    <td>@Model.ReqMenuName</td>
-                    <th><label>@SharedLocalizer["Label_ActionTaker"]</label></th>
-                    <td>
-                        @if ((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded && Model.PROC_STATUS != "68" )
-                        {
-                            <form asp-action="UpdateResUser" asp-route-id="@Model.REQID" method="post" class="d-inline-flex align-items-center">
-                                @Html.AntiForgeryToken()
-                                <select name="resUserId" asp-for="RESUSERID" asp-items="ViewBag.UserList" class="form-select form-select" style="width: auto;">
-                                    <option value="">@SharedLocalizer["Placeholder_SelectActionTaker"]</option>
-                                </select>
-                                <button type="submit" class="btn btn-primary btn-sm ms-2">@SharedLocalizer["Button_Change"]</button>
-                            </form>
-                        }
-                        else
-                        {
-                            @Model.ResUserName
-                        }
-                    </td>
-                </tr>
-                
-                <tr>
-                    <th><label>@SharedLocalizer["Label_RequestDate"]</label></th>
-                    <td>@Model.REQDATE.ToString("yyyy-MM-dd")</td>
-                    <th><label>@SharedLocalizer["Label_DueDate"]</label></th>
-                    <td>@( Model.DUEDATE.HasValue ? Model.DUEDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"].Value )</td>
-                    <th><label>@SharedLocalizer["Label_ExpectedCompletionDate"]</label></th>
-                    <td>
-                        @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded && Model.PROC_STATUS != "68" )
-                        {
-                            <form asp-action="UpdateExpectDate" asp-route-id="@Model.REQID" method="post" class="d-inline-flex align-items-center">
-                                @Html.AntiForgeryToken()
-                                <div id="ExpectDate" style="width:70%"></div>                                
-                                <input type="hidden" name="ExpectDate" id="hiddenExpectDate" value="@Model.EXPECTDATE?.ToString("yyyy-MM-dd")" maxlength="10" />                                
-                                <button type="submit" onclick="return setExpectDate();" class="btn btn-primary btn-sm ms-2">@SharedLocalizer["Button_Change"]</button>
-                            </form>
-                            <p id="expectDateError" class="text-danger d-block"></p>
-                        }
-                        else
-                        {
-                            @( Model.EXPECTDATE.HasValue ? Model.EXPECTDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"].Value)
-                        }
-                    </td>
-                    <th><label>@SharedLocalizer["Label_ProgressStatus"]</label></th>
-                    <td>@(Model.ProcStatusName != null ? SharedLocalizer["CC" + Model.PROC_STATUS] : SharedLocalizer["Status_Waiting"].Value)</td>
-                </tr>
-                <tr>
-                    <th><label>@SharedLocalizer["Label_Urgency"]</label></th>
-                    <td>@Model.PriorityName</td>                               
-                    <th><label>@SharedLocalizer["Label_Importance"]</label></th>
-                    <td>@(string.IsNullOrEmpty(Model.IMPTCD) ? "" : SharedLocalizer["CC" + Model.IMPTCD])</td>
-                    <th><label>@SharedLocalizer["Label_Tcode"]</label></th>
-                    <td>@Model.REQTCODE</td>
-                </tr>
-                
-            </table>
-        </div>
+            <tr>
+                <th><label>@SharedLocalizer["Label_Requester"]</label></th>
+                <td>@Model.ReqUserName</td>
+                <th><label>@SharedLocalizer["Label_Affiliation"]</label></th>
+                <td>@{
+                        var orgParts = new[] { Model.CorpName, Model.DeptName, Model.OfficeName, Model.TeamName };
+                        var organization = string.Join(" / ", orgParts.Where(p => !string.IsNullOrEmpty(p)));
+                    }
+                    @organization
+                </td>
+                <th><label>@SharedLocalizer["Label_Email"]</label></th>
+                <td>@Model.ReqUserEmail</td>
+                <th><label>@SharedLocalizer["Label_Contact"]</label></th>
+                <td>@Model.ReqUserTel</td>                    
+            </tr>
+
+            <tr>
+                <th><label>@SharedLocalizer["Label_RequestType"]</label></th>
+                <td>@SharedLocalizer["CC" + Model.REQTYPE] </td>
+                <th><label>@SharedLocalizer["Label_SystemCode"]</label></th>
+                <td>@Model.SystemName</td>                    
+                <th><label>@SharedLocalizer["Label_RequestMenu"]</label></th>
+                <td>@Model.ReqMenuName</td>
+                <th><label>@SharedLocalizer["Label_ActionTaker"]</label></th>
+                <td>
+                    @if ((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded && Model.PROC_STATUS != "68" )
+                    {
+                        <form asp-action="UpdateResUser" asp-route-id="@Model.REQID" method="post" class="d-inline-flex align-items-center">
+                            @Html.AntiForgeryToken()
+                            <select name="resUserId" asp-for="RESUSERID" asp-items="ViewBag.UserList" class="form-select form-select" style="width: auto;">
+                                <option value="">@SharedLocalizer["Placeholder_SelectActionTaker"]</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-sm ms-2">@SharedLocalizer["Button_Change"]</button>
+                        </form>
+                    }
+                    else
+                    {
+                        @Model.ResUserName
+                    } 
+                </td>
+            </tr>
+            
+            <tr>
+                <th><label>@SharedLocalizer["Label_RequestDate"]</label></th>
+                <td>@Model.REQDATE.ToString("yyyy-MM-dd")</td>
+                <th><label>@SharedLocalizer["Label_DueDate"]</label></th>
+                <td>@( Model.DUEDATE.HasValue ? Model.DUEDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"].Value )</td>
+                <th><label>@SharedLocalizer["Label_ExpectedCompletionDate"]</label></th>
+                <td>
+                    @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded && Model.PROC_STATUS != "68" )
+                    {
+                        <form asp-action="UpdateExpectDate" asp-route-id="@Model.REQID" method="post" class="d-inline-flex align-items-center">
+                            @Html.AntiForgeryToken()
+                            <div id="ExpectDate" style="width:70%"></div>                                
+                            <input type="hidden" name="ExpectDate" id="hiddenExpectDate" value="@Model.EXPECTDATE?.ToString("yyyy-MM-dd")" maxlength="10" />                                
+                            <button type="submit" onclick="return setExpectDate();" class="btn btn-primary btn-sm ms-2">@SharedLocalizer["Button_Change"]</button>
+                        </form>
+                        <p id="expectDateError" class="text-danger d-block"></p>
+                    }
+                    else
+                    {
+                        @( Model.EXPECTDATE.HasValue ? Model.EXPECTDATE.Value.ToString("yyyy-MM-dd") : SharedLocalizer["Status_Undecided"].Value)
+                    }
+                </td>
+                <th><label>@SharedLocalizer["Label_ProgressStatus"]</label></th>
+                <td>@(Model.ProcStatusName != null ? SharedLocalizer["CC" + Model.PROC_STATUS] : SharedLocalizer["Status_Waiting"].Value)</td>
+            </tr>
+            <tr>
+                <th><label>@SharedLocalizer["Label_Urgency"]</label></th>
+                <td>@Model.PriorityName</td>                               
+                <th><label>@SharedLocalizer["Label_Importance"]</label></th>
+                <td>@(string.IsNullOrEmpty(Model.IMPTCD) ? "" : SharedLocalizer["CC" + Model.IMPTCD])</td>
+                <th><label>@SharedLocalizer["Label_Tcode"]</label></th>
+                <td>@Model.REQTCODE</td>
+            </tr>
+            
+        </table>
     </div>
+</div>
 
+    
+<div class="card mt-4">
+    <div class="card-header">@SharedLocalizer["Label_InquiryContent"]</div>
+    <div class="card-body content-display">
+        @Html.Raw(Model.CONTENTS_HTML)
+    </div>
+</div>
+
+
+@if (Model.AttachFiles.Any())
+{   
+    var userFileCnt = 0;
     <div class="card mt-4">
-        <div class="card-header">@SharedLocalizer["Label_InquiryContent"]</div>
-        <div class="card-body content-display">
-            @Html.Raw(Model.CONTENTS_HTML)
-        </div>
+        <div class="card-header">@SharedLocalizer["Label_Attachments"]</div>
+        <ul class="list-group list-group-flush">
+            @foreach(var file in Model.AttachFiles)
+            {
+                @if(file.REQTYPE == "U"){
+                    userFileCnt++;
+                    <li class="list-group-item">
+                        <a asp-action="DownloadFile" asp-route-id="@file.FILEID">@file.REAL_FILENAME</a>
+                    </li>
+                }                    
+            }
+
+            @if( userFileCnt == 0 ){
+                <li class="list-group-item">등록된 파일이 없습니다.</li>
+            }
+        </ul>
     </div>
+}
 
-    @if (Model.AttachFiles.Any())
-    {   
-        var userFileCnt = 0;
-        <div class="card mt-4">
-            <div class="card-header">@SharedLocalizer["Label_Attachments"]</div>
-            <ul class="list-group list-group-flush">
-                @foreach(var file in Model.AttachFiles)
-                {
-                    @if(file.REQTYPE == "U"){
-                        userFileCnt++;
-                        <li class="list-group-item">
-                            <a asp-action="DownloadFile" asp-route-id="@file.FILEID">@file.REAL_FILENAME</a>
-                        </li>
-                    }                    
-                }
-
-                @if( userFileCnt == 0 ){
-                    <li class="list-group-item">등록된 파일이 없습니다.</li>
-                }
-            </ul>
-        </div>
-    }
-
-    <hr/> 
-    @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded)
-    {
+<hr/> 
+@if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded)
+{
     <div class="row">
         <div class="col-md-12">
             <table class="table-layout Details" style="width:100%">
@@ -176,16 +182,17 @@
             </table>
         </div>
     </div>   
+
     <hr/>
-    }
+}
     
-    @{
-        var nonFormStatus = new List<string>{ "63", "65", "68", "69", "82" };
-    }
+@{
+    var nonFormStatus = new List<string>{ "63", "65", "68", "69", "82" };
+}
     
-    @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded && !nonFormStatus.Contains(Model.PROC_STATUS) ){
-    
-    // 관리자 권한이고 대기상태가 아닌경우
+@if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded && !nonFormStatus.Contains(Model.PROC_STATUS) ){
+
+// 관리자 권한이고 대기상태가 아닌경우
     <form id="req-form" asp-action="SubmitAnswer" asp-route-id="@Model.REQID" enctype="multipart/form-data">
         <input type="hidden" asp-for="REQID" />
         <input type="hidden" asp-for="PROC_STATUS" />
@@ -279,78 +286,76 @@
         </div>
     </form>
 
-    }
+}
 
     <!-- 답변완료 시 답변 내용 출력 -->
-    @if (!string.IsNullOrEmpty(Model.ANSWER_HTML) && ( Model.PROC_STATUS == "65" || Model.PROC_STATUS == "68" ) )
-    {
-        <div class="card mt-4">
-            <div class="card-header">@Html.DisplayNameFor(model => model.ANSWER_HTML)</div>
-            <div class="card-body content-display">
-                @Html.Raw(Model.ANSWER_HTML)
-            </div>
+@if (!string.IsNullOrEmpty(Model.ANSWER_HTML) && ( Model.PROC_STATUS == "65" || Model.PROC_STATUS == "68" ) )
+{
+    <div class="card mt-4">
+        <div class="card-header">@Html.DisplayNameFor(model => model.ANSWER_HTML)</div>
+        <div class="card-body content-display">
+            @Html.Raw(Model.ANSWER_HTML)
         </div>
+    </div>
         
-        @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded){
-            <div class="card mt-4">
-                <div class="card-header">@Html.DisplayNameFor(model => model.NOTE_HTML)</div>
-                <div class="card-body content-display">
-                    @Html.Raw(Model.NOTE_HTML)
-                </div>
-            </div>
-        }
-
-        @if (Model.AttachFiles.Any())
-        {
-            var fileCnt = 0;
-            <div class="card mt-4">
-                <div class="card-header">@SharedLocalizer["Label_Attachments"]</div>
-                <ul class="list-group list-group-flush">
-                    @foreach(var file in Model.AttachFiles)
-                    {
-                        @if(file.REQTYPE == "M"){
-                            fileCnt++;
-                            <li class="list-group-item">
-                                <a asp-action="DownloadFile" asp-route-id="@file.FILEID">@file.REAL_FILENAME</a>
-                            </li>
-                        }                    
-                    }
-
-                    @if( fileCnt == 0 ){
-                        <li class="list-group-item">등록된 파일이 없습니다.</li>
-                    }
-                </ul>
-            </div>
-        }
-
-    }
-
-    @if (Model.PROC_STATUS == "65" && Model.REQUSERID == User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier))
-    {
+    @if((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded){
         <div class="card mt-4">
-            <div class="card-header">
-                @SharedLocalizer["Label_ReInquiry"]
-            </div>
-            <div class="card-body">
-                <form asp-action="SubmitReInquiry" asp-controller="Req" method="post">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="@Model.REQID" />
-                    
-                    <div class="mb-3">
-                        <div id="re-inquiry-editor"></div>
-                        <input type="hidden" name="reInquiryContent" />
-                    </div>
-                    
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-primary">@SharedLocalizer["Button_SendReInquiry"]</button>
-                    </div>
-                </form>
+            <div class="card-header">@Html.DisplayNameFor(model => model.NOTE_HTML)</div>
+            <div class="card-body content-display">
+                @Html.Raw(Model.NOTE_HTML)
             </div>
         </div>
     }
 
-    
-</div>
+    @if (Model.AttachFiles.Any())
+    {
+        var fileCnt = 0;
+        <div class="card mt-4">
+            <div class="card-header">@SharedLocalizer["Label_Attachments"]</div>
+            <ul class="list-group list-group-flush">
+                @foreach(var file in Model.AttachFiles)
+                {
+                    @if(file.REQTYPE == "M"){
+                        fileCnt++;
+                        <li class="list-group-item">
+                            <a asp-action="DownloadFile" asp-route-id="@file.FILEID">@file.REAL_FILENAME</a>
+                        </li>
+                    }                    
+                }
+
+                @if( fileCnt == 0 ){
+                    <li class="list-group-item">등록된 파일이 없습니다.</li>
+                }
+            </ul>
+        </div>
+    }
+
+}
+
+@if (Model.PROC_STATUS == "65" && Model.REQUSERID == User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier))
+{
+    <div class="card mt-4">
+        <div class="card-header">
+            @SharedLocalizer["Label_ReInquiry"]
+        </div>
+        <div class="card-body">
+            <form asp-action="SubmitReInquiry" asp-controller="Req" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.REQID" />
+                
+                <div class="mb-3">
+                    <div id="re-inquiry-editor"></div>
+                    <input type="hidden" name="reInquiryContent" />
+                </div>
+                
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">@SharedLocalizer["Button_SendReInquiry"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
 <!-- 히스토리 영역 -->
 <div class="mt-4">
 
@@ -472,8 +477,11 @@
     </div>
 </div>
 <!-- 히스토리 영역 -->
+
 <!-- 버튼 영역 -->
 <div class="d-flex justify-content-between align-items-center mt-5">
+
+
     <div>
         @if(Model.PROC_STATUS == "69" && currentUserId == Model.REQUSERID )
         {
@@ -492,7 +500,8 @@
             <form asp-controller="Req" asp-action="SetProcStatus" asp-route-id="@Model.REQID" method="post" class="me-2">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="status" value="62" />
-                <button type="submit" class="btn btn-primary">@SharedLocalizer["Button_Accept"]</button>
+                <input type="hidden" name="expectDate" id="acceptExpectDate" />
+                <button type="submit" class="btn btn-primary" onclick="return prepareAccept();">@SharedLocalizer["Button_Accept"]</button>
             </form>
             <form asp-controller="Req" asp-action="SetProcStatus" asp-route-id="@Model.REQID" method="post">
                 @Html.AntiForgeryToken()
@@ -522,6 +531,11 @@
     </div>
 </div>
 <!-- 버튼 영역 -->
+
+<div class='bigPictureWrapper'>
+	<div class='bigPicture'>
+	</div>	   
+</div>
 
 @section Scripts {
 
@@ -568,6 +582,45 @@
         padding: 20px;
         background-color: #f8f9fa;
     }
+
+    .bigPictureWrapper {
+        position: fixed;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.85); 
+        z-index: 9999;
+        cursor: pointer;
+    }
+
+    .bigPicture {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    .bigPicture img {
+        max-width: 90%;
+        max-height: 90%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        transform: scale(0.9);
+        transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.4s ease;
+        opacity: 0;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+    }
+
+    .bigPicture.active img {
+        transform: scale(1.2);
+        opacity: 1;
+    } 
     
 </style>
 
@@ -582,19 +635,27 @@
     initializeHtmlEditor('#note-editor', 'input[name="@Html.NameFor(m => m.NOTE_HTML)"]');
     initializeHtmlEditor('#re-inquiry-editor', 'input[name="reInquiryContent"]');
 
-    function popupImage(url){
-        var img = new Image();
-        var scWidth = screen.availWidth; //현재 사용중인 스크린 크기를 구함
-        var scHeight = screen.availHeight;
-        var left = (parseInt(scWidth)-650)/2; //팝업창 위치 조절
-        var top = (parseInt(scHeight)-900)/2;
-        img.src = url;
-        var img_width = img.width-500; //팝업창 크기 조절
-        var win_width = img.width-500;
-        var height = img.height-290;
-        var openImage = window.open('','_blank','width='+img_width+',height='+height+',top='+top+',left='+left+',menubars=no,scrollbars=auto');
-        openImage.document.write("<style>body{margin:0px;}</style><a href=#; onclick=window.close(); onfocus=this.blur();><img src='"+url+"'width='"+win_width+"'></a>");
+    @* 이미지 클릭 *@
+    function showImage(fileCallPath){
+		    
+        $(".bigPictureWrapper").css("display","flex").show();		    
+		    $(".bigPicture")
+		        .html("<img src='"+fileCallPath+"' >");
+            
+        // 약간의 지연 후 active 클래스를 추가하여 애니메이션 효과 적용
+        setTimeout(function() {
+            $(".bigPicture").addClass("active");
+        }, 10);
     }
+		  
+    $(".bigPictureWrapper").on("click", function(e){    
+        $(".bigPicture").removeClass("active"); // 확대 효과 제거
+        
+        setTimeout(function(){
+            $('.bigPictureWrapper').hide();
+        }, 300); // transition 시간(0.3s)과 동일하게 설정
+    });
+
     
     $("#file-uploader").dxFileUploader({ 
         name: 'newFiles',
@@ -621,6 +682,19 @@
         var form = document.getElementById('req-form');
         form.action = '@Url.Action("SaveDraft", "Req", new { id = Model.REQID })';
         form.submit();
+    }
+
+    function prepareAccept() {        
+        var expectDateValue = $('#hiddenExpectDate').val();
+
+        if (!expectDateValue) {            
+            alert('@Html.Raw(SharedLocalizer["Validation_SelectExpectDate"])');
+            return false;
+        }
+        
+        $('#acceptExpectDate').val(expectDateValue);
+
+        return confirm('@Html.Raw(SharedLocalizer["Confirmation_Accept"])'); // 접수하시겠습니까? 확인창
     }
 
     function setExpectDate(){
@@ -672,7 +746,7 @@
         });
 
         $('.content-display img').on('click', function(othis){
-            popupImage(othis.target.src);
+            showImage(othis.target.src);
         });
 
         $('#req-form').on('submit', function (e) {
@@ -707,8 +781,6 @@
             }
             return true;
         });
-
-
     });
 
 </script>

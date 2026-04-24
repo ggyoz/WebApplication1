@@ -113,5 +113,41 @@ namespace CSR.Controllers
 
             return View("EmailTest");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SendResponseToRequesterEmail(string toEmail)
+        {
+            try
+            {
+                // 테스트용 가상 모델 데이터 생성 (요청자용 답변 알림)
+                var model = new ReqInfo
+                {
+                    REQID = 88888,
+                    TITLE = "[테스트] ERP 시스템 권한 추가 요청 건에 대하여",
+                    ReqUserName = "김요청", // 요청자
+                    ResUserName = "이조치", // 조치자
+                    ProcStatusName = "조치완료",
+                    UPDATE_DATE = DateTime.Now,
+                    ANSWER_HTML = "<p>요청하신 ERP 시스템 권한 추가가 완료되었습니다.</p><p>로그아웃 후 다시 로그인하여 확인 부탁드립니다.</p><br/><ul><li>적용권한: 영업조회, 매출관리</li><li>조치일시: 2024-05-20 14:00</li></ul>",
+                    NOTE_HTML = "시스템 설정 완료"
+                };
+
+                // Razor 뷰를 HTML 문자열로 렌더링 (방금 만든 템플릿 사용)
+                string htmlBody = await _renderer.RenderViewToStringAsync("EmailTemplates/ResponseToRequester", model);
+
+                // 메일 전송
+                await _emailService.SendEmailAsync(toEmail, "[조치완료] 요청하신 사항에 대한 답변이 등록되었습니다. (TEST)", htmlBody);
+
+                ViewBag.Message = "요청자용 답변 알림 메일이 성공적으로 전송되었습니다.";
+                ViewBag.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = $"템플릿 메일 전송 실패: {ex.Message}";
+                ViewBag.IsSuccess = false;
+            }
+
+            return View("EmailTest");
+        }
     }
 }

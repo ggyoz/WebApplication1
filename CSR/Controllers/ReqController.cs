@@ -353,8 +353,6 @@ namespace CSR.Controllers
             string? importanceCd = null
             )
         {
-
-            Console.WriteLine("terminateYn : " + terminateYn);
             // 세션이 없으면 로그인페이지로 튕겨냄
             var sessionCorCd = HttpContext.Session.GetString("CorCd");
             var sessionTeamCd = HttpContext.Session.GetString("TeamCd");
@@ -686,6 +684,14 @@ namespace CSR.Controllers
             ViewBag.ImportantCodes = await _commCodeService.GetSelectListByPCodeAsync(78);
             ViewBag.difficultCodes = await _commCodeService.GetSelectListByPCodeAsync(7);
 
+            var users = await _userService.GetManagerOrHigherUsersForDropDownAsync();
+            ViewBag.UserList = users.Select(u => new SelectListItem
+            {
+                Value = u.UserId,
+                Text = u.UserName,
+                Selected = (u.UserId == reqInfo.RESUSERID)
+            }).ToList();
+
             var originalReq = await _reqService.GetReqInfoByIdAsync(id);
             reqInfo.AttachFiles = originalReq?.AttachFiles ?? new List<ReqFile>();
             
@@ -817,6 +823,32 @@ namespace CSR.Controllers
                     modelToReturn.UPDATE_USERID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";
                     modelToReturn.PROC_STATUS = "65"; // Set status for answering
                     await _reqService.UpdateReqInfoAsync(modelToReturn, newFiles, deletedFiles, historyReasonValue);
+
+                    // 요청자에게 알림 메일 발송
+                    try
+                    {
+                        var fullReqInfo = await _reqService.GetReqInfoByIdAsync(id);
+                        if (fullReqInfo != null && !string.IsNullOrEmpty(fullReqInfo.REQUSERID))
+                        {
+                            var reqUser = await _userService.GetUserByIdAsync(fullReqInfo.REQUSERID);
+                            if (reqUser != null && !string.IsNullOrEmpty(reqUser.EmailAddr))
+                            {
+                                Console.WriteLine("reqUser.EmailAddr : " + reqUser.EmailAddr);
+                                string emailBody = await _renderer.RenderViewToStringAsync("EmailTemplates/ResponseToRequester", fullReqInfo);
+                                string subject = $"[ITSM] 문의하신 요청사항에 답변이 등록되었습니다. - {fullReqInfo.TITLE}";
+                                await _emailService.SendEmailAsync(reqUser.EmailAddr, subject, emailBody);
+                                
+                                _logger.LogInformation("Notification email sent to processor {UserId} for Request {ReqId}", fullReqInfo.REQUSERID, id);
+                            }
+                        }
+                    }
+                    catch (Exception mailEx)
+                    {
+                        // 메일 발송 실패가 요청 생성 실패로 이어지지 않도록 로그만 기록
+                        _logger.LogError(mailEx, "Error sending notification email for new request {ReqId}", id);
+                    }
+
+
                     return RedirectToAction(nameof(Details), new { id = reqInfo.REQID });
                 }
                 catch (Exception ex)
@@ -824,6 +856,8 @@ namespace CSR.Controllers
                     _logger.LogError(ex, "Error submitting answer for requirement.");
                     ModelState.AddModelError("", "An error occurred while submitting the answer.");
                 }
+
+                
             }
 
             // Repopulate ViewBag for Details view
@@ -1138,8 +1172,6 @@ namespace CSR.Controllers
             {
                 var stats = await _reqService.GetRequestsCountByDivisionAndPriorityAsync();
                 
-                // --- 쿼리디버깅코드 ---                                
-                Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(stats, Formatting.Indented));
 
                 return Json(new { success = true, stats = stats });
             }
@@ -1321,7 +1353,7 @@ namespace CSR.Controllers
 
             // Append re-inquiry content
             string reInquiryHeader = $"<hr><h4>재문의 ({DateTime.Now:yyyy-MM-dd})</h4>";
-            reqInfo.CONTENTS_HTML += reInquiryHeader + reInquiryContent;
+            reqInfo.CONTENTS_HTML = reInquiryHeader + reInquiryContent;
 
             // Update status to "Re-inquiry"
             reqInfo.PROC_STATUS = "83";

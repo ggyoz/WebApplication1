@@ -101,3 +101,31 @@ table.table-striped tr{
 table.table-striped td{
     vertical-align: middle;
 }
+
+
+/* Styling for form tables */
+/* table.table-create td {
+    padding: 12px 10px;
+    vertical-align: middle;
+}
+
+table.table-create.Details td{
+    padding: 15px 10px;
+    vertical-align: middle;
+}
+
+table.table-create tr {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+table.table-create tr:last-of-type {
+    border-bottom: none;
+}
+
+table.table-create th {
+    background-color: #e0e0e0;
+    color:#000000;
+    padding: 12px 1px;
+    vertical-align: middle;
+    text-align: center;
+} */

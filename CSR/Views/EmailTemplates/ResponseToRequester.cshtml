@@ -1,0 +1,45 @@
+@model CSR.Models.ReqInfo
+@{
+    Layout = "_EmailLayout";
+}
+
+<p>안녕하세요 @Model.ReqUserName 님,</p>
+<p>귀하가 등록하신 ITSM 요청에 대한 조치 결과(답변)가 등록되었습니다.</p>
+
+<table style="width: 40%; border-collapse: collapse; border: 1px solid #dee2e6; margin: 20px auto; table-layout: fixed;">
+    <tr>
+        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 12px; width: 30%; font-weight: 600; text-align: center;">요청번호</th>
+        <td style="border: 1px solid #dee2e6; padding: 12px; text-align: left;">@Model.REQID</td>
+    </tr>
+    <tr>
+        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 12px; font-weight: 600; text-align: center;">요청제목</th>
+        <td style="border: 1px solid #dee2e6; padding: 12px; text-align: left; font-weight: bold; color: #333;">@Model.TITLE</td>
+    </tr>
+    <tr>
+        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 12px; font-weight: 600; text-align: center;">조치자</th>
+        <td style="border: 1px solid #dee2e6; padding: 12px; text-align: left;">@Model.ResUserName</td>
+    </tr>
+    <tr>
+        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 12px; font-weight: 600; text-align: center;">진행상태</th>
+        <td style="border: 1px solid #dee2e6; padding: 12px; text-align: left;">@Model.ProcStatusName</td>
+    </tr>
+    <tr>
+        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 12px; font-weight: 600; text-align: center;">답변등록일</th>
+        <td style="border: 1px solid #dee2e6; padding: 12px; text-align: left;">@(Model.UPDATE_DATE?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))</td>
+    </tr>
+    <tr>
+        <td colspan="2" style="text-align: center;">
+            <a href="http://itsm.mobasesystem.com/Req/Details/@Model.REQID" 
+                style="display: inline-block; padding: 12px 24px; margin-top: 10px; margin-bottom: 10px;  background-color: #0d6efd; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 500;">
+                요청사항 바로가기
+            </a>
+        </td>
+    </tr>
+</table>
+@* 
+<div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-left: 4px solid #198754; border-radius: 4px;">
+    <strong>조치 내용(답변):</strong><br />
+    <div style="margin-top: 10px; max-height: 300px; overflow-y: auto; background-color: #ffffff; padding: 10px; border: 1px solid #eee;">
+        @Html.Raw(Model.ANSWER_HTML)
+    </div>
+</div> *@

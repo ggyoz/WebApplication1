@@ -25,13 +25,13 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form id="answerForm" asp-action="Answer" asp-route-id="@Model.REQID" enctype="multipart/form-data">
+        <form id="answerForm" asp-action="Answer" onsubmit="return validateForm();" asp-route-id="@Model.REQID" enctype="multipart/form-data">
             <input type="hidden" asp-for="REQID" />
             <input type="hidden" asp-for="REG_USERID" />
             <div asp-validation-summary="All" class="text-danger"></div>
 
 
-            <table class="table-layout" width="100%; min-width:600px;">
+            <table class="table-create" width="100%; min-width:600px;">
                 <colgroup>
                     <col width="8%">
                     <col width="15%">
@@ -191,9 +191,55 @@
     </div>
 </div>
 
+
 @section Scripts {
     <style>
-        #file-uploader .dx-fileuploader-input-wrapper { min-height: 150px; border: 2px dashed #ccc; padding: 20px; background-color: #f8f9fa; }
+
+        #file-uploader .dx-fileuploader-input-wrapper {
+            min-height: 150px;
+            border: 2px dashed #ccc;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        @* 이미지 넘침 방지 *@
+        .dx-htmleditor-content img{
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .table-create {            
+            border-top:1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .table-create th {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: bold;
+            padding: 12px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: right;
+            vertical-align: middle;
+        }
+        .table-create td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+        .table-create .form-control, .table-create .form-select {
+            border-radius: 4px;
+        }
+        
+        .html-editor .dx-htmleditor-content {
+            white-space: normal; /* 텍스트가 자동으로 줄 바꿈되도록 설정 */
+            word-break: break-word; /* 긴 단어도 줄 바꿈되도록 설정 */
+            background-color:#ffffff;
+        }
+        
     </style>
     <script>
 
@@ -294,7 +340,7 @@
 
                     reqMenuDropdown.val(reqMenuValue);      
 
-                    getadminDropdown(adminId, reqMenuValue);
+                    //getadminDropdown(adminId, reqMenuValue);
                 },
                 error: function(xhr, status, error) {
                     console.error("An error occurred while fetching menus: " + error);
@@ -472,16 +518,30 @@
                 $('#TITLE').focus();
                 return false;
             }
-                    // 2. 시스템 필수 체크
+            // REQTYPE 요청유형형
+            if (!$('#REQTYPE').val()) {
+                alert('@Html.Raw(SharedLocalizer["요청유형을 선택해주세요"])');
+                $('#REQTYPE').focus();
+                return false;
+            }
+
+            // 2. 시스템 필수 체크
             if (!$('#SYSTEMCD').val()) {
                 alert('@Html.Raw(SharedLocalizer["Validation_Required_System"] ?? "시스템을 선택해 주세요.")');
                 $('#SYSTEMCD').focus();
                 return false;
             }
-                    // 3. 처리 상태 필수 체크
+            // 3. 처리 상태 필수 체크
             if (!$('#PROC_STATUS').val()) {
                 alert('@Html.Raw(SharedLocalizer["Validation_Required_Status"] ?? "처리 상태를 선택해 주세요.")');
                 $('#PROC_STATUS').focus();
+                return false;
+            }
+
+            // 3. 처리 상태 필수 체크
+            if (!$('#RESUSERID').val()) {
+                alert('@Html.Raw(SharedLocalizer["조치자를 선택해주세요"])');
+                $('#RESUSERID').focus();
                 return false;
             }
 

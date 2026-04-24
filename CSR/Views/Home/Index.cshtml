@@ -15,7 +15,7 @@
             <div class="col-md-2 mb-4" style="width:20%">
                 <div class="card blueCard shadow-sm h-100" onClick="goToReqList('', '')">
                     <div class="card-body m-3">
-                        <div class="d-flex justify-content-between align-items-center"">
+                        <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column"> 
                                 <h5 class="card-title mb-0">@SharedLocalizer["Dashboard_TotalRequests"]</h5>
                                 <p class="card-text mb-0">@SharedLocalizer["Dashboard_TotalRequests_Desc"]</p>
@@ -39,7 +39,7 @@
                 </div>
             </div>
             <div class="col-md-2 mb-4" style="width:20%">
-                <div class="card greenCard shadow-sm h-100" onClick="goToReqList('64', 'my')">
+                <div class="card greenCard shadow-sm h-100" onClick="goToReqList('62,64,65,83', 'my')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center"> 
                             <div class="d-flex flex-column"> 
@@ -67,7 +67,7 @@
             </div>
 
             <div class="col-md-3 mb-4" style="width:20%">
-                <div class="card redCard shadow-sm h-100" onClick="goToReqList('69,62,64', 'delay')">
+                <div class="card redCard shadow-sm h-100" onClick="goToReqList('69,62,64,83', 'delay')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
@@ -82,7 +82,7 @@
         }
         else if (User.IsInRole("R3")) // Manager
         {
-            <div class="col-md-3 mb-4">
+            <div class="col-md-3 mb-4" style="width:20%">
                 <div class="card blueCard shadow-sm h-100" onClick="goToReqList('')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
@@ -96,7 +96,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-4">
+            <div class="col-md-3 mb-4" style="width:20%">
                 <div class="card yellowCard shadow-sm h-100" onClick="goToReqList('69', 'my')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
@@ -110,8 +110,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="card greenCard shadow-sm h-100" onClick="goToReqList('62,64,65', 'my')">
+            <div class="col-md-3 mb-4" style="width:20%">
+                <div class="card greenCard shadow-sm h-100" onClick="goToReqList('62,64,65,83', 'my')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
@@ -123,8 +123,23 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="card redCard shadow-sm h-100" onClick="goToReqList('', 'delay')">
+
+            <div class="col-md-3 mb-4" style="width:20%">
+                <div class="card blueCard shadow-sm h-100" onClick="goToReqList('65', 'my')">
+                    <div class="card-body m-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-column">
+                                <h5 class="card-title mb-0">@SharedLocalizer["현업검증"]</h5>
+                                <p class="card-text mb-0">@SharedLocalizer["답변 완료된 요청"]</p>
+                            </div>
+                            <p class="card-text display-5 mb-0" id="r4OverAnsweredRequestsCount">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-4" style="width:20%">
+                <div class="card redCard shadow-sm h-100" onClick="goToReqList('69,62,64,83', 'delay')">
                     <div class="card-body m-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column">
@@ -727,7 +742,7 @@
                         var totalCount = data.WAITCOUNT + data.RECEIVEDCOUNT + data.INPROGRESSCOUNT + data.CLOSEDCOUNT + data.ANSWEREDCOUNT;
                         if (currentUserRole === 'R4') {
                             $('#r4TotalRequestsCount').text(totalCount);
-                            $('#r4OverAnsweredRequestsCount').text(data.ANSWEREDCOUNT);
+                            $('#r4OverAnsweredRequestsCount').text(data.ANSWEREDCOUNT);                            
                         } else {
                             $('#r3TotalRequestsCount').text(totalCount);
                         }

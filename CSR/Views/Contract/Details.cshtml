@@ -1,0 +1,148 @@
+@model CSR.Models.Contract
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<CSR.SharedStrings> SharedLocalizer
+
+@{
+    ViewData["Title"] = "계약 상세 정보";
+}
+
+<div class="container-fluid px-4">
+
+    <hr />
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-file-contract me-1"></i>
+                        <strong>[@Model.VENDOR_CODE] @Model.VENDOR_NAME</strong>
+                        <span class="ms-2 text-muted">@Model.CONTRACT_YEAR 년</span>
+                    </div>
+                    <div>
+                        <span class="badge bg-secondary">@Model.CONTRACT_TYPE</span>
+                        <span class="badge @(Model.USEYN == "Y" ? "bg-success" : "bg-danger") ms-1">
+                            @(Model.USEYN == "Y" ? "사용" : "미사용")
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table-detail w-100">
+                        <colgroup>
+                            <col width="15%">
+                            <col width="35%">
+                            <col width="15%">
+                            <col width="35%">
+                        </colgroup>
+                        <tbody>
+                            <tr class="section-title">
+                                <td colspan="4"><i class="fas fa-info-circle me-2"></i> 계약 기본 정보</td>
+                            </tr>
+                            <tr>
+                                <th>업체명</th>
+                                <td>[@Model.VENDOR_CODE] @Model.VENDOR_NAME</td>
+                                <th>구분</th>
+                                <td><span class="badge bg-secondary">@Model.CONTRACT_TYPE</span></td>
+                            </tr>
+                            <tr class="section-title">
+                                <td colspan="4"><i class="fas fa-calendar-alt me-2"></i> 계약 기간</td>
+                            </tr>
+                            <tr>
+                                <th>계약연도</th>
+                                <td>@Model.CONTRACT_YEAR 년</td>
+                                <th>계약기간</th>
+                                <td>
+                                    @{
+                                        var parts = new System.Collections.Generic.List<string>();
+                                        if (Model.CONTRACT_YEARS > 0) parts.Add($"{Model.CONTRACT_YEARS}년");
+                                        if (Model.CONTRACT_MONTHS > 0) parts.Add($"{Model.CONTRACT_MONTHS}개월");
+                                    }
+                                    @(parts.Any() ? string.Join(" ", parts) : "-")
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>계약시작일</th>
+                                <td>@Model.CONTRACT_START.ToString("yyyy-MM-dd")</td>
+                                <th>계약종료일</th>
+                                <td>@Model.CONTRACT_END.ToString("yyyy-MM-dd")</td>
+                            </tr>
+                            <tr class="section-title">
+                                <td colspan="4"><i class="fas fa-clipboard-list me-2"></i> 계약 내역</td>
+                            </tr>
+                            <tr>
+                                <th>계약내역</th>
+                                <td colspan="3" style="min-height: 100px; vertical-align: top; white-space: pre-wrap;">
+                                    @Html.Raw(Model.CONTRACT_DESC?.Replace("\n", "<br/>") ?? "-")
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>등록일 / 등록자</th>
+                                <td>@Model.REG_DATE.ToString("yyyy-MM-dd HH:mm") / @Model.REG_USERID</td>
+                                <th>수정일 / 수정자</th>
+                                <td>
+                                    @(Model.UPDATE_DATE?.ToString("yyyy-MM-dd HH:mm") ?? "-") /
+                                    @(Model.UPDATE_USERID ?? "-")
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="button-area text-end mt-3 mb-5">
+                <a asp-action="Edit" asp-route-id="@Model.CONTRACT_ID" class="btn btn-warning px-4">
+                    <i class="fas fa-edit"></i> 수정
+                </a>
+                <button type="button" class="btn btn-danger px-4" onclick="deleteContract(@Model.CONTRACT_ID)">
+                    <i class="fas fa-trash"></i> 삭제
+                </button>
+                <a asp-action="Index" class="btn btn-secondary px-4">
+                    <i class="fas fa-list"></i> 목록
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="deleteForm" asp-action="Delete" method="post" style="display:none;">
+    <input type="hidden" name="id" id="deleteId" />
+</form>
+
+@section Scripts {
+    <style>
+        .table-detail {
+            border-collapse: collapse;
+            border-top: 1px solid #dee2e6;
+        }
+        .table-detail th {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            border: 1px solid #dee2e6;
+            font-weight: 600;
+            color: #495057;
+            text-align: left;
+        }
+        .table-detail td {
+            padding: 12px 15px;
+            border: 1px solid #dee2e6;
+            color: #212529;
+        }
+        .section-title {
+            background-color: #e9ecef;
+            font-weight: bold;
+            color: #343a40;
+        }
+        .section-title td {
+            padding: 8px 15px;
+            border-bottom: 2px solid #dee2e6;
+        }
+    </style>
+    <script>
+        function deleteContract(id) {
+            if (confirm('정말 삭제하시겠습니까?')) {
+                document.getElementById('deleteId').value = id;
+                document.getElementById('deleteForm').submit();
+            }
+        }
+    </script>
+}

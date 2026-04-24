@@ -144,6 +144,8 @@ function initDateBox(selector, hiddenSelector, value){
     if (value) {
         $(hiddenSelector).val(formatDate(new Date(value)));
     }
+
+    return dateBox;
 };
 
 

@@ -24,7 +24,7 @@
             <input type="hidden" asp-for="REG_USERID" />
             <input type="hidden" asp-for="REQUSERID" />
             
-            <table class="table-layout" width="100%">
+            <table class="table-create" width="100%">
                 <colgroup>
                     <col width="8%">
                     <col width="15%">
@@ -37,17 +37,17 @@
                 </colgroup>
                 <tbody>
                     <tr>
-                        <td>@SharedLocalizer["Label_Requester"]</td>
+                        <th><label>@SharedLocalizer["Label_Requester"]</label></th>
                         <td>
                             <div class="d-flex">
                                 <input asp-for="ReqUserName" class="form-control" readonly />
                                 @if( (await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded ){
-                                    <div id="btnSearchUser" class="ms-2"></div>
+                                    <div style="width:30%" id="btnSearchUser" class="ms-2"></div>
                                 }
                             </div>
                             <span asp-validation-for="ReqUserName" class="text-danger"></span>
                         </td>
-                        <td>@SharedLocalizer["Label_Affiliation"]</td>
+                        <th><label>@SharedLocalizer["Label_Affiliation"]</label></th>
                         <td>
                             @{
                                 var orgParts = new[] { Model.CorpName, Model.DeptName, Model.OfficeName, Model.TeamName };
@@ -56,38 +56,38 @@
                             <input type="text" class="form-control" name="organization" value="@organization" id="organization" readonly />
                         </td>
 
-                        <td>@SharedLocalizer["Label_Email"]</td>
+                        <th><label>@SharedLocalizer["Label_Email"]</label></th>
                         <td>
                             <input asp-for="ReqUserEmail" class="form-control" readonly />
                             <span asp-validation-for="ReqUserEmail" class="text-danger"></span>
                         </td>
-                        <td>@SharedLocalizer["Label_Contact"]</td>
+                        <th><label>@SharedLocalizer["Label_Contact"]</label></th>
                         <td>
                             <input asp-for="ReqUserTel" class="form-control" readonly />
                             <span asp-validation-for="ReqUserTel" class="text-danger"></span>
                         </td>
                     </tr>
                     <tr>
-                        <td><label class="control-label">@SharedLocalizer["Label_RequestType"]</label></td>
+                        <th><label class="control-label">@SharedLocalizer["Label_RequestType"]</label></th>
                         <td>
                             <select asp-for="REQTYPE" asp-items="ViewBag.ReqTypes" class="form-select">
                             <option value="">@SharedLocalizer["Placeholder_SelectRequestType"]</option>
                             </select>
                             <span asp-validation-for="REQTYPE" class="text-danger"></span>
                         </td>
-                        <td><label class="control-label">@SharedLocalizer["Label_SystemCode"]</label></label></td>
+                        <th><label class="control-label">@SharedLocalizer["Label_SystemCode"]</label></th>
                         <td>
                             <select asp-for="SYSTEMCD" asp-items="ViewBag.SystemCodes" class="form-select">
                             <option value="">@SharedLocalizer["Placeholder_SelectSystem"]</option>
                             </select>
                             <span asp-validation-for="SYSTEMCD" class="text-danger"></span>
                         </td>
-                        <td><label class="control-label">@SharedLocalizer["Label_RequestMenu"]</label></td>
+                        <th><label class="control-label">@SharedLocalizer["Label_RequestMenu"]</label></th>
                         <td>
                             <select asp-for="REQMENU" id="ReqMenu" class="form-select"></select>
                             <span asp-validation-for="REQMENU" class="text-danger"></span>
                         </td>
-                        <td><label class="control-label">@SharedLocalizer["Label_ActionTaker"]<label></td>
+                        <th><label class="control-label">@SharedLocalizer["Label_ActionTaker"]</label></th>
                         <td>
                             <select asp-for="RESUSERID" class="form-select"></select>
                             <span asp-validation-for="RESUSERID" class="text-danger"></span>
@@ -95,24 +95,27 @@
                     </tr>
                     
                     <tr>
-                        <td><label class="control-label">@SharedLocalizer["Label_RequestDate"]</label></td>
+                        <th><label class="control-label">@SharedLocalizer["Label_RequestDate"]</label></th>
                         <td>
-                            <input asp-for="REQDATE" type="date" class="form-control" />
+                            <div id="ReqDate"></div>
+                            <input asp-for="REQDATE" type="hidden" class="form-control" id="hiddenReqDate" />
                             <span asp-validation-for="REQDATE" class="text-danger"></span>
                         </td>
-                        <td><label class="control-label">@SharedLocalizer["Label_DueDate"]</label></td>
+                        <th><label class="control-label">@SharedLocalizer["Label_DueDate"]</label></th>
                         <td>
-                            <input asp-for="DUEDATE" type="date" class="form-control" />
+                            <div id="DueDate"></div>                            
+                            <input asp-for="DUEDATE" type="hidden" class="form-control" id="hiddenDueDate"/>                            
                             <span asp-validation-for="DUEDATE" class="text-danger"></span>
+                            <div class="mt-1"><i class="bi bi-caret-right-fill"></i> <small class="text-muted">완료요청일은 요청일 기준 D+5일 이후로 작성 부탁드립니다.</small></div>
                         </td>
-                        <td><label class="control-label">@SharedLocalizer["Label_Urgency"]</label></td>
+                        <th><label class="control-label">@SharedLocalizer["Label_Urgency"]</label></th>
                         <td>
                             <select asp-for="PRIORITYCD" asp-items="ViewBag.PriorityCodes" class="form-select">
                             <option value="">@SharedLocalizer["Placeholder_SelectUrgency"]</option>
                             </select>
                             <span asp-validation-for="PRIORITYCD" class="text-danger"></span>
                         </td>  
-                        <td><label class="control-label">@SharedLocalizer["Label_Tcode"]</label></td>
+                        <th><label class="control-label">@SharedLocalizer["Label_Tcode"]</label></th>
                         <td>
                             <input asp-for="REQTCODE" type="text" class="form-control" maxlength="16" />
                             <span asp-validation-for="REQTCODE" class="text-danger"></span>
@@ -120,7 +123,7 @@
                     </tr>
 
                     <tr>
-                        <td><label class="control-label">@SharedLocalizer["Label_Title"]</label></td>
+                        <th><label class="control-label">@SharedLocalizer["Label_Title"]</label></th>
                         <td colspan="7">
                             <input asp-for="TITLE" class="form-control" maxlength="100" />
                             <span asp-validation-for="TITLE" class="text-danger"></span>
@@ -128,9 +131,9 @@
                     </tr>
 
                     <tr>
-                        <td style="vertical-align: top;">
+                        <th style="vertical-align: top;">
                             <label class="control-label">@SharedLocalizer["Label_Content"]</label>
-                        </td>
+                        </th>
                         <td colspan="7">
                             <span asp-validation-for="CONTENTS_HTML" class="text-danger"></span>
                             <div class="html-editor"></div>
@@ -145,7 +148,7 @@
                         </td>
                     </tr>                    
                     <tr>
-                        <td><label class="control-label">@SharedLocalizer["Label_Attachments"]</label></td>
+                        <th><label class="control-label">@SharedLocalizer["Label_Attachments"]</label></th>
                         <td colspan="7">
                             <div>
                                 <div id="file-uploader"></div>
@@ -170,6 +173,29 @@
 
 @section Scripts {
     <style>
+        .table-create {            
+            border-top:1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .table-create th {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: bold;
+            padding: 12px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: right;
+            vertical-align: middle;
+        }
+        .table-create td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+        .table-create .form-control, .table-create .form-select {
+            border-radius: 4px;
+        }
         #file-uploader .dx-fileuploader-input-wrapper {
             min-height: 150px;
             border: 2px dashed #ccc;
@@ -182,9 +208,25 @@
             background-color:#ffffff;
         }
 
+         @* 이미지 넘침 방지 *@
+        .dx-htmleditor-content img{
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
     </style>
+
     <script>
         $(function() {
+
+            var today = new Date();
+            var after5day = new Date();
+            after5day.setDate(today.getDate() + 5);
+
+            initDateBox('#ReqDate', '#hiddenReqDate', today);
+            initDateBox('#DueDate', '#hiddenDueDate', after5day);
 
             initializeHtmlEditor(
                 '.html-editor',
@@ -218,8 +260,8 @@
                     { id: '#SYSTEMCD', label: '@Html.Raw(SharedLocalizer["Label_SystemCode"])' },
                     { id: '#ReqMenu', label: '@Html.Raw(SharedLocalizer["Label_RequestMenu"])' },
                     { id: '#RESUSERID', label: '@Html.Raw(SharedLocalizer["Label_ActionTaker"])' },
-                    { id: '#REQDATE', label: '@Html.Raw(SharedLocalizer["Label_RequestDate"])' },
-                    { id: '#DUEDATE', label: '@Html.Raw(SharedLocalizer["Label_DueDate"])' },
+                    { id: '#hiddenReqDate', label: '@Html.Raw(SharedLocalizer["Label_RequestDate"])' },
+                    { id: '#hiddenDueDate', label: '@Html.Raw(SharedLocalizer["Label_DueDate"])' },
                     { id: '#PRIORITYCD', label: '@Html.Raw(SharedLocalizer["Label_Urgency"])' },
                     { id: 'input[name="TITLE"]', label: '@Html.Raw(SharedLocalizer["Label_Title"])' }
                 ];

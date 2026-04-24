@@ -1,0 +1,162 @@
+@model CSR.Models.Vendor
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<CSR.SharedStrings> SharedLocalizer
+
+@{
+    ViewData["Title"] = "벤더 상세 정보";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">벤더 상세 정보</h1>
+    
+    <hr />
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-building me-1"></i>
+                        <strong>[@Model.VENDOR_CODE] @Model.VENDOR_NAME</strong>
+                    </div>
+                    <div>
+                        <span class="badge @(Model.USEYN == "Y" ? "bg-success" : "bg-danger")">
+                            @(Model.USEYN == "Y" ? "사용" : "미사용")
+                        </span>
+                        <span class="badge bg-primary ms-1">@Model.STATUS</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table-detail w-100">
+                        <colgroup>
+                            <col width="15%">
+                            <col width="35%">
+                            <col width="15%">
+                            <col width="35%">
+                        </colgroup>
+                        <tbody>
+                            <tr class="section-title">
+                                <td colspan="4"><i class="fas fa-info-circle me-2"></i> 기본 정보</td>
+                            </tr>
+                            <tr>
+                                <th>업체 코드</th>
+                                <td>@Model.VENDOR_CODE</td>
+                                <th>업체명</th>
+                                <td>@Model.VENDOR_NAME</td>
+                            </tr>
+                            <tr>
+                                <th>업체 구분</th>
+                                <td>@Model.VENDOR_TYPE</td>
+                                <th>사업자등록번호</th>
+                                <td>@Model.BIZ_REG_NO</td>
+                            </tr>
+                            <tr>
+                                <th>업태</th>
+                                <td>@Model.BIZ_TYPE</td>
+                                <th>종목</th>
+                                <td>@Model.BIZ_ITEM</td>
+                            </tr>
+                            <tr>
+                                <th>회사 주소</th>
+                                <td colspan="3">@Model.ADDRESS</td>
+                            </tr>
+                            
+                            <tr class="section-title">
+                                <td colspan="4"><i class="fas fa-user-tie me-2"></i> 대표자 및 담당자 정보</td>
+                            </tr>
+                            <tr>
+                                <th>대표자명</th>
+                                <td>@Model.CEO_NAME</td>
+                                <th>대표 전화번호</th>
+                                <td>@Model.TEL_NO</td>
+                            </tr>
+                            <tr>
+                                <th>대표 이메일</th>
+                                <td colspan="3">@Model.EMAIL</td>
+                            </tr>
+                            <tr>
+                                <th>담당자명</th>
+                                <td>@Model.MANAGER_NAME</td>
+                                <th>담당자 연락처</th>
+                                <td>@Model.MANAGER_PHONE</td>
+                            </tr>
+                            <tr>
+                                <th>담당자 이메일</th>
+                                <td colspan="3">@Model.MANAGER_EMAIL</td>
+                            </tr>
+
+                            <tr class="section-title">
+                                <td colspan="4"><i class="fas fa-comment-dots me-2"></i> 기타 정보</td>
+                            </tr>
+                            <tr>
+                                <th>비고</th>
+                                <td colspan="3" style="min-height: 100px; vertical-align: top;">
+                                    @Html.Raw(Model.REMARKS?.Replace("\n", "<br/>"))
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>등록일 / 등록자</th>
+                                <td>@Model.REG_DATE.ToString("yyyy-MM-dd HH:mm") / @Model.REG_USERID</td>
+                                <th>수정일 / 수정자</th>
+                                <td>
+                                    @(Model.UPDATE_DATE?.ToString("yyyy-MM-dd HH:mm") ?? "-") / 
+                                    @(Model.UPDATE_USERID ?? "-")
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="button-area text-end mt-3 mb-5">
+                <a asp-action="Edit" asp-route-id="@Model.VENDORID" class="btn btn-warning px-4">
+                    <i class="fas fa-edit"></i> 수정
+                </a>
+                <a asp-action="Index" class="btn btn-secondary px-4">
+                    <i class="fas fa-list"></i> 목록
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .table-detail {
+            border-collapse: collapse;
+            border-top: 1px solid #dee2e6;
+        }
+        .table-detail th {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            border: 1px solid #dee2e6;
+            font-weight: 600;
+            color: #495057;
+            text-align: left;
+        }
+        .table-detail td {
+            padding: 12px 15px;
+            border: 1px solid #dee2e6;
+            color: #212529;
+        }
+        .section-title {
+            background-color: #e9ecef;
+            font-weight: bold;
+            color: #343a40;
+        }
+        .section-title td {
+            padding: 8px 15px;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .btn-warning {
+            color: #fff;
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+        .btn-warning:hover {
+            color: #fff;
+            background-color: #e0a800;
+            border-color: #d39e00;
+        }
+    </style>
+}

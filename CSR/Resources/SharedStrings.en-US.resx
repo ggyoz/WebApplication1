@@ -175,6 +175,8 @@
   <data name="Validation_ExpectDateAfterRequestDate_Part2" xml:space="preserve"><value>).</value></data>
   <data name="Validation_FileNameTooLong" xml:space="preserve"><value>File name is too long. (Max {0} characters)</value></data>
   <data name="Message_NoHistory" xml:space="preserve"><value>History is empty</value></data>
+  <data name="Confirmation_Accept" xml:space="preserve"><value>접수하시겠습니까?</value></data>
+
 
   <!-- CommCodes (CC values) -->
   <data name="CC1" xml:space="preserve"><value>Urgency Level</value></data>

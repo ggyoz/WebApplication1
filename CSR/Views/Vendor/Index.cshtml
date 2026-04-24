@@ -1,0 +1,125 @@
+@model IEnumerable<CSR.Models.Vendor>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<CSR.SharedStrings> SharedLocalizer
+
+@{
+    ViewData["Title"] = "벤더 관리";
+}
+
+<div class="container-fluid">    
+
+    <partial name="_PageTitlePartial" />
+
+    <div class="card search-area mb-4">
+        <form asp-action="Index" method="get">
+            <div class="card-body">
+                <!-- 상단 검색 영역 -->
+                <div class="row g-3">
+                    <div class="col-12 col-md-3">
+                        <label class="form-label fw-bold">업체명</label>
+                        <input name="vendorName" class="form-control" value="@ViewData["VendorName"]" placeholder="업체명 입력" />
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label fw-bold">업체코드</label>
+                        <input name="vendorCode" class="form-control" value="@ViewData["VendorCode"]" placeholder="업체코드 입력" />
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label fw-bold">업체구분</label>
+                        <input name="vendorType" class="form-control" value="@ViewData["VendorType"]" placeholder="예: H/W, S/W" />
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label fw-bold">상태</label>
+                        <select name="status" class="form-select">
+                            <option value="">전체</option>                            
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-3">
+                    <button type="submit" class="btn btn-primary search-btn px-4">
+                        <i class="fas fa-search"></i> 검색
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="d-flex justify-content-between mb-3"> 
+        <div class="text-start">
+            <span class="text-muted">
+                Total: <strong class="text-primary">@Model.Count()</strong> 건
+            </span>
+        </div>
+
+        <div class="text-end">
+            <a asp-action="Create" class="btn btn-add">
+                <i class="fas fa-plus"></i> 신규 등록
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table board-tabl">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>업체코드</th>
+                    <th>업체명</th>
+                    <th>구분</th>
+                    <th>대표자</th>
+                    <th>연락처</th>
+                    <th>상태</th>
+                    <th>사용여부</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr onclick="location.href='@Url.Action("Details", new { id = item.VENDORID })'" style="cursor: pointer;">
+                            <td>@item.VENDORID</td>
+                            <td>@item.VENDOR_CODE</td>
+                            <td class="fw-bold">@item.VENDOR_NAME</td>
+                            <td>@item.VENDOR_TYPE</td>
+                            <td>@item.CEO_NAME</td>
+                            <td>@item.TEL_NO</td>
+                            <td>@item.STATUS</td>
+                            <td>
+                                <span class="badge @(item.USEYN == "Y" ? "bg-success" : "bg-danger")">
+                                    @(item.USEYN == "Y" ? "사용" : "미사용")
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center">데이터가 없습니다.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<form id="deleteForm" asp-action="Delete" method="post" style="display:none;">
+    <input type="hidden" name="id" id="deleteId" />
+</form>
+
+@section Scripts {
+    <style>
+        .board-tabl tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+    <script>
+        function deleteVendor(id) {
+            if (confirm('정말 삭제하시겠습니까?')) {
+                document.getElementById('deleteId').value = id;
+                document.getElementById('deleteForm').submit();
+            }
+        }
+    </script>
+}

@@ -549,7 +549,7 @@ namespace CSR.Services
                     CASE WHEN count(R.PRIORITYCD) != 0 THEN TRUNC ( SUM(CASE WHEN R.PROC_STATUS = '68' THEN 1 ELSE 0 END) / count(R.PRIORITYCD) * 100 ) ELSE 0 END AS EndPercent
                 FROM TB_USER_INFO U 
                 LEFT JOIN TB_REQ_INFO R ON R.RESUSERID = U.USERID AND R.USEYN = 'Y'
-                WHERE U.USER_DIV IN ( 'R3', 'R4' ) AND U.USERID NOT IN ( 'admin', '120006053')
+                WHERE U.USER_DIV IN ( 'R3', 'R4' ) AND U.USERID NOT IN ( 'admin', '120006053') AND U.USEYN = 'Y'
                 GROUP BY U.USERID, U.USERNAME, U.TEAMCD, U.USER_DIV
                 ORDER BY U.TEAMCD, U.USER_DIV desc, U.USERID ";
             
@@ -856,9 +856,6 @@ namespace CSR.Services
             string? importanceCd = null
             )
         {
-
-            Console.WriteLine("terminateYn : " + terminateYn);
-
             var (baseQuery, parameters) = BuildReqInfoBaseQuery(
                 reqTypeCd, procStatusCd, priorityCd, reqDate, dueDate, expectDate,
                 regId, reqUserName, resUserName, searchValue, corCd, deptCd, officeCd, teamCd, tcode,
@@ -955,8 +952,6 @@ namespace CSR.Services
             {
 
                 string[] procStatusCds = procStatusCd.Split(",");
-                Console.WriteLine("procStatusCds :" + procStatusCds[0]);
-                Console.WriteLine("procStatusCd :" + procStatusCd[0]);
 
                 // if( procStatusCd == "64"){
                 //     baseQuery.Append(" AND R.PROC_STATUS not in ('69', '68', '63') ");
@@ -1342,6 +1337,7 @@ namespace CSR.Services
                 sql.Append(", STARTDATE = SYSDATE");
             }else if (statusVal == "68"){ // 종결
                 sql.Append(", ENDDATE = SYSDATE"); // 종결 시 종료일자 기록
+                sql.Append(", EXPECTDATE = SYSDATE"); // 종결 시 완료예정일도 변경
                 historyReason = "76";
             }else if( statusVal == "63"){ // 반려
                 historyReason = "84";

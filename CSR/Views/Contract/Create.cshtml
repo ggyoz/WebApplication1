@@ -1,0 +1,201 @@
+@model CSR.Models.Contract
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<CSR.SharedStrings> SharedLocalizer
+
+@{
+    ViewData["Title"] = "계약 등록";
+}
+
+<partial name="_PageTitlePartial" />
+
+<div class="container-fluid px-4">
+
+    <hr />
+
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <table class="table-create" width="100%">
+                    <colgroup>
+                        <col width="10%">
+                        <col width="15%">
+                        <col width="10%">
+                        <col width="15%">
+                        <col width="10%">
+                        <col width="15%">
+                        <col width="10%">
+                        <col width="15%">
+                    </colgroup>
+                    <tbody>
+                        <tr class="table-separator">
+                            <td colspan="8" style="background-color: #f1f5f9; padding: 5px; border-bottom: 1px solid #cbd5e1;">
+                                <i class="fas fa-file-contract ms-2"></i> <strong>계약 기본 정보</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="VENDORID"></label></th>
+                            <td colspan="3">
+                                <select asp-for="VENDORID" class="form-select">
+                                    <option value="">-- 업체 선택 --</option>
+                                    @foreach (var vendor in ViewBag.Vendors)
+                                    {
+                                        <option value="@vendor.VENDORID">[@vendor.VENDOR_CODE] @vendor.VENDOR_NAME</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="VENDORID" class="text-danger"></span>
+                            </td>
+                            <th><label asp-for="CONTRACT_TYPE"></label></th>
+                            <td>
+                                <select asp-for="CONTRACT_TYPE" class="form-select">
+                                    <option value="">-- 구분 선택 --</option>
+                                    <option value="유지보수">유지보수</option>
+                                    <option value="개발">개발</option>
+                                    <option value="라이센스">라이센스</option>
+                                    <option value="장비">장비</option>
+                                    <option value="도입">도입</option>
+                                    <option value="납품">납품</option>
+                                </select>
+                                <span asp-validation-for="CONTRACT_TYPE" class="text-danger"></span>
+                            </td>
+                            <th><label asp-for="USEYN"></label></th>
+                            <td>
+                                <select asp-for="USEYN" class="form-select">
+                                    <option value="Y">사용</option>
+                                    <option value="N">미사용</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="table-separator">
+                            <td colspan="8" style="background-color: #f1f5f9; padding: 5px; border-bottom: 1px solid #cbd5e1;">
+                                <i class="fas fa-calendar-alt ms-2"></i> <strong>계약 기간</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="CONTRACT_START"></label></th>
+                            <td>                                
+                                <div id="contractStart"></div>
+                                <input asp-for="CONTRACT_START" class="form-control" type="hidden" />
+                                <span asp-validation-for="CONTRACT_START" class="text-danger"></span>
+                            </td>
+                            <th><label asp-for="CONTRACT_END"></label></th>
+                            <td>
+                                <div id="contractEnd"></div>
+                                <input asp-for="CONTRACT_END" class="form-control" type="hidden" />
+                                <span asp-validation-for="CONTRACT_END" class="text-danger"></span>
+                            </td>
+                            <th><label asp-for="CONTRACT_YEAR"></label></th>
+                            <td>
+                                <input asp-for="CONTRACT_YEAR" class="form-control" type="number" />
+                                <span asp-validation-for="CONTRACT_YEAR" class="text-danger"></span>
+                            </td>
+                            <td colspan="2" class="text-muted" style="font-size:0.85em; vertical-align: middle;">
+                                ※ 시작일 입력 시 자동 계산됩니다.
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="CONTRACT_YEARS"></label></th>
+                            <td>
+                                <input asp-for="CONTRACT_YEARS" class="form-control" type="number" min="0" />
+                            </td>
+                            <th><label asp-for="CONTRACT_MONTHS"></label></th>
+                            <td>
+                                <input asp-for="CONTRACT_MONTHS" class="form-control" type="number" min="0" max="11" />
+                            </td>
+                            <td colspan="4" class="text-muted" style="font-size:0.85em; vertical-align: middle;">
+                                ※ 시작일/종료일 입력 시 자동 계산됩니다. 직접 수정 가능합니다.
+                            </td>
+                        </tr>
+                        <tr class="table-separator">
+                            <td colspan="8" style="background-color: #f1f5f9; padding: 5px; border-bottom: 1px solid #cbd5e1;">
+                                <i class="fas fa-clipboard-list ms-2"></i> <strong>계약 내역</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="CONTRACT_DESC"></label></th>
+                            <td colspan="7">
+                                <textarea asp-for="CONTRACT_DESC" class="form-control" rows="5" placeholder="계약 내역을 입력해주세요."></textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="button-area text-end mt-4 mb-5">
+                    <button type="submit" class="btn btn-primary px-4">저장</button>
+                    <a asp-action="Index" class="btn btn-list">목록</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .table-create {
+            border-top: 1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .table-create th {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: bold;
+            padding: 12px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: right;
+            vertical-align: middle;
+        }
+        .table-create td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+        .table-create .form-control, .table-create .form-select {
+            border-radius: 4px;
+        }
+    </style>
+    <script>
+
+        var today = new Date();
+
+        var startBox = initDateBox('#contractStart', '#CONTRACT_START', today);
+        var endBox = initDateBox('#contractEnd', '#CONTRACT_END', today);
+
+        startBox.option('onValueChanged', function (e) {
+            const dateValue = e.value ? formatDate(e.value) : '';
+            $('#CONTRACT_START').val(dateValue);
+            calcDuration();
+        });
+
+        endBox.option('onValueChanged', function (e) {
+            const dateValue = e.value ? formatDate(e.value) : '';
+            $('#CONTRACT_END').val(dateValue);
+            calcDuration();
+        });
+
+        function calcDuration() {
+            var start = $('#CONTRACT_START').val();
+            var end = $('#CONTRACT_END').val();
+
+            if (start) {
+                document.getElementById('CONTRACT_YEAR').value = new Date(start).getFullYear();
+            }
+            if (start && end) {
+                var s = new Date(start);
+                var e = new Date(end);
+                if (e >= s) {
+                    var totalMonths = (e.getFullYear() - s.getFullYear()) * 12 + (e.getMonth() - s.getMonth());
+                    document.getElementById('CONTRACT_YEARS').value = Math.floor(totalMonths / 12);
+                    document.getElementById('CONTRACT_MONTHS').value = totalMonths % 12;
+                }
+            }
+        }
+
+        // 초기 로드 시 계산 실행
+        calcDuration();
+
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

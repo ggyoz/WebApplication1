@@ -179,8 +179,6 @@ namespace CSR.Controllers
 
             // JavaScript에서 사용하기 쉽도록 필요한 데이터만 가공 (Value, Text)
             var result = searchDeptCd.Select(m => new { value = m.DeptCd, text = m.DeptName });
-            
-            //Console.WriteLine("Parameters: " + JsonConvert.SerializeObject(result, Formatting.Indented));
 
             return Json(result);
         }

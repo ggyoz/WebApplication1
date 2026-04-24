@@ -1,0 +1,162 @@
+@model CSR.Models.Vendor
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<CSR.SharedStrings> SharedLocalizer
+
+@{
+    ViewData["Title"] = "벤더 수정";
+}
+
+<partial name="_PageTitlePartial" />
+
+<div class="container-fluid">    
+
+    <hr />
+
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="VENDORID" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <table class="table-create" width="100%">
+                    <colgroup>
+                        <col width="10%">
+                        <col width="15%">
+                        <col width="10%">
+                        <col width="15%">
+                        <col width="10%">
+                        <col width="15%">
+                        <col width="10%">
+                        <col width="15%">
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th><label asp-for="VENDOR_CODE"></label></th>
+                            <td>
+                                <input asp-for="VENDOR_CODE" class="form-control" />
+                                <span asp-validation-for="VENDOR_CODE" class="text-danger"></span>
+                            </td>
+                            <th><label asp-for="VENDOR_NAME"></label></th>
+                            <td>
+                                <input asp-for="VENDOR_NAME" class="form-control" />
+                                <span asp-validation-for="VENDOR_NAME" class="text-danger"></span>
+                            </td>
+                            <th><label asp-for="VENDOR_TYPE"></label></th>
+                            <td>
+                                <input asp-for="VENDOR_TYPE" class="form-control" placeholder="예: H/W, S/W" />
+                                <span asp-validation-for="VENDOR_TYPE" class="text-danger"></span>
+                            </td>
+                            <th><label asp-for="BIZ_REG_NO"></label></th>
+                            <td>
+                                <input asp-for="BIZ_REG_NO" class="form-control" />
+                                <span asp-validation-for="BIZ_REG_NO" class="text-danger"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="CEO_NAME"></label></th>
+                            <td>
+                                <input asp-for="CEO_NAME" class="form-control" />
+                                <span asp-validation-for="CEO_NAME" class="text-danger"></span>
+                            </td>
+                            <th><label asp-for="TEL_NO"></label></th>
+                            <td>
+                                <input asp-for="TEL_NO" class="form-control" />
+                                <span asp-validation-for="TEL_NO" class="text-danger"></span>
+                            </td>
+                            <th><label asp-for="EMAIL"></label></th>
+                            <td>
+                                <input asp-for="EMAIL" class="form-control" />
+                                <span asp-validation-for="EMAIL" class="text-danger"></span>
+                            </td>
+                            <th><label asp-for="STATUS"></label></th>
+                            <td>
+                                <select asp-for="STATUS" class="form-select">
+                                    <option value="정상">정상</option>
+                                    <option value="중지">중지</option>
+                                    <option value="계약만료">계약만료</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="ADDRESS"></label></th>
+                            <td colspan="7">
+                                <input asp-for="ADDRESS" class="form-control" />
+                                <span asp-validation-for="ADDRESS" class="text-danger"></span>
+                            </td>
+                        </tr>
+                        <tr class="table-separator">
+                            <td colspan="8" style="background-color: #f1f5f9; padding: 5px; border-bottom: 1px solid #cbd5e1;">
+                                <i class="fas fa-user-tie ms-2"></i> <strong>담당자 정보</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="MANAGER_NAME"></label></th>
+                            <td>
+                                <input asp-for="MANAGER_NAME" class="form-control" />
+                                <span asp-validation-for="MANAGER_NAME" class="text-danger"></span>
+                            </td>
+                            <th><label asp-for="MANAGER_PHONE"></label></th>
+                            <td>
+                                <input asp-for="MANAGER_PHONE" class="form-control" />
+                                <span asp-validation-for="MANAGER_PHONE" class="text-danger"></span>
+                            </td>
+                            <th><label asp-for="MANAGER_EMAIL"></label></th>
+                            <td>
+                                <input asp-for="MANAGER_EMAIL" class="form-control" />
+                                <span asp-validation-for="MANAGER_EMAIL" class="text-danger"></span>
+                            </td>
+                            <th><label asp-for="USEYN"></label></th>
+                            <td>
+                                <select asp-for="USEYN" class="form-select">
+                                    <option value="Y">사용</option>
+                                    <option value="N">미사용</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="REMARKS"></label></th>
+                            <td colspan="7">
+                                <textarea asp-for="REMARKS" class="form-control" rows="3"></textarea>
+                                <span asp-validation-for="REMARKS" class="text-danger"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="button-area text-end mt-4 mb-5">
+                    <button type="submit" class="btn btn-primary px-4">수정 완료</button>
+                    <a asp-action="Index" class="btn btn-list">목록</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .table-create {            
+            border-top: 1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .table-create th {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: bold;
+            padding: 12px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: right;
+            vertical-align: middle;
+        }
+        .table-create td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+        .table-create .form-control, .table-create .form-select {
+            border-radius: 4px;
+        }
+    </style>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
