@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using CSR.Models;
 using Dapper;
@@ -51,7 +52,15 @@ namespace CSR.Services
                 FROM TB_CONTRACT_INFO c
                 LEFT JOIN TB_VENDOR_INFO v ON c.VENDORID = v.VENDORID
                 WHERE c.CONTRACT_ID = :id";
-            return await _db.QueryFirstOrDefaultAsync<Contract>(sql, new { id });
+            var contract = await _db.QueryFirstOrDefaultAsync<Contract>(sql, new { id });
+
+            if (contract != null)
+            {
+                var fileSql = "SELECT * FROM TB_CONTRACT_FILE WHERE CONTRACT_ID = :id AND USEYN = 'Y' ORDER BY FILEID";
+                contract.AttachFiles = (await _db.QueryAsync<ContractFile>(fileSql, new { id })).ToList();
+            }
+
+            return contract;
         }
 
         public async Task<int> CreateContractAsync(Contract contract)
@@ -65,8 +74,11 @@ namespace CSR.Services
                     SEQ_TB_CONTRACT_INFO.NEXTVAL, :VENDORID, :CONTRACT_YEAR, :CONTRACT_START, :CONTRACT_END,
                     :CONTRACT_YEARS, :CONTRACT_MONTHS, :CONTRACT_TYPE, :CONTRACT_DESC,
                     :USEYN, SYSDATE, :REG_USERID
-                )";
-            return await _db.ExecuteAsync(sql, contract);
+                ) RETURNING CONTRACT_ID INTO :CONTRACT_ID";
+            var parameters = new DynamicParameters(contract);
+            parameters.Add(":CONTRACT_ID", dbType: DbType.Int32, direction: ParameterDirection.Output);
+            await _db.ExecuteAsync(sql, parameters);
+            return parameters.Get<int>(":CONTRACT_ID");
         }
 
         public async Task<int> UpdateContractAsync(Contract contract)

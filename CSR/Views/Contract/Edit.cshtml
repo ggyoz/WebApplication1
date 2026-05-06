@@ -14,7 +14,7 @@
 
     <div class="row">
         <div class="col-md-12">
-            <form asp-action="Edit" method="post">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
                 <input type="hidden" asp-for="CONTRACT_ID" />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -119,6 +119,40 @@
                                 <textarea asp-for="CONTRACT_DESC" class="form-control" rows="5"></textarea>
                             </td>
                         </tr>
+                        <tr class="table-separator">
+                            <td colspan="8" style="background-color: #f1f5f9; padding: 5px; border-bottom: 1px solid #cbd5e1;">
+                                <i class="fas fa-paperclip ms-2"></i> <strong>첨부파일</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="8" style="padding: 10px;">
+                                @if (Model.AttachFiles != null && Model.AttachFiles.Any())
+                                {
+                                    <ul class="list-unstyled mb-3" id="existing-files">
+                                        @foreach (var file in Model.AttachFiles)
+                                        {
+                                            <li class="d-flex align-items-center py-1 border-bottom file-item" id="file-item-@file.FILEID">
+                                                <i class="fas fa-file me-2 text-secondary"></i>
+                                                <a asp-action="DownloadFile" asp-route-id="@file.FILEID" class="me-auto text-decoration-none">
+                                                    @file.REAL_FILENAME
+                                                </a>
+                                                <input type="hidden" name="deletedFiles" value="@file.FILEID" id="delete-input-@file.FILEID" disabled />
+                                                <button type="button" class="btn btn-sm btn-outline-danger ms-3"
+                                                        onclick="markFileDeleted(@file.FILEID, '@file.REAL_FILENAME')">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <p class="text-muted mb-3" id="no-files-msg">첨부파일 없음</p>
+                                }
+                                <div id="file-uploader"></div>
+                                <span class="text-muted" style="font-size: 0.85em;">※ 최대 파일 크기: 10MB / 허용 형식: PDF, Excel, Word, 이미지</span>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
 
@@ -159,6 +193,25 @@
         }
     </style>
     <script>
+        $(function () {
+            $("#file-uploader").dxFileUploader({
+                name: "newFiles",
+                multiple: true,
+                uploadMode: "useForm",
+                allowCanceling: true,
+                accept: ".pdf,.xlsx,.xls,.docx,.doc,image/*",
+                maxFileSize: 10000000,
+            });
+        });
+
+        function markFileDeleted(fileId, fileName) {
+            if (!confirm(fileName + ' 파일을 삭제하시겠습니까?\n(저장 시 반영됩니다.)')) return;
+            var item = document.getElementById('file-item-' + fileId);
+            item.classList.add('text-decoration-line-through', 'text-muted', 'opacity-50');
+            item.querySelector('button').disabled = true;
+            document.getElementById('delete-input-' + fileId).disabled = false;
+        }
+
         function calcDuration() {
             var start = document.getElementById('CONTRACT_START').value;
             var end = document.getElementById('CONTRACT_END').value;

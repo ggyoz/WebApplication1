@@ -14,7 +14,7 @@
 
     <div class="row">
         <div class="col-md-12">
-            <form asp-action="Create" method="post">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <table class="table-create" width="100%">
@@ -118,6 +118,17 @@
                                 <textarea asp-for="CONTRACT_DESC" class="form-control" rows="5" placeholder="계약 내역을 입력해주세요."></textarea>
                             </td>
                         </tr>
+                        <tr class="table-separator">
+                            <td colspan="8" style="background-color: #f1f5f9; padding: 5px; border-bottom: 1px solid #cbd5e1;">
+                                <i class="fas fa-paperclip ms-2"></i> <strong>첨부파일</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="8" style="padding: 10px;">
+                                <div id="file-uploader"></div>
+                                <span class="text-muted" style="font-size: 0.85em;">※ 최대 파일 크기: 10MB / 허용 형식: PDF, Excel, Word, 이미지</span>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
 
@@ -157,6 +168,16 @@
         }
     </style>
     <script>
+        $(function () {
+            $("#file-uploader").dxFileUploader({
+                name: "files",
+                multiple: true,
+                uploadMode: "useForm",
+                allowCanceling: true,
+                accept: ".pdf,.xlsx,.xls,.docx,.doc,image/*",
+                maxFileSize: 10000000,
+            });
+        });
 
         var today = new Date();
 

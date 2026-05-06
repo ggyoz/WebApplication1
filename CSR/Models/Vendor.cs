@@ -7,18 +7,16 @@ namespace CSR.Models
     {
         [Display(Name = "업체 ID")]
         public int VENDORID { get; set; }
-
-        [Required]
+        
         [Display(Name = "업체 코드")]
-        public string VENDOR_CODE { get; set; }
+        public string? VENDOR_CODE { get; set; }
 
         [Required]
         [Display(Name = "업체명")]
         public string VENDOR_NAME { get; set; }
-
-        [Required]
+        
         [Display(Name = "업체 구분")]
-        public string VENDOR_TYPE { get; set; }
+        public string? VENDOR_TYPE { get; set; }
 
         [Display(Name = "사업자등록번호")]
         public string? BIZ_REG_NO { get; set; }

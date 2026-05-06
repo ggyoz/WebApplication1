@@ -277,6 +277,8 @@
   <data name="CC122" xml:space="preserve"><value>교육요청</value></data>
   <data name="CC123" xml:space="preserve"><value>원인분석</value></data>
   <data name="CC124" xml:space="preserve"><value>프로세스개선</value></data>
+  <data name="CC141" xml:space="preserve"><value>WA(E-ACOUNTING)</value></data>
+
 
   <!-- MyPage specific -->
   <data name="MyPageTitle" xml:space="preserve"><value>내 정보 수정</value></data>

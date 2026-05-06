@@ -22,6 +22,47 @@ namespace CSR.Controllers
             return View();
         }
 
+        public IActionResult HtmlEditorTest()
+        {
+            return View();
+        }
+
+        public IActionResult FileUploadTest()
+        {
+            return View();
+        }
+
+        // useForm 모드: 여러 파일을 폼으로 한 번에 받아 정보 반환 (실제 저장 없음)
+        [HttpPost]
+        public IActionResult FileUploadTest(List<IFormFile> files)
+        {
+            var result = (files ?? new List<IFormFile>())
+                .Where(f => f.Length > 0)
+                .Select(f => new
+                {
+                    realFileName = f.FileName,
+                    contentType = f.ContentType,
+                    size = f.Length
+                });
+
+            return Json(new { files = result });
+        }
+
+        // instantly / useButtons 모드: 파일 1개씩 AJAX로 받아 정보 반환 (실제 저장 없음)
+        [HttpPost]
+        public IActionResult FileUploadSingle(IFormFile files)
+        {
+            if (files == null || files.Length == 0)
+                return BadRequest(new { error = "No file uploaded." });
+
+            return Json(new
+            {
+                realFileName = files.FileName,
+                contentType = files.ContentType,
+                size = files.Length
+            });
+        }
+
         [HttpPost]
         public async Task<IActionResult> SendTestEmail(string toEmail, string subject, string body)
         {

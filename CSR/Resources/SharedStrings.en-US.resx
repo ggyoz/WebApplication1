@@ -274,6 +274,7 @@
   <data name="CC122" xml:space="preserve"><value>Request for Training</value></data>
   <data name="CC123" xml:space="preserve"><value>Cause analysis</value></data>
   <data name="CC124" xml:space="preserve"><value>Process Improvement</value></data>
+    <data name="CC141" xml:space="preserve"><value>WA(E-ACOUNTING)</value></data>
 
   <!-- MyPage specific -->
   <data name="MyPageTitle" xml:space="preserve"><value>Edit My Info</value></data>

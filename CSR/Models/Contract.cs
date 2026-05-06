@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace CSR.Models
@@ -44,7 +45,7 @@ namespace CSR.Models
         public string USEYN { get; set; } = "Y";
 
         [Display(Name = "등록일")]
-        public DateTime? REG_DATE { get; set; }
+        public DateTime REG_DATE { get; set; }
 
         [Display(Name = "등록자ID")]
         public string? REG_USERID { get; set; }
@@ -58,5 +59,7 @@ namespace CSR.Models
         // 조회용 (JOIN)
         public string? VENDOR_NAME { get; set; }
         public string? VENDOR_CODE { get; set; }
+
+        public List<ContractFile> AttachFiles { get; set; } = new();
     }
 }

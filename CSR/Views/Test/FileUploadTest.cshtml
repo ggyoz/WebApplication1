@@ -1,0 +1,136 @@
+@{
+    ViewData["Title"] = "파일 업로드 테스트";
+}
+
+<div class="container mt-4">
+    <h2>파일 업로드 테스트</h2>
+    <hr />
+
+    @* ① useForm 모드 *@
+    <div class="card mb-4">
+        <div class="card-header fw-bold">① useForm 모드 (폼 제출 시 함께 전송)</div>
+        <div class="card-body">
+            <p class="text-muted small">파일을 선택하고 [업로드] 버튼을 클릭하면 폼 데이터로 서버에 전송됩니다.</p>
+            <form id="formUpload">
+                <div id="fileUploader-form"></div>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">업로드</button>
+                </div>
+            </form>
+            <div id="formResult" class="mt-3"></div>
+        </div>
+    </div>
+
+    @* ② instantly 모드 *@
+    <div class="card mb-4">
+        <div class="card-header fw-bold">② instantly 모드 (선택 즉시 서버 전송)</div>
+        <div class="card-body">
+            <p class="text-muted small">파일을 선택하는 즉시 AJAX로 서버에 업로드됩니다.</p>
+            <div id="fileUploader-instantly"></div>
+            <div id="instantlyResult" class="mt-3"></div>
+        </div>
+    </div>
+
+    @* ③ useButtons 모드 *@
+    <div class="card mb-4">
+        <div class="card-header fw-bold">③ useButtons 모드 (개별 업로드 버튼)</div>
+        <div class="card-body">
+            <p class="text-muted small">파일마다 개별 업로드 버튼이 표시됩니다.</p>
+            <div id="fileUploader-buttons"></div>
+            <div id="buttonsResult" class="mt-3"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function renderResult(selector, files) {
+            if (!files || files.length === 0) {
+                $(selector).html('<div class="alert alert-warning">업로드된 파일 없음</div>');
+                return;
+            }
+            const rows = files.map(f => `
+                <tr>
+                    <td>${f.realFileName}</td>
+                    <td>${f.contentType}</td>
+                    <td>${(f.size / 1024).toFixed(1)} KB</td>
+                    <td><span class="badge bg-success">성공</span></td>
+                </tr>`).join('');
+            $(selector).html(`
+                <table class="table table-sm table-bordered mt-2">
+                    <thead class="table-light"><tr><th>파일명</th><th>타입</th><th>크기</th><th>결과</th></tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>`);
+        }
+
+        $(function () {
+            // ① useForm
+            $("#fileUploader-form").dxFileUploader({
+                name: 'files',
+                multiple: true,
+                uploadMode: 'useForm',
+                allowCanceling: true,
+                accept: 'image/*,.pdf,.xlsx,.xls,.doc,.docx,.zip',
+                maxFileSize: 4000000,
+            });
+
+            $('#formUpload').on('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                $.ajax({
+                    url: '@Url.Action("FileUploadTest", "Test")',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) { renderResult('#formResult', res.files); },
+                    error: function () {
+                        $('#formResult').html('<div class="alert alert-danger">업로드 실패</div>');
+                    }
+                });
+            });
+
+            // ② instantly
+            $("#fileUploader-instantly").dxFileUploader({
+                name: 'files',
+                multiple: true,
+                uploadMode: 'instantly',
+                uploadUrl: '@Url.Action("FileUploadSingle", "Test")',
+                allowCanceling: true,
+                accept: 'image/*,.pdf,.xlsx,.xls,.doc,.docx,.zip',
+                maxFileSize: 4000000,
+                onUploaded: function (e) {
+                    const res = JSON.parse(e.request.response);
+                    const prev = $('#instantlyResult').data('results') || [];
+                    prev.push(res);
+                    $('#instantlyResult').data('results', prev);
+                    renderResult('#instantlyResult', prev);
+                },
+                onUploadError: function () {
+                    $('#instantlyResult').html('<div class="alert alert-danger">업로드 실패</div>');
+                }
+            });
+
+            // ③ useButtons
+            $("#fileUploader-buttons").dxFileUploader({
+                name: 'files',
+                multiple: true,
+                uploadMode: 'useButtons',
+                uploadUrl: '@Url.Action("FileUploadSingle", "Test")',
+                allowCanceling: true,
+                accept: 'image/*,.pdf,.xlsx,.xls,.doc,.docx,.zip',
+                maxFileSize: 4000000,
+                onUploaded: function (e) {
+                    const res = JSON.parse(e.request.response);
+                    const prev = $('#buttonsResult').data('results') || [];
+                    prev.push(res);
+                    $('#buttonsResult').data('results', prev);
+                    renderResult('#buttonsResult', prev);
+                },
+                onUploadError: function () {
+                    $('#buttonsResult').html('<div class="alert alert-danger">업로드 실패</div>');
+                }
+            });
+        });
+    </script>
+}

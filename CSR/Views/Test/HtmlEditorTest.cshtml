@@ -1,0 +1,170 @@
+@{
+    ViewData["Title"] = "DxHtmlEditor 테스트";
+}
+
+<div class="container mt-4">
+    <h2>DxHtmlEditor 테스트</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8">
+            <h5>에디터</h5>
+            <div class="html-editor"></div>
+            <input type="hidden" id="editorValue" name="editorValue" />
+
+            <div class="mt-3 d-flex gap-2">
+                <button type="button" class="btn btn-primary" id="btnGetHtml">HTML 가져오기</button>
+                <button type="button" class="btn btn-secondary" id="btnSetSample">샘플 내용 삽입</button>
+                <button type="button" class="btn btn-outline-danger" id="btnClear">초기화</button>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <h5>렌더링 미리보기</h5>
+            <div class="value-content border rounded p-3" style="min-height: 200px; background: #fafafa;"></div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h5>HTML 소스</h5>
+            <pre id="htmlOutput" class="border rounded p-3 bg-light" style="min-height: 80px; white-space: pre-wrap; word-break: break-all; font-size: 13px;"></pre>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function initializeHtmlEditorAtCursor(editorSelector, inputSelector, previewSelector) {
+            const initialValue = $(inputSelector).val();
+
+            const editorInstance = $(editorSelector).dxHtmlEditor({
+                height: 500,
+                value: initialValue,
+                toolbar: {
+                    items: [
+                        'undo', 'redo', 'separator',
+                        'bold', 'separator',
+                        {
+                            name: 'size',
+                            acceptedValues: ['8pt', '10pt', '12pt', '14pt', '18pt', '24pt', '36pt'],
+                        }, 'separator',
+                        'alignLeft', 'alignCenter', 'alignRight', 'alignJustify', 'separator',
+                        'color', 'background', 'separator',
+                        'orderedList', 'bulletList', 'separator',
+                        'link', 'image',
+                    ],
+                },
+                imageUpload: {
+                    fileUploadMode: 'server',
+                    uploadUrl: "/api/image/upload",
+                    fileTypes: [".jpg", ".jpeg", ".png", ".gif", ".webp"],
+                    uploadMethod: "POST",
+                    fileUploaderOptions: {
+                        onUploaded: function (e) {
+                            const imageUrl = JSON.parse(e.request.response).url;
+                            if (imageUrl != "") {
+                                const selection = editorInstance.getSelection();
+                                const insertIndex = selection ? selection.index : editorInstance.getLength();
+                                editorInstance.insertEmbed(insertIndex, "extendedImage", imageUrl);
+                            }
+                        }
+                    }
+                },
+                onValueChanged(e) {
+                    $(inputSelector).val(e.value);
+                    if (previewSelector) {
+                        $(previewSelector).html(e.value);
+                    }
+                },
+                mediaResizing: {
+                    enabled: true
+                }
+            }).dxHtmlEditor('instance');
+
+            if (previewSelector) {
+                $(previewSelector).html(initialValue);
+            }
+
+            return editorInstance;
+        }
+
+        function resizeAndUploadImage(editorInstance, file, maxSize) {
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                const img = new Image();
+                img.onload = function () {
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxSize || height > maxSize) {
+                        const ratio = Math.min(maxSize / width, maxSize / height);
+                        width = Math.round(width * ratio);
+                        height = Math.round(height * ratio);
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob(function (blob) {
+                        const formData = new FormData();
+                        formData.append('file', blob, file.name || 'paste.png');
+                        fetch('/api/image/upload', { method: 'POST', body: formData })
+                            .then(r => r.json())
+                            .then(data => {
+                                const sel = editorInstance.getSelection();
+                                const idx = sel ? sel.index : editorInstance.getLength();
+                                editorInstance.insertEmbed(idx, 'extendedImage', data.url);
+                            });
+                    }, 'image/png');
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function addPasteImageResize(editorInstance, maxSize) {
+            const editorEl = editorInstance.element()[0];
+            editorEl.addEventListener('paste', function (e) {
+                const items = (e.clipboardData || window.clipboardData || {}).items;
+                if (!items) return;
+                for (const item of items) {
+                    if (item.type.startsWith('image/')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        resizeAndUploadImage(editorInstance, item.getAsFile(), maxSize);
+                        return;
+                    }
+                }
+            }, true);
+        }
+
+        $(function () {
+            const editorInstance = initializeHtmlEditorAtCursor(
+                '.html-editor',
+                '#editorValue',
+                '.value-content'
+            );
+            addPasteImageResize(editorInstance, 1200);
+
+            $('#btnGetHtml').on('click', function () {
+                const html = $('#editorValue').val();
+                $('#htmlOutput').text(html || '(비어 있음)');
+            });
+
+            $('#btnSetSample').on('click', function () {
+                const editorInstance = $('.html-editor').dxHtmlEditor('instance');
+                const sample = '<p><strong>제목 텍스트</strong></p><p>일반 단락입니다. <em>이탤릭</em>, <u>밑줄</u> 등을 포함합니다.</p><ul><li>항목 1</li><li>항목 2</li><li>항목 3</li></ul>';
+                editorInstance.option('value', sample);
+            });
+
+            $('#btnClear').on('click', function () {
+                const editorInstance = $('.html-editor').dxHtmlEditor('instance');
+                editorInstance.option('value', '');
+                $('#htmlOutput').text('');
+            });
+        });
+    </script>
+}

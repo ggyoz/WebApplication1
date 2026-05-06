@@ -8,7 +8,7 @@
 
 <partial name="_PageTitlePartial" />
 
-<div class="container-fluid">    
+<div class="container-fluid">
 
     <hr />
 
@@ -30,6 +30,11 @@
                         <col width="15%">
                     </colgroup>
                     <tbody>
+                        <tr class="table-separator">
+                            <td colspan="8" style="background-color: #f1f5f9; padding: 5px; border-bottom: 1px solid #cbd5e1;">
+                                <i class="fas fa-building ms-2"></i> <strong>업체 정보</strong>
+                            </td>
+                        </tr>
                         <tr>
                             <th><label asp-for="VENDOR_CODE"></label></th>
                             <td>
@@ -53,6 +58,52 @@
                             </td>
                         </tr>
                         <tr>
+                            <th><label asp-for="BIZ_TYPE"></label></th>
+                            <td>
+                                <input asp-for="BIZ_TYPE" class="form-control" />
+                                <span asp-validation-for="BIZ_TYPE" class="text-danger"></span>
+                            </td>
+                            <th><label asp-for="BIZ_ITEM"></label></th>
+                            <td>
+                                <input asp-for="BIZ_ITEM" class="form-control" />
+                                <span asp-validation-for="BIZ_ITEM" class="text-danger"></span>
+                            </td>
+                            <th><label asp-for="STATUS"></label></th>
+                            <td>
+                                <select asp-for="STATUS" class="form-select">
+                                    <option value="정상">정상</option>
+                                    <option value="중지">중지</option>
+                                    <option value="계약만료">계약만료</option>
+                                </select>
+                            </td>
+                            <th><label asp-for="USEYN"></label></th>
+                            <td>
+                                <select asp-for="USEYN" class="form-select">
+                                    <option value="Y">사용</option>
+                                    <option value="N">미사용</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="ADDRESS"></label></th>
+                            <td colspan="7">
+                                <input asp-for="ADDRESS" class="form-control" />
+                                <span asp-validation-for="ADDRESS" class="text-danger"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="REMARKS"></label></th>
+                            <td colspan="7">
+                                <textarea asp-for="REMARKS" class="form-control" rows="3"></textarea>
+                                <span asp-validation-for="REMARKS" class="text-danger"></span>
+                            </td>
+                        </tr>
+                        <tr class="table-separator">
+                            <td colspan="8" style="background-color: #f1f5f9; padding: 5px; border-bottom: 1px solid #cbd5e1;">
+                                <i class="fas fa-user-tie ms-2"></i> <strong>대표자 정보</strong>
+                            </td>
+                        </tr>
+                        <tr>
                             <th><label asp-for="CEO_NAME"></label></th>
                             <td>
                                 <input asp-for="CEO_NAME" class="form-control" />
@@ -64,24 +115,9 @@
                                 <span asp-validation-for="TEL_NO" class="text-danger"></span>
                             </td>
                             <th><label asp-for="EMAIL"></label></th>
-                            <td>
+                            <td colspan="3">
                                 <input asp-for="EMAIL" class="form-control" />
                                 <span asp-validation-for="EMAIL" class="text-danger"></span>
-                            </td>
-                            <th><label asp-for="STATUS"></label></th>
-                            <td>
-                                <select asp-for="STATUS" class="form-select">
-                                    <option value="정상">정상</option>
-                                    <option value="중지">중지</option>
-                                    <option value="계약만료">계약만료</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><label asp-for="ADDRESS"></label></th>
-                            <td colspan="7">
-                                <input asp-for="ADDRESS" class="form-control" />
-                                <span asp-validation-for="ADDRESS" class="text-danger"></span>
                             </td>
                         </tr>
                         <tr class="table-separator">
@@ -101,23 +137,9 @@
                                 <span asp-validation-for="MANAGER_PHONE" class="text-danger"></span>
                             </td>
                             <th><label asp-for="MANAGER_EMAIL"></label></th>
-                            <td>
+                            <td colspan="3">
                                 <input asp-for="MANAGER_EMAIL" class="form-control" />
                                 <span asp-validation-for="MANAGER_EMAIL" class="text-danger"></span>
-                            </td>
-                            <th><label asp-for="USEYN"></label></th>
-                            <td>
-                                <select asp-for="USEYN" class="form-select">
-                                    <option value="Y">사용</option>
-                                    <option value="N">미사용</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><label asp-for="REMARKS"></label></th>
-                            <td colspan="7">
-                                <textarea asp-for="REMARKS" class="form-control" rows="3"></textarea>
-                                <span asp-validation-for="REMARKS" class="text-danger"></span>
                             </td>
                         </tr>
                     </tbody>
@@ -134,7 +156,7 @@
 
 @section Scripts {
     <style>
-        .table-create {            
+        .table-create {
             border-top: 1px solid #ccc;
             border-bottom: 1px solid #ccc;
             margin-bottom: 20px;
