@@ -36,7 +36,25 @@ namespace CSR.Controllers
             return View(contracts);
         }
 
+        public async Task<IActionResult> Index2(string vendorName, int? contractYear, string contractType)
+        {
+            var contracts = await _contractService.GetContractsAsync(vendorName, contractYear, contractType);
+
+            ViewData["VendorName"] = vendorName;
+            ViewData["ContractYear"] = contractYear;
+            ViewData["ContractType"] = contractType;
+
+            return View(contracts);
+        }
+
         public async Task<IActionResult> Details(int id)
+        {
+            var contract = await _contractService.GetContractByIdAsync(id);
+            if (contract == null) return NotFound();
+            return View(contract);
+        }
+
+        public async Task<IActionResult> Details2(int id)
         {
             var contract = await _contractService.GetContractByIdAsync(id);
             if (contract == null) return NotFound();
@@ -45,6 +63,13 @@ namespace CSR.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Create()
+        {
+            ViewBag.Vendors = await _vendorService.GetVendorsAsync();
+            return View(new Contract { CONTRACT_YEAR = DateTime.Now.Year });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Create2()
         {
             ViewBag.Vendors = await _vendorService.GetVendorsAsync();
             return View(new Contract { CONTRACT_YEAR = DateTime.Now.Year });

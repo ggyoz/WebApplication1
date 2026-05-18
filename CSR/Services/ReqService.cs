@@ -103,6 +103,7 @@ namespace CSR.Services
         Task<dynamic> GetTeamRequestPerformanceAsync(string corCd, string teamCd);
         Task<dynamic> GetAllRequestCountsByStatusAsync();
         Task<dynamic> GetAllRequestPerformanceAsync();
+        Task<int> GetMyAssignedAnsweredCountAsync(string userId);
     }
 
     public class ReqService : IReqService
@@ -435,6 +436,12 @@ namespace CSR.Services
         public async Task<int> GetMyCompletedRequestsCountAsync(string userId)
         {
             var sql = @" SELECT COUNT(*) FROM TB_REQ_INFO WHERE REQUSERID = :UserId AND PROC_STATUS = '65' AND USEYN = 'Y' ";
+            return await _dbConnection.ExecuteScalarAsync<int>(sql, new { UserId = userId });
+        }
+
+        public async Task<int> GetMyAssignedAnsweredCountAsync(string userId)
+        {
+            var sql = @" SELECT COUNT(*) FROM TB_REQ_INFO WHERE RESUSERID = :UserId AND PROC_STATUS = '65' AND USEYN = 'Y' ";
             return await _dbConnection.ExecuteScalarAsync<int>(sql, new { UserId = userId });
         }
 

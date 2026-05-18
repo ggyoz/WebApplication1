@@ -278,6 +278,7 @@
   <data name="CC123" xml:space="preserve"><value>원인분석</value></data>
   <data name="CC124" xml:space="preserve"><value>프로세스개선</value></data>
   <data name="CC141" xml:space="preserve"><value>WA(E-ACOUNTING)</value></data>
+  <data name="CC161" xml:space="preserve"><value>M-BOM</value></data>
 
 
   <!-- MyPage specific -->

@@ -70,18 +70,28 @@ function initializeHtmlEditor(editorSelector, inputSelector, previewSelector) {
             fileTypes: [".jpg", ".jpeg", ".png", ".gif", ".webp"],
             uploadMethod: "POST",
             fileUploaderOptions: {
-                onUploaded: function(e) {
-                    // Assuming your server returns a JSON object like { "url": "path/to/image.png" }
+
+                onUploaded: function (e) {
                     const imageUrl = JSON.parse(e.request.response).url;
                     if (imageUrl != "") {
-                        // 값 넣는 방법 ( 값 추가가 아님 )
-                        // editorInstance.option("value", "<img width='100%' src='" + imageUrl + "'></img>");
-                        // 이미지 삽입 방법
-                        editorInstance.insertEmbed(editorInstance.getLength(), // Insert at the end
-                            "extendedImage", imageUrl
-                        );
+                        const selection = editorInstance.getSelection();
+                        const insertIndex = selection ? selection.index : editorInstance.getLength();
+                        editorInstance.insertEmbed(insertIndex, "extendedImage", imageUrl);
                     }
                 }
+
+                // onUploaded: function(e) {
+                //     // Assuming your server returns a JSON object like { "url": "path/to/image.png" }
+                //     const imageUrl = JSON.parse(e.request.response).url;
+                //     if (imageUrl != "") {
+                //         // 값 넣는 방법 ( 값 추가가 아님 )
+                //         // editorInstance.option("value", "<img width='100%' src='" + imageUrl + "'></img>");
+                //         // 이미지 삽입 방법
+                //         editorInstance.insertEmbed(editorInstance.getLength(), // Insert at the end
+                //             "extendedImage", imageUrl
+                //         );
+                //     }
+                // }
             }            
         },        
         onValueChanged(e) {

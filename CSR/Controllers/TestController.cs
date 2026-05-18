@@ -190,5 +190,41 @@ namespace CSR.Controllers
 
             return View("EmailTest");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SendProcessorChangedEmail(string toEmail)
+        {
+            try
+            {
+                var model = new ReqInfo
+                {
+                    REQID = 77777,
+                    TITLE = "[테스트] 시스템 접근 권한 변경 요청 건",
+                    ReqUserName = "김요청",
+                    CorpName = "모베이스",
+                    DeptName = "IT기획팀",
+                    ResUserName = "박신담당", // 새 담당자
+                    ReqTypeName = "시스템권한",
+                    SystemName = "ERP 시스템",
+                    PRIORITYCD = "2", // 긴급
+                    PriorityName = "긴급",
+                    REQDATE = DateTime.Now,
+                    DUEDATE = DateTime.Now.AddDays(2),
+                };
+
+                string htmlBody = await _renderer.RenderViewToStringAsync("EmailTemplates/ProcessorChanged", model);
+                await _emailService.SendEmailAsync(toEmail, "[담당자변경] 요청사항의 담당자로 지정되었습니다. (TEST)", htmlBody);
+
+                ViewBag.Message = "담당자 변경 알림 메일이 성공적으로 전송되었습니다.";
+                ViewBag.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = $"템플릿 메일 전송 실패: {ex.Message}";
+                ViewBag.IsSuccess = false;
+            }
+
+            return View("EmailTest");
+        }
     }
 }

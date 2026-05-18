@@ -1,0 +1,167 @@
+@model IEnumerable<CSR.Models.Contract>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<CSR.SharedStrings> SharedLocalizer
+
+@{
+    ViewData["Title"] = "계약 관리";
+}
+
+<div class="container-fluid">
+
+    <partial name="_PageTitlePartial" />
+
+    <div class="card search-area mb-4">
+        <form asp-action="Index" method="get">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12 col-md-4">
+                        <label class="form-label fw-bold">업체명</label>
+                        <input name="vendorName" class="form-control" value="@ViewData["VendorName"]" placeholder="업체명 입력" />
+                    </div>
+                    <div class="col-12 col-md-2">
+                        <label class="form-label fw-bold">계약연도</label>
+                        <input name="contractYear" type="number" class="form-control" value="@ViewData["ContractYear"]" placeholder="예: 2025" />
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label fw-bold">구분</label>
+                        <select name="contractType" class="form-select">
+                            <option value="">전체</option>
+                            <option value="유지보수" selected="@(ViewData["ContractType"]?.ToString() == "유지보수")">유지보수</option>
+                            <option value="개발" selected="@(ViewData["ContractType"]?.ToString() == "개발")">개발</option>
+                            <option value="라이센스" selected="@(ViewData["ContractType"]?.ToString() == "라이센스")">라이센스</option>
+                            <option value="장비" selected="@(ViewData["ContractType"]?.ToString() == "장비")">장비</option>
+                            <option value="도입" selected="@(ViewData["ContractType"]?.ToString() == "도입")">도입</option>
+                            <option value="납품" selected="@(ViewData["ContractType"]?.ToString() == "납품")">납품</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end mt-3">
+                    <button type="submit" class="btn btn-action btn-action-primary">
+                        <i class="bi bi-search btn-icon"></i>
+                        <span class="btn-label">검색</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="d-flex justify-content-between mb-3">
+        <div class="text-start">
+            <span class="text-muted">
+                Total: <strong class="text-primary">@Model.Count()</strong> 건
+            </span>
+        </div>
+        <div class="text-end">
+            <a asp-action="Create" class="btn btn-action btn-add">
+                <i class="bi bi-plus btn-icon"></i>
+                <span class="btn-label">신규 등록</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table board-tabl">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>업체명</th>
+                    <th>계약연도</th>
+                    <th>구분</th>
+                    <th>계약기간</th>
+                    <th>기간(년/개월)</th>
+                    <th>사용여부</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr onclick="location.href='@Url.Action("Details", new { id = item.CONTRACT_ID })'" style="cursor: pointer;">
+                            <td>@item.CONTRACT_ID</td>
+                            <td class="fw-bold">@item.VENDOR_NAME</td>
+                            <td>@item.CONTRACT_YEAR</td>
+                            <td>
+                                <span class="badge bg-secondary">@item.CONTRACT_TYPE</span>
+                            </td>
+                            <td>@item.CONTRACT_START.ToString("yyyy-MM-dd") ~ @item.CONTRACT_END.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                @{
+                                    var parts = new System.Collections.Generic.List<string>();
+                                    if (item.CONTRACT_YEARS > 0) parts.Add($"{item.CONTRACT_YEARS}년");
+                                    if (item.CONTRACT_MONTHS > 0) parts.Add($"{item.CONTRACT_MONTHS}개월");
+                                }
+                                @(parts.Any() ? string.Join(" " , parts) : "-")
+                            </td>
+                            <td>
+                                <span class="badge @(item.USEYN == "Y" ? "bg-success" : "bg-danger")">
+                                    @(item.USEYN == "Y" ? "사용" : "미사용")
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center">데이터가 없습니다.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<form id="deleteForm" asp-action="Delete" method="post" style="display:none;">
+    <input type="hidden" name="id" id="deleteId" />
+</form>
+
+@section Scripts {
+    <style>
+        .board-tabl tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.03em;
+            border: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            text-decoration: none;
+        }
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .btn-action:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn-icon {
+            font-size: 1rem;
+        }
+        .btn-action-primary {
+            background-color: #0d6efd;
+            color: #fff;
+        }
+        .btn-action-primary:hover {
+            background-color: #0b5ed7;
+            color: #fff;
+        }
+    </style>
+    <script>
+        function deleteContract(id) {
+            if (confirm('정말 삭제하시겠습니까?')) {
+                document.getElementById('deleteId').value = id;
+                document.getElementById('deleteForm').submit();
+            }
+        }
+    </script>
+}

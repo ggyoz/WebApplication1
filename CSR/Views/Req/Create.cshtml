@@ -78,7 +78,7 @@
                         <th><label class="control-label">@SharedLocalizer["Label_SystemCode"]</label></th>
                         <td>
                             <select asp-for="SYSTEMCD" asp-items="ViewBag.SystemCodes" class="form-select">
-                            <option value="">@SharedLocalizer["Placeholder_SelectSystem"]</option>
+                                <option value="">@SharedLocalizer["Placeholder_SelectSystem"]</option>
                             </select>
                             <span asp-validation-for="SYSTEMCD" class="text-danger"></span>
                         </td>
@@ -144,7 +144,9 @@
                             3. 요청내용 :  <br/>                             
                             4. 현상 및 문제점 : <br/> 
                             5. 샘플데이터 : <br/> 
-                            ※ 요청사항은 팀내에서 합의된 내용만 입력 부탁드립니다."/>
+                            ※ 요청사항은 팀내에서 합의된 내용만 입력 부탁드립니다.<br/>
+                            ※ Excel 데이터 업로드에서 오류가 발생한 경우 Excel 파일을 첨부해주세요.
+                            "/>
                         </td>
                     </tr>                    
                     <tr>

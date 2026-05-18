@@ -31,7 +31,7 @@ namespace CSR.Controllers.Api
                 // 로그인한 사용자의 ID 가져오기 (ClaimTypes.Name 또는 Identity.Name)
                 var corCd = HttpContext.Session.GetString("CorCd");
                 var userId = User.Identity?.Name;
-                
+
                 if (string.IsNullOrEmpty(userId))
                 {
                     return Unauthorized();
@@ -79,10 +79,10 @@ namespace CSR.Controllers.Api
             {
                 // 세션에서 법인 코드 가져오기
                 var corCd = HttpContext.Session.GetString("CorCd");
-                
+
                 if (string.IsNullOrEmpty(corCd))
                 {
-                    // 세션에 없으면 에러보다는 빈 데이터 또는 0으로 응답하거나, 
+                    // 세션에 없으면 에러보다는 빈 데이터 또는 0으로 응답하거나,
                     // 필요시 DB에서 다시 조회하는 로직을 넣을 수 있습니다.
                     return Ok(new { WAITCOUNT = 0, RECEIVEDCOUNT = 0, CLOSEDCOUNT = 0, INPROGRESSCOUNT = 0 });
                 }
@@ -393,8 +393,26 @@ namespace CSR.Controllers.Api
             }
         }
 
-        
+        /// <summary>
+        /// 로그인한 사용자가 조치자로 지정된 요청사항 중 답변완료 건수를 가져옵니다.
+        /// </summary>
+        [HttpGet("my-assigned-answered-count")]
+        public async Task<IActionResult> GetMyAssignedAnsweredCount()
+        {
+            try
+            {
+                var userId = User.Identity?.Name;
+                if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
+                var count = await _reqService.GetMyAssignedAnsweredCountAsync(userId);
+                return Ok(new { count });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "조치자 답변완료 건수 조회 중 오류 발생. UserId: {UserId}", User.Identity?.Name);
+                return StatusCode(500, new { message = "내부 서버 오류가 발생했습니다." });
+            }
+        }
 
     }
 }

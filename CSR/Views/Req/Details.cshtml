@@ -503,11 +503,12 @@
                 <input type="hidden" name="expectDate" id="acceptExpectDate" />
                 <button type="submit" class="btn btn-primary" onclick="return prepareAccept();">@SharedLocalizer["Button_Accept"]</button>
             </form>
+            @* 반려기능 제한
             <form asp-controller="Req" asp-action="SetProcStatus" asp-route-id="@Model.REQID" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="status" value="63" />
                 <button type="submit" class="btn btn btn-secondary">@SharedLocalizer["Button_Reject"]</button>
-            </form>
+            </form> *@
         }
 
         @if( (Model.PROC_STATUS == "65" && currentUserId == Model.REQUSERID) || Model.PROC_STATUS == "65" && (await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded){

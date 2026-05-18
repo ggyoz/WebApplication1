@@ -66,4 +66,16 @@
         </div>
         <button type="submit" class="btn btn-warning text-white">요청자용 답변 메일 테스트 전송</button>
     </form>
+
+    <hr />
+
+    <form asp-action="SendProcessorChangedEmail" method="post" class="mb-5">
+        <h4>담당자 변경 알림 메일 템플릿 테스트</h4>
+        <p class="text-muted"><code>Views/EmailTemplates/ProcessorChanged.cshtml</code> 템플릿을 테스트합니다.</p>
+        <div class="mb-3">
+            <label for="toEmail_processor_changed" class="form-label">수신자 이메일 (새 담당자)</label>
+            <input type="email" class="form-control" id="toEmail_processor_changed" name="toEmail" required placeholder="example@email.com">
+        </div>
+        <button type="submit" class="btn btn-secondary">담당자 변경 메일 테스트 전송</button>
+    </form>
 </div>

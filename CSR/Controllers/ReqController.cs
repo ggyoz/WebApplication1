@@ -141,7 +141,7 @@ namespace CSR.Controllers
 
             if( User.IsInRole("R1")) {
                 corCd = sessionCorCd;
-                // 검색했을때때
+                // 검색했을때
                 if(!string.IsNullOrEmpty(deptCd) || !string.IsNullOrEmpty(officeCd) || !string.IsNullOrEmpty(teamCd)){                                    
                     teamCd = sessionTeamCd;
                 }else{                    
@@ -297,10 +297,24 @@ namespace CSR.Controllers
                 if(!string.IsNullOrEmpty(deptCd) || !string.IsNullOrEmpty(officeCd) || !string.IsNullOrEmpty(teamCd)){
                     
                 }else{
-                    if(string.IsNullOrEmpty(sessionOfficeCd)){
-                        deptCd = defaultDeptStr;
-                    }else if(string.IsNullOrEmpty(sessionTeamCd)){
+
+                    if (!string.IsNullOrEmpty(sessionDeptCd))
+                    {
+                        deptCd = sessionDeptCd;
+                    }   
+
+                    if( !string.IsNullOrEmpty(sessionOfficeCd)){
                         officeCd = sessionOfficeCd;
+                    }
+
+                    // if(string.IsNullOrEmpty(sessionOfficeCd)){
+                    //     deptCd = defaultDeptStr;
+                    // }else if(string.IsNullOrEmpty(sessionTeamCd)){
+                    //     officeCd = sessionOfficeCd;
+                    // }
+
+                    if( !string.IsNullOrEmpty(sessionTeamCd)){
+                        teamCd = sessionTeamCd;
                     }
                 }                
             }
@@ -1310,7 +1324,7 @@ namespace CSR.Controllers
         [Authorize(Policy = "RequireManagerOrHigher")]
         public async Task<IActionResult> UpdateResUser(int id, string resUserId)
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier); // 수정자
             if (currentUserId == null)
             {
                 return Challenge();
@@ -1321,6 +1335,27 @@ namespace CSR.Controllers
             if (result)
             {
                 TempData["ToastMessage"] = "조치자가 성공적으로 변경되었습니다.";
+
+                try
+                {
+                    var fullReqInfo = await _reqService.GetReqInfoByIdAsync(id);
+                    if (fullReqInfo != null && !string.IsNullOrEmpty(resUserId))
+                    {
+                        var newProcessor = await _userService.GetUserByIdAsync(resUserId);
+                        if (newProcessor != null && !string.IsNullOrEmpty(newProcessor.EmailAddr))
+                        {
+                            string emailBody = await _renderer.RenderViewToStringAsync("EmailTemplates/ProcessorChanged", fullReqInfo);
+                            string subject = $"[ITSM] 조치자로 지정되었습니다 - {fullReqInfo.TITLE}";
+                            await _emailService.SendEmailAsync(newProcessor.EmailAddr, subject, emailBody);
+
+                            _logger.LogInformation("Processor changed email sent to {UserId} for Request {ReqId}", resUserId, id);
+                        }
+                    }
+                }
+                catch (Exception mailEx)
+                {
+                    _logger.LogError(mailEx, "Error sending processor changed email for Request {ReqId}", id);
+                }
             }
             else
             {

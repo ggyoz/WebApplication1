@@ -12,7 +12,6 @@ a, abbr, acronym, address, big, cite, code,
 del, dfn, em, img, ins, kbd, q, s, samp,
 small, strike, sub, sup, tt, var,
 b, u, i, center,
-dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed, 
@@ -36,9 +35,7 @@ body {
 	font-family: 'Pretendard', sans-serif; /* Pretendard 폰트 적용 */
   font-weight: normal;
 }
-ol, ul {
-	list-style: none;
-}
+
 blockquote, q {
 	quotes: none;
 }
