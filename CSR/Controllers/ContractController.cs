@@ -106,6 +106,16 @@ namespace CSR.Controllers
             return View(contract);
         }
 
+        
+        [HttpGet]
+        public async Task<IActionResult> Edit2(int id)
+        {
+            var contract = await _contractService.GetContractByIdAsync(id);
+            if (contract == null) return NotFound();
+            ViewBag.Vendors = await _vendorService.GetVendorsAsync();
+            return View(contract);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Contract contract, List<IFormFile> newFiles, [FromForm] List<int> deletedFiles)

@@ -30,7 +30,10 @@
                         <th></th>
                         <td></td> 
                         <td colspan="4" class="text-end">
-                            <button type="submit" class="btn btn-light search-btn">@SharedLocalizer["Button_Search"]</button>
+                            <button type="submit" class="btn btn-action btn-action-primary">
+                        <i class="bi bi-search btn-icon"></i>
+                        <span class="btn-label">@SharedLocalizer["Button_Search"]</span>
+                    </button>
                         </td>
                     </tr>
                 </tbody>
@@ -49,7 +52,10 @@
     <div>
         @if ((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded)
         {
-            <a asp-action="Create" class="btn btn-add">@Localizer["CreateNew"]</a>
+            <a asp-action="Create" class="btn btn-action btn-add">
+                <i class="bi bi-plus btn-icon"></i>
+                <span class="btn-label">@Localizer["CreateNew"]</span>
+            </a>
         }
     </div>
 </div>

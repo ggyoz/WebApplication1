@@ -66,9 +66,15 @@
             <div class="button-area text-end mt-5 m-3">
                 @if ((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded)
                 {
-                    <input type="submit" value="@SharedLocalizer["Button_Save"]" class="btn btn-primary" />
+                    <button type="submit" class="btn btn-action btn-action-primary">
+                        <i class="bi bi-floppy btn-icon"></i>
+                        <span class="btn-label">@SharedLocalizer["Button_Save"]</span>
+                    </button>
                 }
-                <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
+                <a asp-action="Index" class="btn btn-action btn-action-secondary">
+                    <i class="bi bi-list-ul btn-icon"></i>
+                    <span class="btn-label">@SharedLocalizer["Button_List"]</span>
+                </a>
             </div>
         </form>
     </div>

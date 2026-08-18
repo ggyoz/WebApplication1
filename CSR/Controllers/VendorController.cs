@@ -29,6 +29,17 @@ namespace CSR.Controllers
 
             return View(vendors);
         }
+        public async Task<IActionResult> Index2(string vendorName, string vendorCode, string vendorType, string status)
+        {
+            var vendors = await _vendorService.GetVendorsAsync(vendorName, vendorCode, vendorType, status);
+            
+            ViewData["VendorName"] = vendorName;
+            ViewData["VendorCode"] = vendorCode;
+            ViewData["VendorType"] = vendorType;
+            ViewData["Status"] = status;
+
+            return View(vendors);
+        }
 
         public async Task<IActionResult> Details(int id)
         {
@@ -37,8 +48,23 @@ namespace CSR.Controllers
             return View(vendor);
         }
 
+        
+        public async Task<IActionResult> Details2(int id)
+        {
+            var vendor = await _vendorService.GetVendorByIdAsync(id);
+            if (vendor == null) return NotFound();
+            return View(vendor);
+        }
+
+
         [HttpGet]
         public IActionResult Create()
+        {
+            return View(new Vendor());
+        }
+
+        [HttpGet]
+        public IActionResult Create2()
         {
             return View(new Vendor());
         }
@@ -58,6 +84,14 @@ namespace CSR.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
+        {
+            var vendor = await _vendorService.GetVendorByIdAsync(id);
+            if (vendor == null) return NotFound();
+            return View(vendor);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit2(int id)
         {
             var vendor = await _vendorService.GetVendorByIdAsync(id);
             if (vendor == null) return NotFound();

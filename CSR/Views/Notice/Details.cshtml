@@ -49,15 +49,24 @@
         @if ((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded)
         {
             <form asp-action="Delete" asp-route-id="@Model.ID" method="post" style="display:inline;" onsubmit="return confirm('@Localizer["DeleteConfirmation"]');">
-                <button type="submit" class="btn btn-outline-secondary">@SharedLocalizer["Button_Delete"]</button>
+                <button type="submit" class="btn btn-action btn-action-danger">
+                    <i class="bi bi-trash btn-icon"></i>
+                    <span class="btn-label">@SharedLocalizer["Button_Delete"]</span>
+                </button>
             </form>
         }
     </div>
     <div>
         @if ((await AuthorizationService.AuthorizeAsync(User, "RequireManagerOrHigher")).Succeeded)
         {
-            <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary">@SharedLocalizer["Button_Edit"]</a>
+            <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-action btn-action-warning">
+                <i class="bi bi-pencil btn-icon"></i>
+                <span class="btn-label">@SharedLocalizer["Button_Edit"]</span>
+            </a>
         }
-        <a asp-action="Index" class="btn btn-list">@SharedLocalizer["Button_List"]</a>
+        <a asp-action="Index" class="btn btn-action btn-action-secondary">
+            <i class="bi bi-list-ul btn-icon"></i>
+            <span class="btn-label">@SharedLocalizer["Button_List"]</span>
+        </a>
     </div>
 </div>

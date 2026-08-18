@@ -9,8 +9,7 @@
 
 
 <div class="container-fluid px-4">
-    <partial name="_PageTitlePartial" />
-    
+    <partial name="_PageTitlePartial" />    
     <hr />
 
     <div class="row">
@@ -153,14 +152,8 @@
                 </table>
 
                 <div class="button-area text-end mt-4 mb-5">
-                    <button type="submit" class="btn btn-action btn-action-primary">
-                        <i class="bi bi-floppy btn-icon"></i>
-                        <span class="btn-label">저장</span>
-                    </button>
-                    <a asp-action="Index" class="btn btn-action btn-action-secondary">
-                        <i class="bi bi-list-ul btn-icon"></i>
-                        <span class="btn-label">목록</span>
-                    </a>
+                    <button type="submit" class="btn btn-primary px-4">저장</button>
+                    <a asp-action="Index" class="btn btn-list">목록</a>
                 </div>
             </form>
         </div>

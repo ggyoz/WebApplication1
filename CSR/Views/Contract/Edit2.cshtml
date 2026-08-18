@@ -3,10 +3,8 @@
 @inject IHtmlLocalizer<CSR.SharedStrings> SharedLocalizer
 
 @{
-    ViewData["Title"] = "계약 등록";
+    ViewData["Title"] = "계약 수정";
 }
-
-
 
 <div class="container-fluid">
     <partial name="_PageTitlePartial" />
@@ -14,7 +12,8 @@
 
     <div class="row">
         <div class="col-md-12">
-            <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="CONTRACT_ID" />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <table class="table-create" width="100%">
@@ -31,7 +30,7 @@
                     <tbody>
                         <tr class="table-separator">
                             <td colspan="8" style="background-color: #f1f5f9; padding: 5px; border-bottom: 1px solid #cbd5e1;">
-                                <i class="bi bi-file-earmark-text ms-2"></i> <strong>계약 기본 정보</strong>
+                                <i class="fas fa-file-contract ms-2"></i> <strong>계약 기본 정보</strong>
                             </td>
                         </tr>
                         <tr>
@@ -41,7 +40,9 @@
                                     <option value="">-- 업체 선택 --</option>
                                     @foreach (var vendor in ViewBag.Vendors)
                                     {
-                                        <option value="@vendor.VENDORID">[@vendor.VENDOR_CODE] @vendor.VENDOR_NAME</option>
+                                        <option value="@vendor.VENDORID" selected="@(Model.VENDORID == vendor.VENDORID)">
+                                            [@vendor.VENDOR_CODE] @vendor.VENDOR_NAME
+                                        </option>
                                     }
                                 </select>
                                 <span asp-validation-for="VENDORID" class="text-danger"></span>
@@ -69,20 +70,20 @@
                         </tr>
                         <tr class="table-separator">
                             <td colspan="8" style="background-color: #f1f5f9; padding: 5px; border-bottom: 1px solid #cbd5e1;">
-                                <i class="bi bi-calendar3 ms-2"></i> <strong>계약 기간</strong>
+                                <i class="fas fa-calendar-alt ms-2"></i> <strong>계약 기간</strong>
                             </td>
                         </tr>
                         <tr>
                             <th><label asp-for="CONTRACT_START"></label></th>
                             <td>
-                                <div id="contractStart"></div>
-                                <input asp-for="CONTRACT_START" class="form-control" type="hidden" />
+                                <input asp-for="CONTRACT_START" class="form-control" type="date"
+                                       value="@Model.CONTRACT_START.ToString("yyyy-MM-dd")" />
                                 <span asp-validation-for="CONTRACT_START" class="text-danger"></span>
                             </td>
                             <th><label asp-for="CONTRACT_END"></label></th>
                             <td>
-                                <div id="contractEnd"></div>
-                                <input asp-for="CONTRACT_END" class="form-control" type="hidden" />
+                                <input asp-for="CONTRACT_END" class="form-control" type="date"
+                                       value="@Model.CONTRACT_END.ToString("yyyy-MM-dd")" />
                                 <span asp-validation-for="CONTRACT_END" class="text-danger"></span>
                             </td>
                             <th><label asp-for="CONTRACT_YEAR"></label></th>
@@ -90,9 +91,7 @@
                                 <input asp-for="CONTRACT_YEAR" class="form-control" type="number" />
                                 <span asp-validation-for="CONTRACT_YEAR" class="text-danger"></span>
                             </td>
-                            <td colspan="2" class="text-muted" style="font-size:0.85em; vertical-align: middle;">
-                                ※ 시작일 입력 시 자동 계산됩니다.
-                            </td>
+                            <td colspan="2"></td>
                         </tr>
                         <tr>
                             <th><label asp-for="CONTRACT_YEARS"></label></th>
@@ -104,27 +103,50 @@
                                 <input asp-for="CONTRACT_MONTHS" class="form-control" type="number" min="0" max="11" />
                             </td>
                             <td colspan="4" class="text-muted" style="font-size:0.85em; vertical-align: middle;">
-                                ※ 시작일/종료일 입력 시 자동 계산됩니다. 직접 수정 가능합니다.
+                                ※ 시작일/종료일 변경 시 자동 계산됩니다.
                             </td>
                         </tr>
                         <tr class="table-separator">
                             <td colspan="8" style="background-color: #f1f5f9; padding: 5px; border-bottom: 1px solid #cbd5e1;">
-                                <i class="bi bi-clipboard-check ms-2"></i> <strong>계약 내역</strong>
+                                <i class="fas fa-clipboard-list ms-2"></i> <strong>계약 내역</strong>
                             </td>
                         </tr>
                         <tr>
                             <th><label asp-for="CONTRACT_DESC"></label></th>
                             <td colspan="7">
-                                <textarea asp-for="CONTRACT_DESC" class="form-control" rows="5" placeholder="계약 내역을 입력해주세요."></textarea>
+                                <textarea asp-for="CONTRACT_DESC" class="form-control" rows="5"></textarea>
                             </td>
                         </tr>
                         <tr class="table-separator">
                             <td colspan="8" style="background-color: #f1f5f9; padding: 5px; border-bottom: 1px solid #cbd5e1;">
-                                <i class="bi bi-paperclip ms-2"></i> <strong>첨부파일</strong>
+                                <i class="fas fa-paperclip ms-2"></i> <strong>첨부파일</strong>
                             </td>
                         </tr>
                         <tr>
                             <td colspan="8" style="padding: 10px;">
+                                @if (Model.AttachFiles != null && Model.AttachFiles.Any())
+                                {
+                                    <ul class="list-unstyled mb-3" id="existing-files">
+                                        @foreach (var file in Model.AttachFiles)
+                                        {
+                                            <li class="d-flex align-items-center py-1 border-bottom file-item" id="file-item-@file.FILEID">
+                                                <i class="fas fa-file me-2 text-secondary"></i>
+                                                <a asp-action="DownloadFile" asp-route-id="@file.FILEID" class="me-auto text-decoration-none">
+                                                    @file.REAL_FILENAME
+                                                </a>
+                                                <input type="hidden" name="deletedFiles" value="@file.FILEID" id="delete-input-@file.FILEID" disabled />
+                                                <button type="button" class="btn btn-sm btn-outline-danger ms-3"
+                                                        onclick="markFileDeleted(@file.FILEID, '@file.REAL_FILENAME')">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <p class="text-muted mb-3" id="no-files-msg">첨부파일 없음</p>
+                                }
                                 <div id="file-uploader"></div>
                                 <span class="text-muted" style="font-size: 0.85em;">※ 최대 파일 크기: 10MB / 허용 형식: PDF, Excel, Word, 이미지</span>
                             </td>
@@ -135,8 +157,12 @@
                 <div class="button-area text-end mt-4 mb-5">
                     <button type="submit" class="btn btn-action btn-action-primary">
                         <i class="bi bi-floppy btn-icon"></i>
-                        <span class="btn-label">저장</span>
+                        <span class="btn-label">수정 완료</span>
                     </button>
+                    <a asp-action="Details" asp-route-id="@Model.CONTRACT_ID" class="btn btn-action btn-action-warning">
+                        <i class="bi bi-x-circle btn-icon"></i>
+                        <span class="btn-label">취소</span>
+                    </a>
                     <a asp-action="Index" class="btn btn-action btn-action-secondary">
                         <i class="bi bi-list-ul btn-icon"></i>
                         <span class="btn-label">목록</span>
@@ -206,6 +232,14 @@
             background-color: #0b5ed7;
             color: #fff;
         }
+        .btn-action-warning {
+            background-color: #ffc107;
+            color: #000;
+        }
+        .btn-action-warning:hover {
+            background-color: #e0a800;
+            color: #000;
+        }
         .btn-action-secondary {
             background-color: #6c757d;
             color: #fff;
@@ -218,7 +252,7 @@
     <script>
         $(function () {
             $("#file-uploader").dxFileUploader({
-                name: "files",
+                name: "newFiles",
                 multiple: true,
                 uploadMode: "useForm",
                 allowCanceling: true,
@@ -227,27 +261,17 @@
             });
         });
 
-        var today = new Date();
-
-        var startBox = initDateBox('#contractStart', '#CONTRACT_START', today);
-        var endBox = initDateBox('#contractEnd', '#CONTRACT_END', today);
-
-        startBox.option('onValueChanged', function (e) {
-            const dateValue = e.value ? formatDate(e.value) : '';
-            $('#CONTRACT_START').val(dateValue);
-            calcDuration();
-        });
-
-        endBox.option('onValueChanged', function (e) {
-            const dateValue = e.value ? formatDate(e.value) : '';
-            $('#CONTRACT_END').val(dateValue);
-            calcDuration();
-        });
+        function markFileDeleted(fileId, fileName) {
+            if (!confirm(fileName + ' 파일을 삭제하시겠습니까?\n(저장 시 반영됩니다.)')) return;
+            var item = document.getElementById('file-item-' + fileId);
+            item.classList.add('text-decoration-line-through', 'text-muted', 'opacity-50');
+            item.querySelector('button').disabled = true;
+            document.getElementById('delete-input-' + fileId).disabled = false;
+        }
 
         function calcDuration() {
-            var start = $('#CONTRACT_START').val();
-            var end = $('#CONTRACT_END').val();
-
+            var start = document.getElementById('CONTRACT_START').value;
+            var end = document.getElementById('CONTRACT_END').value;
             if (start) {
                 document.getElementById('CONTRACT_YEAR').value = new Date(start).getFullYear();
             }
@@ -261,9 +285,8 @@
                 }
             }
         }
-
-        calcDuration();
-
+        document.getElementById('CONTRACT_START').addEventListener('change', calcDuration);
+        document.getElementById('CONTRACT_END').addEventListener('change', calcDuration);
     </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

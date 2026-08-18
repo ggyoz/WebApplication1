@@ -6,10 +6,10 @@
     ViewData["Title"] = "계약 등록";
 }
 
-<partial name="_PageTitlePartial" />
 
-<div class="container-fluid px-4">
 
+<div class="container-fluid">
+    <partial name="_PageTitlePartial" />
     <hr />
 
     <div class="row">
@@ -31,7 +31,7 @@
                     <tbody>
                         <tr class="table-separator">
                             <td colspan="8" style="background-color: #f1f5f9; padding: 5px; border-bottom: 1px solid #cbd5e1;">
-                                <i class="fas fa-file-contract ms-2"></i> <strong>계약 기본 정보</strong>
+                                <i class="bi bi-file-earmark-text ms-2"></i> <strong>계약 기본 정보</strong>
                             </td>
                         </tr>
                         <tr>
@@ -69,12 +69,12 @@
                         </tr>
                         <tr class="table-separator">
                             <td colspan="8" style="background-color: #f1f5f9; padding: 5px; border-bottom: 1px solid #cbd5e1;">
-                                <i class="fas fa-calendar-alt ms-2"></i> <strong>계약 기간</strong>
+                                <i class="bi bi-calendar3 ms-2"></i> <strong>계약 기간</strong>
                             </td>
                         </tr>
                         <tr>
                             <th><label asp-for="CONTRACT_START"></label></th>
-                            <td>                                
+                            <td>
                                 <div id="contractStart"></div>
                                 <input asp-for="CONTRACT_START" class="form-control" type="hidden" />
                                 <span asp-validation-for="CONTRACT_START" class="text-danger"></span>
@@ -109,7 +109,7 @@
                         </tr>
                         <tr class="table-separator">
                             <td colspan="8" style="background-color: #f1f5f9; padding: 5px; border-bottom: 1px solid #cbd5e1;">
-                                <i class="fas fa-clipboard-list ms-2"></i> <strong>계약 내역</strong>
+                                <i class="bi bi-clipboard-check ms-2"></i> <strong>계약 내역</strong>
                             </td>
                         </tr>
                         <tr>
@@ -120,7 +120,7 @@
                         </tr>
                         <tr class="table-separator">
                             <td colspan="8" style="background-color: #f1f5f9; padding: 5px; border-bottom: 1px solid #cbd5e1;">
-                                <i class="fas fa-paperclip ms-2"></i> <strong>첨부파일</strong>
+                                <i class="bi bi-paperclip ms-2"></i> <strong>첨부파일</strong>
                             </td>
                         </tr>
                         <tr>
@@ -133,8 +133,14 @@
                 </table>
 
                 <div class="button-area text-end mt-4 mb-5">
-                    <button type="submit" class="btn btn-primary px-4">저장</button>
-                    <a asp-action="Index" class="btn btn-list">목록</a>
+                    <button type="submit" class="btn btn-action btn-action-primary">
+                        <i class="bi bi-floppy btn-icon"></i>
+                        <span class="btn-label">저장</span>
+                    </button>
+                    <a asp-action="Index" class="btn btn-action btn-action-secondary">
+                        <i class="bi bi-list-ul btn-icon"></i>
+                        <span class="btn-label">목록</span>
+                    </a>
                 </div>
             </form>
         </div>
@@ -214,7 +220,6 @@
             }
         }
 
-        // 초기 로드 시 계산 실행
         calcDuration();
 
     </script>

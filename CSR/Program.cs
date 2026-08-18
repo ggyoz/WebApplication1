@@ -62,7 +62,7 @@ builder.Services.AddControllersWithViews(options =>
     .AddViewLocalization()                                              // 뷰에서 다국어를 지원하도록 설정
     .AddDataAnnotationsLocalization();                                  // 데이터 유효성 검사 메시지에서 다국어를 지원하도록 설정
 
-// // 데이터 보호 서비스 추가 (애플리케이션 재시작 시 로그인 유지)
+// 데이터 보호 서비스 추가 (앱 재시작 시 기존 쿠키 유지)
 // builder.Services.AddDataProtection()
 //     .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "Keys")));
 

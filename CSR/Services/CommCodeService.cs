@@ -125,8 +125,8 @@ namespace CSR.Services
             var allCodes = await GetAllCommCodesAsync();
             var query = allCodes.Where(c => c.PARENTID == pid && c.USEYN == "Y");
 
-            // 제외할 진행상태 목록 
-            var excludeIds = new[] { 66, 68, 63, 67, 83, 82 };
+            // 제외할 진행상태 목록 // 63 반려, 66 담당자변경, 67 일정변경, 68 종결, 82 삭제
+            var excludeIds = new[] { 66, 68, 63, 67, 82 };
 
             if( pid == 61){
                 query = query.Where(c => !excludeIds.Contains(c.CODEID) );

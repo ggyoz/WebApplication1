@@ -6,10 +6,8 @@
     ViewData["Title"] = "계약 수정";
 }
 
-<partial name="_PageTitlePartial" />
-
-<div class="container-fluid px-4">
-
+<div class="container-fluid">
+    <partial name="_PageTitlePartial" />
     <hr />
 
     <div class="row">
@@ -137,9 +135,9 @@
                                                     @file.REAL_FILENAME
                                                 </a>
                                                 <input type="hidden" name="deletedFiles" value="@file.FILEID" id="delete-input-@file.FILEID" disabled />
-                                                <button type="button" class="btn btn-sm btn-outline-danger ms-3"
+                                                <button type="button" class="btn btn-sm btn-danger btn-file-delete ms-3"
                                                         onclick="markFileDeleted(@file.FILEID, '@file.REAL_FILENAME')">
-                                                    <i class="fas fa-times"></i>
+                                                    <i class="bi bi-trash me-1"></i> 삭제
                                                 </button>
                                             </li>
                                         }
@@ -157,9 +155,18 @@
                 </table>
 
                 <div class="button-area text-end mt-4 mb-5">
-                    <button type="submit" class="btn btn-primary px-4">수정 완료</button>
-                    <a asp-action="Details" asp-route-id="@Model.CONTRACT_ID" class="btn btn-secondary px-4">취소</a>
-                    <a asp-action="Index" class="btn btn-list">목록</a>
+                    <button type="submit" class="btn btn-action btn-action-primary">
+                        <i class="bi bi-floppy btn-icon"></i>
+                        <span class="btn-label">수정 완료</span>
+                    </button>
+                    <a asp-action="Details" asp-route-id="@Model.CONTRACT_ID" class="btn btn-action btn-action-warning">
+                        <i class="bi bi-x-circle btn-icon"></i>
+                        <span class="btn-label">취소</span>
+                    </a>
+                    <a asp-action="Index" class="btn btn-action btn-action-secondary">
+                        <i class="bi bi-list-ul btn-icon"></i>
+                        <span class="btn-label">목록</span>
+                    </a>
                 </div>
             </form>
         </div>
@@ -190,6 +197,19 @@
         }
         .table-create .form-control, .table-create .form-select {
             border-radius: 4px;
+        }
+
+        .btn-file-delete {
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 4px 14px;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 4px rgba(220,53,69,0.3);
+        }
+        .btn-file-delete:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(220,53,69,0.4);
         }
     </style>
     <script>

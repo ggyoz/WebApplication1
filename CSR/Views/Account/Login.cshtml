@@ -114,6 +114,7 @@
         <img src="~/image/mobasesystem3.png" alt="Home" class="d-block mx-auto" style="width:250px; height:auto;"/>
         <form asp-action="Login">
             @Html.AntiForgeryToken()
+            <input type="hidden" name="returnUrl" value="@Context.Request.Query["ReturnUrl"]" />
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-floating mb-3">
                 <input asp-for="UserId" class="form-control" placeholder="@SharedLocalizer["Label_UserId"]" maxlength="10" />

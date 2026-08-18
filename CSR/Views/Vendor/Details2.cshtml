@@ -109,26 +109,16 @@
             </div>
 
             <div class="button-area text-end mt-3 mb-5">
-                <a asp-action="Edit" asp-route-id="@Model.VENDORID" class="btn btn-action btn-action-warning">
-                    <i class="bi bi-pencil btn-icon"></i>
-                    <span class="btn-label">수정</span>
+                <a asp-action="Edit" asp-route-id="@Model.VENDORID" class="btn btn-warning px-4">
+                    <i class="fas fa-edit"></i> 수정
                 </a>
-                <button type="button" class="btn btn-action btn-action-danger" onclick="deleteVendor(@Model.VENDORID)">
-                    <i class="bi bi-trash btn-icon"></i>
-                    <span class="btn-label">삭제</span>
-                </button>
-                <a asp-action="Index" class="btn btn-action btn-action-secondary">
-                    <i class="bi bi-list-ul btn-icon"></i>
-                    <span class="btn-label">목록</span>
+                <a asp-action="Index" class="btn btn-secondary px-4">
+                    <i class="fas fa-list"></i> 목록
                 </a>
             </div>
         </div>
     </div>
 </div>
-
-<form id="deleteForm" asp-action="Delete" method="post" style="display:none;">
-    <input type="hidden" name="id" id="deleteId" />
-</form>
 
 @section Scripts {
     <style>
@@ -158,13 +148,15 @@
             padding: 8px 15px;
             border-bottom: 2px solid #dee2e6;
         }
-    </style>
-    <script>
-        function deleteVendor(id) {
-            if (confirm('정말 삭제하시겠습니까?')) {
-                document.getElementById('deleteId').value = id;
-                document.getElementById('deleteForm').submit();
-            }
+        .btn-warning {
+            color: #fff;
+            background-color: #ffc107;
+            border-color: #ffc107;
         }
-    </script>
+        .btn-warning:hover {
+            color: #fff;
+            background-color: #e0a800;
+            border-color: #d39e00;
+        }
+    </style>
 }
